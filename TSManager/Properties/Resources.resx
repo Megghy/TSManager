@@ -1,0 +1,236 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="json.xshd" xml:space="preserve">
+    <value>&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;SyntaxDefinition name="Json" extensions=".js" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008"&gt;
+  &lt;Color name="Digits" foreground="#8700FF" exampleText="3.14" /&gt;
+  &lt;Color name="Value" foreground="#000CFF" exampleText="var text = &amp;quot;Hello, World!&amp;quot;;" /&gt;
+  &lt;Color name="ParamName" foreground="#057500"  exampleText="var text = &amp;quot;Hello, World!&amp;quot;;" /&gt;
+  &lt;RuleSet ignoreCase="false"&gt;
+    &lt;Keywords color="Digits" &gt;
+      &lt;Word&gt;true&lt;/Word&gt;
+      &lt;Word&gt;false&lt;/Word&gt;
+    &lt;/Keywords&gt;
+    &lt;Span color="ParamName"&gt;
+      &lt;Begin&gt;"&lt;/Begin&gt;
+      &lt;End&gt;(?=:)&lt;/End&gt;
+    &lt;/Span&gt;
+    &lt;Span color="Value" multiline="true"&gt;
+      &lt;Begin&gt;
+        (?&amp;lt;=:)\040"[^"]*
+      &lt;/Begin&gt;
+      &lt;End&gt;"&lt;/End&gt;
+    &lt;/Span&gt;
+    &lt;Rule color="Digits"&gt;\b0[xX][0-9a-fA-F]+|(\b\d+(\.[0-9]+)?|\.[0-9]+)([eE][+-]?[0-9]+)?&lt;/Rule&gt;
+  &lt;/RuleSet&gt;
+&lt;/SyntaxDefinition&gt;</value>
+  </data>
+  <data name="Prefix" xml:space="preserve">
+    <value>{
+  "prefix_0": "无","prefix_1": "大",
+  "prefix_2": "巨大",
+  "prefix_3": "危险",
+  "prefix_4": "凶残",
+  "prefix_5": "锋利",
+  "prefix_6": "尖锐",
+  "prefix_7": "微小",
+  "prefix_8": "可怕",
+  "prefix_9": "小",
+  "prefix_10": "钝",
+  "prefix_11": "倒霉",
+  "prefix_12": "笨重",
+  "prefix_13": "可耻",
+  "prefix_14": "重",
+  "prefix_15": "轻",
+  "prefix_16": "精准",
+  "prefix_17": "迅速",
+  "prefix_18": "急速",
+  "prefix_19": "恐怖",
+  "prefix_20": "致命",
+  "prefix_21": "可靠",
+  "prefix_22": "可畏",
+  "prefix_23": "无力",
+  "prefix_24": "粗笨",
+  "prefix_25": "强大",
+  "prefix_26": "神秘",
+  "prefix_27": "精巧",
+  "prefix_28": "精湛",
+  "prefix_29": "笨拙",
+  "prefix_30": "无知",
+  "prefix_31": "错乱",
+  "prefix_32": "威猛",
+  "prefix_33": "禁忌",
+  "prefix_34": "天界",
+  "prefix_35": "狂怒",
+  "prefix_36": "锐利",
+  "prefix_37": "高端",
+  "prefix_38": "强力",
+  "prefix_39": "碎裂",
+  "prefix_40": "破损",
+  "prefix_41": "粗劣",
+  "prefix_42": "迅捷",
+  "prefix_43": "致命",
+  "prefix_44": "灵活",
+  "prefix_45": "灵巧",
+  "prefix_46": "残暴",
+  "prefix_47": "缓慢",
+  "prefix_48": "迟钝",
+  "prefix_49": "呆滞",
+  "prefix_50": "惹恼",
+  "prefix_51": "凶险",
+  "prefix_52": "狂躁",
+  "prefix_53": "致伤",
+  "prefix_54": "强劲",
+  "prefix_55": "粗鲁",
+  "prefix_56": "虚弱",
+  "prefix_57": "无情",
+  "prefix_58": "暴怒",
+  "prefix_59": "神级",
+  "prefix_60": "恶魔",
+  "prefix_61": "狂热",
+  "prefix_62": "坚硬",
+  "prefix_63": "守护",
+  "prefix_64": "装甲",
+  "prefix_65": "护佑",
+  "prefix_66": "奥秘",
+  "prefix_67": "精确",
+  "prefix_68": "幸运",
+  "prefix_69": "锯齿",
+  "prefix_70": "尖刺",
+  "prefix_71": "愤怒",
+  "prefix_72": "险恶",
+  "prefix_73": "轻快",
+  "prefix_74": "快速",
+  "prefix_75": "急速",
+  "prefix_76": "迅捷",
+  "prefix_77": "狂野",
+  "prefix_78": "鲁莽",
+  "prefix_79": "勇猛",
+  "prefix_80": "暴力",
+  "prefix_81": "传奇",
+  "prefix_82": "虚幻",
+  "prefix_83": "神话"
+}</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Texture" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Texture.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+</root>
