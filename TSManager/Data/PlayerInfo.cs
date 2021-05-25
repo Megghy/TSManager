@@ -34,6 +34,13 @@ namespace TSManager.Data
             Data = data;
             Account = account;
         }
+        public PlayerInfo(UserAccount account)
+        {
+            Name = account.Name;
+            ID = account.ID;
+            Data = new PlayerData(new TSPlayer(-1));
+            Account = account;
+        }
         public PlayerInfo()
         {
             ID = -1;
@@ -47,18 +54,21 @@ namespace TSManager.Data
         }
         public void Update()
         {
-            Player = TShock.Players.SingleOrDefault(p => p != null && p.Name == Name);
-            if (Player == null)
-            {
-                if (Online) Online = false;
+            try {
+                Player = TShock.Players.SingleOrDefault(p => p != null && p.Name == Name);
+                if (TShock.Bans.Bans.Where(b => b.Value.Identifier == "uuid:" + Account.UUID).Any() || TShock.Bans.Bans.Where(b => b.Value.Identifier == "acc:" + Name).Any() || (Online ? TShock.Bans.Bans.Where(b => b.Value.Identifier == "ip:" + Player.IP).Any() : false)) Ban = true;
+                else Ban = false;
+                if (Player == null)
+                {
+                    if (Online) Online = false;
+                }
+                else
+                {
+                    PlayTime += TSMMain.UpdateTime;
+                    Online = true;
+                }
             }
-            else
-            {               
-                Data = Player.PlayerData;
-                Account = Player.Account;
-                PlayTime += TSMMain.UpdateTime;
-                Online = true;
-            }
+            catch { }
         }
         public async void Save()
         {
@@ -71,7 +81,7 @@ namespace TSManager.Data
             });
         }
         public bool Online { get; set; }
-        [AlsoNotifyFor("Online", new string[] { "HP", "MaxHP", "MP", "MaxMP", "Mute", "GodMode", "KnownIP", "LastLoginTime", "RegisterTime", "Status", "StatusColor" })]
+        [AlsoNotifyFor("Online", new string[] { "HP", "MaxHP", "MP", "MaxMP", "Ban", "_Ban", "Mute", "GodMode", "KnownIP", "LastLoginTime", "RegisterTime", "Status", "StatusColor" })]
         public long PlayTime { get; set; }
         public string Status { get { return Online ? "在线" : "离线"; } set { } }
         public Brush StatusColor { get { return Online ? Color.FromRgb(178, 223, 120).ToBrush() : Color.FromRgb(253, 86, 86).ToBrush(); } set { } }
@@ -129,7 +139,9 @@ namespace TSManager.Data
                 }
             }
         }
-        public Group Group
+        public bool Ban { get; set; }
+        public bool _Ban { get { return !Ban; } set { } }
+        public TShockAPI.Group Group
         {
             get
             {
@@ -142,7 +154,7 @@ namespace TSManager.Data
                 TShock.UserAccounts.SetUserGroup(Account, value.Name);
             }
         }
-        public List<Group> Groups
+        public List<TShockAPI.Group> Groups
         {
             get
             {
@@ -160,8 +172,6 @@ namespace TSManager.Data
                 if (Online)
                 {
                     Player.mute = true;
-                    Player.SendInfoMessage($"你已被{(value ? "" : "取消")}禁言.");
-                    Utils.Notice($"{Name} 已{(value ? "" : "取消")}禁言", HandyControl.Data.InfoType.Success);
                 }
             }
         }
@@ -173,8 +183,6 @@ namespace TSManager.Data
                 if (Online)
                 {
                     Player.ChangeGodMode(value);
-                    Player.SendInfoMessage($"你已{(value ? "开启" : "关闭")}上帝模式.");
-                    Utils.Notice($"{Name} 已{(value ? "开启" : "关闭")}上帝模式", HandyControl.Data.InfoType.Success);
                 }
             }
         }

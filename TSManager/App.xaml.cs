@@ -44,8 +44,6 @@ namespace TSManager
                 if (File.Exists(Info.Path + "TerrariaServer.exe"))
                 {
                     Info.Server = new ServerManger(typeof(ServerApi).Assembly);
-                    TSMMain.GUI.ShowDialog();
-                    Environment.Exit(0);
                 }
                 else
                 {

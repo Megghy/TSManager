@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -11,6 +10,7 @@ using System.Windows.Media;
 using Terraria.GameContent.Creative;
 using TShockAPI;
 using TSManager.Modules;
+using TSManager.UI.Control;
 
 namespace TSManager
 {
@@ -20,6 +20,12 @@ namespace TSManager
         {
             plr.GodMode = status;
             CreativePowerManager.Instance.GetPower<CreativePowers.GodmodePower>().SetEnabledState(plr.Index, plr.GodMode);
+        }
+        public static bool TryGetPlayerInfo(this TSPlayer plr, out Data.PlayerInfo info)
+        {
+            info = Info.Players.SingleOrDefault(s => s.Name == plr.Name);
+            if (info == null) return false;
+            return true;
         }
         public static void Add(this RichTextBox t, string content, bool playerInfo, Color color = default)
         {
@@ -31,7 +37,7 @@ namespace TSManager
                     t.Document.Blocks.Add(new Paragraph());
                 }
                 Run run = new Run(content);
-                run.Foreground = color.ToBrush(); 
+                run.Foreground = color.ToBrush();
                 run.FontFamily = new FontFamily("Consolas");
                 if (playerInfo)
                 {
@@ -122,6 +128,17 @@ namespace TSManager
                 if (action(obj)) return true;
             }
             return false;
+        }
+        public static void CallOnClick(this ButtonTextBox b)
+        {
+            //建立一个类型
+            Type t = typeof(ButtonTextBox);
+            //产生方法
+            MethodInfo m = t.GetMethod("Button_Click", BindingFlags.NonPublic | BindingFlags.Instance);
+            //参数赋值。传入函数
+            //调用
+            m.Invoke(b, new object[] { b, null });
+            return;
         }
     }
 }

@@ -11,40 +11,37 @@
     <Grid MaxHeight="50">
         <hc:Row>
             <hc:Col Span="4">
-                <TextBlock Text="{Binding Title}"
+                <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type local:ButtonTextBox}},Path=Title}"
                            VerticalAlignment="Center"
                            HorizontalAlignment="Center"
-                           FontSize="12"/>
+                           FontSize="12" />
             </hc:Col>
             <hc:Col Span="20">
                 <Border CornerRadius="4"
-                        Background="White"
-                        BorderBrush="#FFE0E0E0"
                         BorderThickness="1">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="87*" />
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="35*"
-                                              MaxWidth="50" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="34*" />
                         </Grid.ColumnDefinitions>
                         <hc:TextBox x:Name="ContentBox"
-                                    Background="{x:Null}"
-                                    BorderBrush="{x:Null}"
+                                    Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type local:ButtonTextBox}},Path=Text}"
                                     SelectionBrush="{x:Null}"
                                     HorizontalContentAlignment="Stretch"
-                                    VerticalContentAlignment="Stretch" />
+                                    VerticalContentAlignment="Stretch"
+                                    Margin="0,0,0,-2"></hc:TextBox>
                         <hc:Divider LineStrokeThickness="1"
                                     LineStroke="{DynamicResource DarkPrimaryBrush}"
                                     Orientation="Vertical"
-                                    Margin="0,7.5"
+                                    Margin="0,9,0,7"
                                     Grid.Column="1"
                                     VerticalContentAlignment="Stretch"
                                     HorizontalContentAlignment="Stretch" />
                         <Button Grid.Column="2"
                                 Click="Button_Click"
                                 Width="Auto"
-                                Content="{Binding ButtonText}"
+                                Content="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type local:ButtonTextBox}},Path=ButtonText}"
                                 Background="{x:Null}"
                                 BorderBrush="{x:Null}"
                                 HorizontalContentAlignment="Center"

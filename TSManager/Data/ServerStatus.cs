@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Management;
 using System.Reflection;
 using System.Threading.Tasks;
 using PropertyChanged;
@@ -33,7 +34,7 @@ namespace TSManager.Data
         public string TSManagerVersion { get; set; }
         public string TerrariaVersion { get; set; }
         public string TShockVersion { get; set; }
-        [AlsoNotifyFor("CPU", new string[]{ "RunTime_Text" , "Memory" })]
+        [AlsoNotifyFor("RunTime_Text", new string[]{"CPUUsed", "MemoryUsed", "PlayerCount" })]
         public long RunTime { get; set; }
         public string RunTime_Text { get { TimeSpan ts = new TimeSpan(0, 0, (int)(RunTime / 1000)); return $"{ts.Days}日 {ts.Hours}时 {ts.Minutes}分 {ts.Seconds}秒"; } set { } }
         public struct PluginInfo
@@ -51,19 +52,22 @@ namespace TSManager.Data
             public string Description { get; set; }
         }
         public List<PluginInfo> PluginList { get; set; }
-        public double CPU
+        public int PlayerCount { get { return (int)(Info.IsEnterWorld ? Info.OnlinePlayers?.Count : 0); } set { } }
+        readonly PerformanceCounter CPUPerformance = new("Process", "% Processor Time", "TSManager");
+        readonly PerformanceCounter MemoryPerformance = new("Process", "Working Set", "TSManager");
+        public double CPUUsed
         {
             get
             {
-                return new PerformanceCounter("Processor", "% Processor Time", "_Total").NextValue();
+                return Math.Round(CPUPerformance.NextValue(), 2);
             }
             set { } 
         }
-        public double Memory
+        public double MemoryUsed
         {
             get
             {
-                return new PerformanceCounter("Memory", "Available MBytes").NextValue();
+                return Math.Round(MemoryPerformance.NextValue() / 1024 / 1024, 2); ;
             }
             set { }
         }

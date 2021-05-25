@@ -25,7 +25,7 @@ namespace TSManager.Modules
         public TSMMain(Main game) : base(game) { }
         public override void Initialize() { }
         public static TSMMain Instance = new TSMMain(null);
-        public static readonly TSMWindow GUI = new TSMWindow();
+        public static TSMWindow GUI { get; internal set; }
         internal static Properties.Settings Settings => Properties.Settings.Default;
         internal static void GUIInvoke(Action action)
         {
@@ -119,7 +119,7 @@ namespace TSManager.Modules
                 var foldingStrategy = new XmlFoldingStrategy();
                 foldingStrategy.UpdateFoldings(foldingManager, GUI.ConfigEditor.Document);
 
-                Info.Configs = ConfigData.ReadAllConfig();
+                Info.Configs = new(ConfigData.ReadAllConfig());
                 GUI.ConfigEditor_List.ItemsSource = Info.Configs;
                 GUI.ConfigEditor_List.SelectedItem = Info.Configs.FirstOrDefault(c => c.Name == "config.json");
                 #endregion
@@ -140,9 +140,12 @@ namespace TSManager.Modules
                 }
                 #endregion
 
+                if (Settings.AutoStart)
+                {
+                    Info.Server.Start(Info.Server.GetStartArgs());
+                }
             }
             catch (Exception ex) { Utils.Notice(ex.Message); }
-            Instance.Update();
         }
         internal void OnServerPreInitializing()
         {
@@ -151,9 +154,8 @@ namespace TSManager.Modules
                 //TSM.MW.Restart_Button.IsEnabled = true; //可以重启了
                 GUI.Console_StopServer.IsEnabled = true; //也可以关闭
                 GUI.Console_StartServer.IsEnabled = false; //现在不能开启了
-                GUI.Tab_Manage.IsEnabled = true; //可以打开管理界面了
-
             });
+            Update();
             Utils.Notice("正在启动服务器...", HandyControl.Data.InfoType.Info);
         }
         internal async void OnServerPostInitialize(EventArgs args)
@@ -164,15 +166,29 @@ namespace TSManager.Modules
                 //加载服务器状态信息
                 GUIInvoke(() =>
                 {
+                    GUI.Tab_Manage.IsEnabled = true; //可以打开管理界面了
                     GUI.Tab_Index.DataContext = new ServerStatus();
                     GUI.Versions.Visibility = Visibility.Visible;
                     GUI.ServerStatus.Visibility = Visibility.Visible;
 
-                    Info.Players = PlayerInfo.GetAllPlayerInfo();
+                    Info.OnlinePlayers = new();
+                    GUI.Console_PlayerList.ItemsSource = Info.OnlinePlayers; //设置玩家列表绑定数据
+
+                    Info.Players = new(PlayerInfo.GetAllPlayerInfo());
                     GUI.PlayerManage_List.ItemsSource = Info.Players;
                     if (Info.Players.Any()) GUI.PlayerManage_List.SelectedItem = Info.Players[0];
+
+                    GUI.GroupManage_AllPermission.ItemsSource = GroupData.GetAllPermissions(); //尝试读取所有权限
+                    GroupManager.RefreshGroupData();//读取所有组权限
                 });
 
+                #region 注册一些用得到的hook
+                ServerApi.Hooks.ServerLeave.Register(this, HookManager.OnPlayerLeave);
+                ServerApi.Hooks.ServerJoin.Register(this, HookManager.OnPlayerJoin);
+
+                TShockAPI.Hooks.AccountHooks.AccountCreate += HookManager.OnAccountCreate;
+                TShockAPI.Hooks.AccountHooks.AccountDelete += HookManager.OnAccountDelete;
+                #endregion
 
                 Utils.Notice("服务器启动完成", HandyControl.Data.InfoType.Success);
                 Info.IsEnterWorld = true;

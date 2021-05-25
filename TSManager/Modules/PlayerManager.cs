@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 using Terraria.GameContent.Creative;
 using TShockAPI;
 using TShockAPI.DB;
@@ -19,14 +22,14 @@ namespace TSManager.Modules
         }
         public static void ChangeGroup(this PlayerInfo info, object group)
         {
-            var g = group as Group;
+            var g = group as TShockAPI.Group;
             if (group != null && info.Group != group)
             {
                 TShock.UserAccounts.SetUserGroup(info.Account, g.Name);
                 Utils.Notice($"成功将玩家 {info} 的用户组更改为 {g.Name}", HandyControl.Data.InfoType.Success);
             }
         }
-        public static void ChangeGroup(this PlayerInfo info, Group group)
+        public static void ChangeGroup(this PlayerInfo info, TShockAPI.Group group)
         {
             if (group != null && info.Group != group)
             {
@@ -86,13 +89,19 @@ namespace TSManager.Modules
             {
                 if (TShock.Bans.InsertBan($"{Identifier.UUID}{(info.Account ?? new UserAccount()).UUID}", reason, "TSManager", DateTime.UtcNow, DateTime.MaxValue) != null) success = true;
                 if (TShock.Bans.InsertBan($"{Identifier.Account}{info.Name}", reason, "TSManager", DateTime.UtcNow, DateTime.MaxValue) != null) success = true;
+                if(info.Online && TShock.Bans.InsertBan($"{Identifier.IP}{info.Player.IP}", reason, "TSManager", DateTime.UtcNow, DateTime.MaxValue) != null) success = true;
             }
             if (success) { Utils.Notice("成功封禁玩家 " + info.Name, HandyControl.Data.InfoType.Success); TSMMain.GUI.PlayerManage_Ban.Text = ""; }
             else Utils.Notice("封禁 " + info + " 失败", HandyControl.Data.InfoType.Error);
         }
         public static void UnBan(this PlayerInfo info)
         {
-
+            var list = new List<Ban>(); 
+            //tolist相当于clone以下免得foreach的时候报错
+            TShock.Bans.Bans.Where(b => b.Value.Identifier == "uuid:" + info.Account.UUID).ToList().ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
+            TShock.Bans.Bans.Where(b => b.Value.Identifier == "acc:" + info).ToList().ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
+            if (Utils.TryParseJson(info.Account.KnownIps, out var ips)) TShock.Bans.Bans.Where(b => b.Value.Identifier.StartsWith("ip") && ips.Children().Contains(b.Value.Identifier.Replace("ip:", ""))).ToList().ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
+            Utils.Notice("成功执行解禁操作", HandyControl.Data.InfoType.Success);
         }
         public static void Whisper(this PlayerInfo info, string text)
         {
@@ -137,12 +146,7 @@ namespace TSManager.Modules
         {
             if (info.Online) info.Player.SendInfoMessage("该账号已被移除");
             TShock.UserAccounts.RemoveUserAccount(info.Account);
-            Info.Players.Remove(info);
-            TSMMain.GUIInvoke(() => {
-                TSMMain.GUI.PlayerManage_MainTab.DataContext = null;
-                TSMMain.GUI.Bag_Tab.DataContext = null;
-            });
-            Utils.Notice($"已删除玩家 {info.Name}", HandyControl.Data.InfoType.Success);
+            //HookManager.OnAccountDelete(new(info.Account));
         }
     }
 }

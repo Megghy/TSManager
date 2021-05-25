@@ -4,7 +4,7 @@
   <Import Project="..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props" Condition="Exists('..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-  <LangVersion>latest</LangVersion>
+    <LangVersion>latest</LangVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{96A36F6A-DA3B-4BF4-8651-DC945396158A}</ProjectGuid>
@@ -56,8 +56,8 @@
     <Reference Include="DotNetZip, Version=1.15.0.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
       <HintPath>..\packages\DotNetZip.1.15.0\lib\net40\DotNetZip.dll</HintPath>
     </Reference>
-    <Reference Include="HandyControl">
-      <HintPath>Resources\HandyControl.dll</HintPath>
+    <Reference Include="HandyControl, Version=3.1.0.0, Culture=neutral, PublicKeyToken=45be8712787a1e5b, processorArchitecture=MSIL">
+      <HintPath>..\packages\HandyControl.3.1.0\lib\net452\HandyControl.dll</HintPath>
     </Reference>
     <Reference Include="HttpServer, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5684c2c737cd4271, processorArchitecture=MSIL">
       <HintPath>..\packages\TerrariaServer.TShock.4.5.2\lib\net452\HttpServer.dll</HintPath>
@@ -83,6 +83,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -108,11 +109,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Data\GroupData.cs" />
     <Compile Include="Modules\BagManager.cs" />
     <Compile Include="Data\ConfigData.cs" />
     <Compile Include="Data\ItemData.cs" />
     <Compile Include="Data\Maps.cs" />
     <Compile Include="Data\PlayerInfo.cs" />
+    <Compile Include="Modules\GroupManager.cs" />
+    <Compile Include="Modules\HookManager.cs" />
     <Compile Include="Modules\PlayerManager.cs" />
     <Compile Include="UI\Control\ButtonTextBox.xaml.cs">
       <DependentUpon>ButtonTextBox.xaml</DependentUpon>

@@ -11,6 +11,7 @@ using Terraria.Localization;
 using Terraria;
 using TShockAPI;
 using TSManager.Data;
+using System.Windows.Documents;
 
 namespace TSManager.Modules
 {
@@ -50,6 +51,13 @@ namespace TSManager.Modules
                     gui.PlayerBagBox.Children.Add(block);
                 }
             });
+        }
+        internal static void ClearAllItem()
+{
+            for (int i = 0; i < 50; i++)
+            {
+                ((Label)TSMMain.GUI.PlayerBagBox.Children[i]).Background = null;
+            } 
         }
         internal static async void ChangeItemListAsync(List<ItemData> list)
         {

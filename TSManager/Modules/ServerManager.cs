@@ -185,6 +185,7 @@ namespace TSManager.Modules
             }.Start();  //似乎只能这样判断服务器是否关闭
             ServerApi.Hooks.GamePostInitialize.Register(TSMMain.Instance, TSMMain.Instance.OnServerPostInitialize, -1);  //注册服务器加载完成的钩子
             TSMMain.Instance.OnServerPreInitializing();
+            TSMMain.GUIInvoke(() => TSMMain.GUI.GoToStartServer.IsEnabled = false);
         }
 
         public async void AppendText(string text)

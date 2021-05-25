@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Terraria;
+using TShockAPI;
 
 namespace TSManager
 {
@@ -25,11 +27,11 @@ namespace TSManager
         /// <summary>
         /// 运行tr服务器的线程
         /// </summary>
-        public static Thread GameThread;
+        public static Thread GameThread { get; set; }
 
-        public static Ionic.Zip.ZipFile TextureZip;
-        public static List<Data.ConfigData> Configs;
-        public static List<Data.PlayerInfo> Players;
-        
+        public static Ionic.Zip.ZipFile TextureZip { get; set; }
+        public static BindingList<Data.ConfigData> Configs { get; set; }
+        public static BindingList<Data.PlayerInfo> Players { get; set; }
+        public static BindingList<TSPlayer> OnlinePlayers { get; set; }
     }
 }
