@@ -60,7 +60,7 @@
                         </hc:Col>
                     </hc:Row>
                     <Button x:Name="GoToStartServer"
-                            Click="OnButtonClick"
+                            Click="GoToStartServer_Click"
                             Content="前往启动服务器"
                             HorizontalAlignment="Stretch"
                             Margin="342,80,349,127"
@@ -184,7 +184,7 @@
                                                 Grid.Row="1"
                                                 VerticalAlignment="Stretch"
                                                 Height="Auto"
-                                                Grid.Column="1"/>
+                                                Grid.Column="1" />
                                     </Grid>
                                 </GroupBox>
                                 <GroupBox Header="启动设置"
@@ -457,7 +457,7 @@
                                                           Fill="{Binding StatusColor}"
                                                           VerticalAlignment="Center"
                                                           HorizontalAlignment="Right" />
-                                                <hc:Divider Orientation="Vertical"/>
+                                                <hc:Divider Orientation="Vertical" />
                                                 <TextBlock VerticalAlignment="Center"
                                                            Text="{Binding Name}" />
                                             </WrapPanel>
@@ -477,41 +477,22 @@
                                                       Header="{Binding Name}"
                                                       Margin="10,10,5,0"
                                                       FontSize="13">
-                                                <Grid Margin="0,-8,1,-6">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="114*" />
-                                                        <ColumnDefinition Width="38*" />
-                                                        <ColumnDefinition Width="77*" />
-                                                        <ColumnDefinition Width="74*" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="33*" />
-                                                        <RowDefinition Height="19*" />
-                                                        <RowDefinition Height="19*" />
-                                                        <RowDefinition Height="56*" />
-                                                        <RowDefinition Height="4*" />
-                                                        <RowDefinition Height="36*" />
-                                                        <RowDefinition Height="36*" />
-                                                        <RowDefinition Height="37*" />
-                                                        <RowDefinition Height="83*" />
-                                                        <RowDefinition Height="72*" />
-                                                    </Grid.RowDefinitions>
-                                                    <TextBlock HorizontalAlignment="Left"
-                                                               TextWrapping="Wrap"
-                                                               VerticalAlignment="Top"
-                                                               Margin="0,10,0,0"
-                                                               Width="105"
-                                                               Height="16">
+                                                <StackPanel>
+                                                    <hc:Row>
+                                                        <hc:Col Span="8">
+                                                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Center">
                                                 <Run Text="Uid: " />
                                                 <Run Text="{Binding ID}" /></TextBlock>
-                                                    <hc:Shield Margin="5,10,5,8"
-                                                               Grid.Column="3"
-                                                               Subject="状态"
-                                                               Status="{Binding Status}"
-                                                               Color="{Binding StatusColor}"
-                                                               Grid.Row="1"
-                                                               Grid.RowSpan="2"
-                                                               Height="Auto" />
+                                                        </hc:Col>
+                                                        <hc:Col Span="16">
+                                                            <hc:ComboBox x:Name="PlayerManage_Group"
+                                                                         hc:TitleElement.Title="用户组"
+                                                                         hc:TitleElement.TitlePlacement="Left"
+                                                                         ItemsSource="{Binding Groups}"
+                                                                         SelectionChanged="OnComboSelect"
+                                                                         DisplayMemberPath="Name" />
+                                                        </hc:Col>
+                                                    </hc:Row>
                                                     <TextBlock TextWrapping="Wrap"
                                                                Width="300"
                                                                Grid.ColumnSpan="4"
@@ -537,62 +518,39 @@
                                                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
                                                                 Grid.ColumnSpan="4"
                                                                 Grid.Row="3" />
-                                                    <hc:ComboBox x:Name="PlayerManage_Group"
-                                                                 hc:TitleElement.Title="用户组"
-                                                                 hc:TitleElement.TitlePlacement="Left"
-                                                                 ItemsSource="{Binding Groups}"
-                                                                 SelectionChanged="OnComboSelect"
-                                                                 DisplayMemberPath="Name"
-                                                                 VerticalAlignment="Top"
-                                                                 Margin="0,2,0,0"
-                                                                 HorizontalAlignment="Left"
-                                                                 Width="189"
-                                                                 Height="30"
-                                                                 Grid.Column="1"
-                                                                 Grid.ColumnSpan="3" />
                                                     <hc:Divider Grid.ColumnSpan="4"
                                                                 Grid.Row="5"
                                                                 Margin="0,20,0,16" />
-                                                    <hc:TextBox hc:TitleElement.Title="当前血量"
-                                                                hc:TitleElement.TitlePlacement="Left"
-                                                                Text="{Binding HP}"
-                                                                Margin="0,5,5,1"
-                                                                Grid.Row="5"
-                                                                HorizontalContentAlignment="Center"
-                                                                Grid.ColumnSpan="2" />
-                                                    <hc:TextBox hc:TitleElement.Title="最大血量"
-                                                                hc:TitleElement.TitlePlacement="Left"
-                                                                Text="{Binding MaxHP}"
-                                                                Margin="0,5,5,1"
-                                                                Grid.Row="5"
-                                                                Padding="0"
-                                                                Grid.Column="2"
-                                                                Grid.ColumnSpan="2"
-                                                                HorizontalContentAlignment="Center" />
-                                                    <hc:TextBox hc:TitleElement.Title="当前蓝量"
-                                                                hc:TitleElement.TitlePlacement="Left"
-                                                                Text="{Binding MP}"
-                                                                Grid.Row="6"
-                                                                Margin="0,5,5,1"
-                                                                HorizontalContentAlignment="Center"
-                                                                Grid.ColumnSpan="2" />
-                                                    <hc:TextBox hc:TitleElement.Title="最大蓝量"
-                                                                hc:TitleElement.TitlePlacement="Left"
-                                                                Text="{Binding MaxMP}"
-                                                                Margin="0,5,5,1"
-                                                                Grid.Row="6"
-                                                                Grid.Column="2"
-                                                                Grid.ColumnSpan="2"
-                                                                HorizontalContentAlignment="Center" />
+                                                    <hc:Row>
+                                                        <hc:Col Span="12">
+                                                            <hc:TextBox hc:TitleElement.Title="当前血量"
+                                                                        hc:TitleElement.TitlePlacement="Left"
+                                                                        Text="{Binding HP}"/>
+                                                        </hc:Col>
+                                                        <hc:Col Span="12">
+                                                            <hc:TextBox hc:TitleElement.Title="最大血量"
+                                                                        hc:TitleElement.TitlePlacement="Left"
+                                                                        Text="{Binding MaxHP}" />
+                                                        </hc:Col>
+                                                    </hc:Row>
+                                                    <hc:Row>
+                                                        <hc:Col Span="12">
+                                                            <hc:TextBox hc:TitleElement.Title="当前蓝量"
+                                                                        hc:TitleElement.TitlePlacement="Left"
+                                                                        Text="{Binding MP}" />
+                                                        </hc:Col>
+                                                        <hc:Col Span="12">
+                                                            <hc:TextBox hc:TitleElement.Title="最大蓝量"
+                                                                        hc:TitleElement.TitlePlacement="Left"
+                                                                        Text="{Binding MaxMP}" />
+                                                        </hc:Col>
+                                                    </hc:Row>
                                                     <tsm:ButtonTextBox x:Name="PlayerManage_Password"
                                                                        ButtonClick="OnButtonTextBoxClick"
                                                                        Title="密码    "
                                                                        hc:InfoElement.Placeholder="键入新密码"
-                                                                       ButtonText="确认"
-                                                                       Grid.Row="7"
-                                                                       Grid.ColumnSpan="4"
-                                                                       Margin="0,5,5,0" />
-                                                </Grid>
+                                                                       ButtonText="确认"/>
+                                                </StackPanel>
                                             </GroupBox>
                                             <GroupBox Header="快捷功能"
                                                       Margin="0,10,10,0"
@@ -605,10 +563,11 @@
                                                     <Grid.RowDefinitions>
                                                         <RowDefinition Height="40*" />
                                                         <RowDefinition Height="40*" />
+                                                        <RowDefinition Height="39*" />
                                                         <RowDefinition Height="40*" />
-                                                        <RowDefinition Height="41*" />
-                                                        <RowDefinition Height="51*" />
-                                                        <RowDefinition Height="194*" />
+                                                        <RowDefinition Height="50*" />
+                                                        <RowDefinition Height="68*" />
+                                                        <RowDefinition Height="123*" />
                                                     </Grid.RowDefinitions>
                                                     <ToggleButton x:Name="PlayerManage_GodMode"
                                                                   Click="OnSwichClick"
@@ -671,7 +630,7 @@
                                                             Content="解禁"
                                                             HorizontalAlignment="Stretch"
                                                             VerticalAlignment="Stretch"
-                                                            Margin="0,5,5,0"
+                                                            Margin="0,7,5,3"
                                                             Grid.Row="3"
                                                             IsEnabled="{Binding Ban}"
                                                             Click="OnButtonClick"
@@ -709,12 +668,11 @@
                                                             HorizontalContentAlignment="Center" />
                                                     <Button x:Name="PlayerManage_Del"
                                                             Content="删除玩家"
-                                                            HorizontalAlignment="Left"
-                                                            VerticalAlignment="Top"
-                                                            Width="461"
+                                                            HorizontalAlignment="Stretch"
+                                                            VerticalAlignment="Stretch"
                                                             Margin="0,4,0,0"
                                                             Grid.Row="5"
-                                                            Height="60"
+                                                            Height="Auto"
                                                             Background="{DynamicResource DarkDangerBrush}"
                                                             Click="OnButtonClick"
                                                             Grid.ColumnSpan="2"
@@ -830,7 +788,8 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="40*"
                                                    MaxHeight="40" />
-                                    <RowDefinition Height="90*" MaxHeight="90"/>
+                                    <RowDefinition Height="90*"
+                                                   MaxHeight="90" />
                                     <RowDefinition Height="41*"
                                                    MaxHeight="40" />
                                     <RowDefinition Height="278*" />
@@ -1068,6 +1027,9 @@
                         </TabItem>
                     </TabControl>
                 </Grid>
+            </hc:TabItem>
+            <hc:TabItem Name="Tab_Script" Header="脚本">
+                <Grid></Grid>
             </hc:TabItem>
             <hc:TabItem Name="Tab_Setting"
                         Header="设置">

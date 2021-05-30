@@ -12,7 +12,6 @@ using TShockAPI;
 using TSManager.Data;
 using TSManager.Modules;
 using TSManager.UI.Control;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Button = System.Windows.Controls.Button;
 using ComboBox = HandyControl.Controls.ComboBox;
 using ListView = System.Windows.Controls.ListView;
@@ -58,6 +57,10 @@ namespace TSManager
                     return true;
                 });
             }
+            else
+            {
+                Environment.Exit(0);
+            }
         }
 
         private void OnButtonClick(object sender, RoutedEventArgs e)
@@ -66,10 +69,7 @@ namespace TSManager
             {
                 var b = sender as Button;
                 var plrInfo = PlayerManage_List.SelectedItem as PlayerInfo;
-                if (b.Name == "GoToStartServer")
-                {
-                    MainTab.SelectedIndex = 1;
-                }
+                if(b.Name == "GoToStartServer") MainTab.SelectedIndex = 1
                 else if (b.Name.StartsWith("Console"))
                 {
                     #region 控制台
@@ -169,12 +169,12 @@ namespace TSManager
                 else if (b.Name.StartsWith("BagManage"))
                 {
                     if (b.Name == "BagManage_Refresh") { BagManager.Refresh(); return; }
-                    if (b.DataContext is not ItemData item  || plrInfo == null)
+                    if (b.DataContext is not ItemData item || plrInfo == null)
                     {
                         Utils.Notice($"未选择物品", HandyControl.Data.InfoType.Warning);
                         return;
                     }
-                    if (TShock.Utils.GetItemById(plrInfo.Data.inventory[item.Slot].NetId).type != item.ID)
+                    if (CheckItemSlot(plrInfo, item))
                     {
                         Utils.Notice("此物品所在位置已变动, 请刷新");
                         return;
@@ -192,11 +192,6 @@ namespace TSManager
                 else if (b.Name.StartsWith("GroupManage"))
                 {
                     var group = GroupManage_List.SelectedItem as GroupData;
-                    if (TShock.Groups.GetGroupByName(group.Name) == null)
-                    {
-                        Utils.Notice($"当前所选的用户组 {group.Name} 已不存在, 请尝试刷新", HandyControl.Data.InfoType.Warning);
-                        return;
-                    }
                     switch (b.Name)
                     {
                         case "GroupManage_DelPermission":
@@ -207,6 +202,7 @@ namespace TSManager
                             break;
                         case "GroupManage_Refresh":
                             GroupManager.RefreshGroupData();
+                            Utils.Notice("已刷新用户组数据", HandyControl.Data.InfoType.Success);
                             break;
                         case "GroupManage_Save":
                             GroupManager.Save();
@@ -219,6 +215,7 @@ namespace TSManager
             }
             catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
         }
+        bool CheckItemSlot(PlayerInfo plrInfo, ItemData item) =>  TShock.Utils.GetItemById(plrInfo.Data.inventory[item.Slot].NetId).type != item.ID;
         private void OnButtonTextBoxClick(object sender, RoutedEventArgs e)
         {
             try
@@ -273,7 +270,7 @@ namespace TSManager
                     }
                     #endregion
                 }
-                else if(b.Name.StartsWith("GroupManage"))
+                else if (b.Name.StartsWith("GroupManage"))
                 {
                     #region 用户组管理器
                     var group = GroupManage_List.SelectedItem as GroupData;
@@ -286,7 +283,7 @@ namespace TSManager
                         case "GroupManage_AddManually":
                             GroupManager.AddManually(group, GroupManage_AddManually.Text);
                             GroupManage_AddManually.Text = "";
-                            break;                        
+                            break;
                     }
                     #endregion
                 }
@@ -365,13 +362,13 @@ namespace TSManager
                 switch (c.Name)
                 {
                     case "ConfigEditor_List":
-                        ConfigEdit.ChangeConfig((Data.ConfigData)c.SelectedItem);
+                        ConfigEdit.ChangeConfig((ConfigData)c.SelectedItem);
                         break;
-                    case "MapBox":
-                        TSMMain.Settings.World = ((Data.Maps)Console_MapBox.SelectedItem).Path;
+                    case "Console_MapBox":
+                        TSMMain.Settings.World = ((Maps)Console_MapBox.SelectedItem).Path;
                         break;
                     case "PlayerManage_Group":
-                        (PlayerManage_List.SelectedItem as Data.PlayerInfo).ChangeGroup(PlayerManage_Group.SelectedItem);
+                        (PlayerManage_List.SelectedItem as PlayerInfo).ChangeGroup(PlayerManage_Group.SelectedItem);
                         break;
                     case "Bag_Choose":
                         BagManager.ChangeBag(PlayerManage_List.SelectedItem as Data.PlayerInfo, (BagManager.BagType)c.SelectedValue);

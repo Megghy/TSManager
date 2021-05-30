@@ -7,8 +7,9 @@
              xmlns:local="clr-namespace:TSManager.UI.Control"
              mc:Ignorable="d"
              d:DesignHeight="30"
-             d:DesignWidth="150">
-    <Grid MaxHeight="50">
+             d:DesignWidth="150"
+             MaxHeight="30">
+    <Grid >
         <hc:Row>
             <hc:Col Span="4">
                 <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type local:ButtonTextBox}},Path=Title}"

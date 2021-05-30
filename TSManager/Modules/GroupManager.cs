@@ -49,12 +49,22 @@ namespace TSManager.Modules
         }
         public static void Del(GroupData group)
         {
+            if (TShock.Groups.GetGroupByName(group.Name) == null)
+            {
+                Utils.Notice($"用户组 {group.Name} 已不存在, 请尝试刷新", HandyControl.Data.InfoType.Warning);
+                return;
+            }
             TShock.Groups.DeleteGroup(group.Name);
             Utils.Notice($"已删除用户组 {group.Name}.", HandyControl.Data.InfoType.Success);
             RefreshGroupData();
         }
         public static void AddPermission(GroupData group, PermissionData permission)
         {
+            if (TShock.Groups.GetGroupByName(group.Name) == null)
+            {
+                Utils.Notice($"当前所选的用户组 {group.Name} 已不存在, 请尝试刷新", HandyControl.Data.InfoType.Warning);
+                return;
+            }
             var tsGroup = TShock.Groups.GetGroupByName(group.Group.Name);
             if (!tsGroup.TotalPermissions.Contains(permission.Name))
             {
@@ -71,6 +81,11 @@ namespace TSManager.Modules
         }
         public static void DelPermission(GroupData group, PermissionData permission)
         {
+            if (TShock.Groups.GetGroupByName(group.Name) == null)
+            {
+                Utils.Notice($"当前所选的用户组 {group.Name} 已不存在, 请尝试刷新", HandyControl.Data.InfoType.Warning);
+                return;
+            }
             var tsGroup = TShock.Groups.GetGroupByName(group.Group.Name);
             if (tsGroup.permissions.Contains(permission.Name))
             {

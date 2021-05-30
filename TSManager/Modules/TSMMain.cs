@@ -13,7 +13,6 @@ using ICSharpCode.AvalonEdit.Search;
 using Ionic.Zip;
 using Newtonsoft.Json.Linq;
 using Terraria;
-using Terraria.GameContent;
 using TerrariaApi.Server;
 using TShockAPI;
 using TSManager.Data;
@@ -120,7 +119,7 @@ namespace TSManager.Modules
                 var foldingStrategy = new XmlFoldingStrategy();
                 foldingStrategy.UpdateFoldings(foldingManager, GUI.ConfigEditor.Document);
                 ConfigEdit.LoadAllConfig();
-                
+
                 #endregion
                 #region 读取地图列表
                 var maps = Maps.GetAllMaps();

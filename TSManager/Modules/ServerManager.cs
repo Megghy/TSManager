@@ -96,6 +96,7 @@ namespace TSManager.Modules
         }
         public async void OnGetText(string s)
         {
+            if (!Info.IsServerRunning) return;
             await Task.Run(() => {
                 if (s == " \r\n")
                 {
@@ -104,6 +105,7 @@ namespace TSManager.Modules
                 }
                 if (Info.IsEnterWorld)
                 {
+                    var color = foregroundColor;
                     var nameList = Info.Players.Select(p => p.Name).ToList();
                     var list = new List<TextInfo>() { new TextInfo(s, false) };
                     if (nameList.Any())
@@ -128,12 +130,12 @@ namespace TSManager.Modules
                             });
                             list = tempList;
                         });
-                        list.ForEach(t => TSMMain.GUI.Console_ConsoleBox.Add(t.Text, t.IsPlayer, t.IsPlayer ? PlayerColor : foregroundColor));
+                        list.ForEach(t => TSMMain.GUI.Console_ConsoleBox.Add(t.Text, t.IsPlayer, t.IsPlayer ? PlayerColor : color));
                         return;
                     }
                     else
                     {
-                        TSMMain.GUI.Console_ConsoleBox.Add(s, foregroundColor);
+                        TSMMain.GUI.Console_ConsoleBox.Add(s, color);
                     }
                 }
                 TSMMain.GUI.Console_ConsoleBox.Add(s, foregroundColor);
@@ -141,7 +143,7 @@ namespace TSManager.Modules
         }
         public string[] GetStartArgs()
         {
-            return new List<string>
+            return new[]
             {
                 $"-port",
                 $"{TSMMain.Settings.Port}",
@@ -154,7 +156,7 @@ namespace TSManager.Modules
                 $"{(File.Exists(TSMMain.Settings.World) ? TSMMain.Settings.World : "")}",
                 $"-players",
                 $"{TSMMain.Settings.MaxPlayer}"
-            }.ToArray();
+            };
         }
         public void Stop()
         {
