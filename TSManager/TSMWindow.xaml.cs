@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -64,6 +65,7 @@ namespace TSManager
             try
             {
                 var b = sender as Button;
+                var plrInfo = PlayerManage_List.SelectedItem as PlayerInfo;
                 if (b.Name == "GoToStartServer")
                 {
                     MainTab.SelectedIndex = 1;
@@ -116,6 +118,9 @@ namespace TSManager
                         case "ConfigEditor_Format":
                             ConfigEdit.Format((Data.ConfigData)b.DataContext);
                             break;
+                        case "ConfigEditor_Refresh":
+                            ConfigEdit.LoadAllConfig();
+                            break;
                         case "ConfigEditor_Save":
                             ConfigEdit.Save((Data.ConfigData)b.DataContext);
                             break;
@@ -129,14 +134,14 @@ namespace TSManager
                 else if (b.Name.StartsWith("PlayerManage"))
                 {
                     #region 玩家管理器
-                    if (b.DataContext is not Data.PlayerInfo plrInfo)
+                    if (plrInfo == null)
                     {
-                        Utils.Notice("未选择玩家", HandyControl.Data.InfoType.Error);
+                        Utils.Notice("未选择玩家", HandyControl.Data.InfoType.Warning);
                         return;
                     }
                     if (!plrInfo.Online && b.Name != "PlayerManage_Del" && b.Name != "PlayerManage_UnBan")
                     {
-                        Utils.Notice("玩家 " + plrInfo.Name + " 未在线.", HandyControl.Data.InfoType.Error);
+                        Utils.Notice("玩家 " + plrInfo.Name + " 未在线.", HandyControl.Data.InfoType.Warning);
                         return;
                     }
                     switch (b.Name)
@@ -161,12 +166,35 @@ namespace TSManager
                     }
                     #endregion
                 }
+                else if (b.Name.StartsWith("BagManage"))
+                {
+                    if (b.Name == "BagManage_Refresh") { BagManager.Refresh(); return; }
+                    if (b.DataContext is not ItemData item  || plrInfo == null)
+                    {
+                        Utils.Notice($"未选择物品", HandyControl.Data.InfoType.Warning);
+                        return;
+                    }
+                    if (TShock.Utils.GetItemById(plrInfo.Data.inventory[item.Slot].NetId).type != item.ID)
+                    {
+                        Utils.Notice("此物品所在位置已变动, 请刷新");
+                        return;
+                    }
+                    switch (b.Name)
+                    {
+                        case "BagManage_ChangeStack":
+                            BagManager.ChangeStack(item);
+                            break;
+                        case "BagManage_Del":
+                            BagManager.DelItem(item);
+                            break;
+                    }
+                }
                 else if (b.Name.StartsWith("GroupManage"))
                 {
                     var group = GroupManage_List.SelectedItem as GroupData;
                     if (TShock.Groups.GetGroupByName(group.Name) == null)
                     {
-                        Utils.Notice($"当前所选的用户组 {group.Name} 已不存在, 请尝试刷新", HandyControl.Data.InfoType.Error);
+                        Utils.Notice($"当前所选的用户组 {group.Name} 已不存在, 请尝试刷新", HandyControl.Data.InfoType.Warning);
                         return;
                     }
                     switch (b.Name)
@@ -201,12 +229,12 @@ namespace TSManager
                     #region 玩家管理器
                     if (b.DataContext is not Data.PlayerInfo plrInfo)
                     {
-                        Utils.Notice("未选择玩家", HandyControl.Data.InfoType.Error);
+                        Utils.Notice("未选择玩家", HandyControl.Data.InfoType.Warning);
                         return;
                     }
                     if (!plrInfo.Online && b.Name != "PlayerManage_Ban" && b.Name != "PlayerManage_Password")
                     {
-                        Utils.Notice("玩家 " + plrInfo.Name + " 未在线.", HandyControl.Data.InfoType.Error);
+                        Utils.Notice("玩家 " + plrInfo.Name + " 未在线.", HandyControl.Data.InfoType.Warning);
                         return;
                     }
                     switch (b.Name)
@@ -231,7 +259,7 @@ namespace TSManager
                             {
                                 plrInfo.Damage(damage);
                             }
-                            else Utils.Notice("无效的伤害数值", HandyControl.Data.InfoType.Error);
+                            else Utils.Notice("无效的伤害数值", HandyControl.Data.InfoType.Warning);
                             break;
                         case "PlayerManage_Command":
                             plrInfo.Command(b.Text);
@@ -283,12 +311,12 @@ namespace TSManager
                     #region 玩家管理器
                     if (b.DataContext is not Data.PlayerInfo plrInfo)
                     {
-                        Utils.Notice("未选择玩家", HandyControl.Data.InfoType.Error);
+                        Utils.Notice("未选择玩家", HandyControl.Data.InfoType.Warning);
                         return;
                     }
                     if (!plrInfo.Online && b.Name is not "PlayerManage_Del" or "PlayerManage_Ban" or "PlayerManage_UnBan")
                     {
-                        Utils.Notice("玩家 " + plrInfo.Name + " 未在线.", HandyControl.Data.InfoType.Error);
+                        Utils.Notice("玩家 " + plrInfo.Name + " 未在线.", HandyControl.Data.InfoType.Warning);
                         return;
                     }
                     switch (b.Name)
@@ -349,7 +377,7 @@ namespace TSManager
                         BagManager.ChangeBag(PlayerManage_List.SelectedItem as Data.PlayerInfo, (BagManager.BagType)c.SelectedValue);
                         break;
                     case "Bag_Prefix":
-                        if (c.DataContext is Data.ItemData) BagManager.ChangePrefix(((Data.ItemData)c.DataContext), (int)c.SelectedValue);
+                        if (c.DataContext is ItemData data) BagManager.ChangePrefix(data, c.SelectedIndex);
                         break;
                 }
             }
@@ -372,8 +400,12 @@ namespace TSManager
                     switch (l.Name)
                     {
                         case "PlayerManage_List":
+                            PlayerManager.ChangeDisplayInfo((PlayerInfo)l.SelectedItem);
+                            break;
                         case "Console_PlayerList":
-                            PlayerManager.ChangeDisplayInfo((Data.PlayerInfo)l.SelectedItem);
+                            var info = Info.Players.SingleOrDefault(p => p.Name == ((TSPlayer)l.SelectedItem).Name);
+                            if (info != null) PlayerManager.ChangeDisplayInfo(info);
+                            else Utils.Notice("此玩家尚未注册", HandyControl.Data.InfoType.Info);
                             break;
                         case "GroupManage_List":
                             GroupManager.ChangeSource((Data.GroupData)l.SelectedItem);
@@ -417,13 +449,14 @@ namespace TSManager
             { //Utils.Notice(ex, HandyControl.Data.InfoType.Error);
             }
         }
-        private void ChangeNightMode(object sender, RoutedEventArgs e)
+        internal void ChangeNightMode(object sender, RoutedEventArgs e)
         {
             var checkbox = sender as CheckBox;
             SharedResourceDictionary.SharedDictionaries.Clear();
-            if ((bool)checkbox.IsChecked) LOGO.Effect = new HandyControl.Media.Effects.ColorComplementEffect();
+            TSMMain.Settings.EnableDarkMode = (bool)checkbox.IsChecked;
+            if (TSMMain.Settings.EnableDarkMode) LOGO.Effect = new HandyControl.Media.Effects.ColorComplementEffect();
             else LOGO.Effect = null;
-            ResourceHelper.GetTheme("HandyTheme", Application.Current.Resources).Skin = (bool)checkbox.IsChecked ? HandyControl.Data.SkinType.Dark : HandyControl.Data.SkinType.Default;
+            ResourceHelper.GetTheme("HandyTheme", Application.Current.Resources).Skin = TSMMain.Settings.EnableDarkMode ? HandyControl.Data.SkinType.Dark : HandyControl.Data.SkinType.Default;
             OnApplyTemplate();
         }
     }

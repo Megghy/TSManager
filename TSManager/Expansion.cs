@@ -96,6 +96,7 @@ namespace TSManager
         }
 
         public static string[] Split(this string text, string splittext) => text.Split(new string[] { splittext }, StringSplitOptions.None);
+        public static string[] Split(this string text, string splittext, int count) => text.Split(new string[] { splittext }, count, StringSplitOptions.None);
         public static int ToInt(this string text) => int.TryParse(text, out int i) ? i : -1;
         public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {

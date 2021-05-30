@@ -56,7 +56,7 @@ namespace TSManager.Modules
         public static void AddPermission(GroupData group, PermissionData permission)
         {
             var tsGroup = TShock.Groups.GetGroupByName(group.Group.Name);
-            if (!tsGroup.permissions.Contains(permission.Name))
+            if (!tsGroup.TotalPermissions.Contains(permission.Name))
             {
                 tsGroup.AddPermission(permission.Name);
                 group.Permissions.Add(permission);

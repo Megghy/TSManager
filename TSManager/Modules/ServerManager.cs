@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using System.Windows.Shell;
 using HarmonyLib;
 using OTAPI;
 using Terraria;
@@ -80,43 +81,63 @@ namespace TSManager.Modules
             }
         }
         Color PlayerColor = Color.FromRgb(Microsoft.Xna.Framework.Color.Aquamarine.R, Microsoft.Xna.Framework.Color.Aquamarine.G, Microsoft.Xna.Framework.Color.Aquamarine.B);
-        public void OnGetText(string s)
+        bool SplitTextFromName(string text, string name, out List<TextInfo> list)
         {
-            if (s == " \r\n")
+            list = new();
+            if (text.Contains(name))
             {
-                TSMMain.GUI.Console_ConsoleBox.AddLine(" ");
-                return;
+                var splitText = text.Split(name, 2);
+                list.Add(new TextInfo(splitText[0], false));
+                list.Add(new TextInfo(name, true));
+                list.Add(new TextInfo(splitText[1], false));
+                return true;
             }
-            if (Info.IsEnterWorld)
-            {
-                var nameList = Info.Players.Select(p => p.Name).ToList();
-                var list = new List<TextInfo>() { new TextInfo(s, false) };
-                if (nameList.Any())
+            else return false;
+        }
+        public async void OnGetText(string s)
+        {
+            await Task.Run(() => {
+                if (s == " \r\n")
                 {
-                    nameList.ForEach(name =>
-                    {
-                        var tempList = new List<TextInfo>();
-                        list.ForEach(t =>
-                        {
-                            if (!t.IsPlayer && t.Text.Contains(name))
-                            {
-                                var splitText = t.Text.Split(name);
-                                tempList.Add(new TextInfo(splitText[0], false));
-                                tempList.Add(new TextInfo(name, true));
-                                tempList.Add(new TextInfo(splitText[1], false));
-                            }
-                            else
-                            {
-                                tempList.Add(t);
-                            }
-                        });
-                        list = tempList;
-                    });
-                    list.ForEach(t => TSMMain.GUI.Console_ConsoleBox.Add(t.Text, t.IsPlayer, t.IsPlayer ? PlayerColor : foregroundColor));
+                    TSMMain.GUI.Console_ConsoleBox.AddLine(" ");
                     return;
                 }
-            }
-            TSMMain.GUI.Console_ConsoleBox.Add(s, foregroundColor);
+                if (Info.IsEnterWorld)
+                {
+                    var nameList = Info.Players.Select(p => p.Name).ToList();
+                    var list = new List<TextInfo>() { new TextInfo(s, false) };
+                    if (nameList.Any())
+                    {
+                        nameList.ForEach(name =>
+                        {
+                            var tempList = new List<TextInfo>();
+                            list.ForEach(t =>
+                            {
+                                var text = t.Text;
+                                if (!t.IsPlayer)
+                                {
+                                    while (SplitTextFromName(text, name, out var l))
+                                    {
+                                        text = l[2].Text;
+                                        tempList.Add(l[0]);
+                                        tempList.Add(l[1]);
+                                    }
+                                    tempList.Add(new(text));
+                                }
+                                else tempList.Add(t);
+                            });
+                            list = tempList;
+                        });
+                        list.ForEach(t => TSMMain.GUI.Console_ConsoleBox.Add(t.Text, t.IsPlayer, t.IsPlayer ? PlayerColor : foregroundColor));
+                        return;
+                    }
+                    else
+                    {
+                        TSMMain.GUI.Console_ConsoleBox.Add(s, foregroundColor);
+                    }
+                }
+                TSMMain.GUI.Console_ConsoleBox.Add(s, foregroundColor);
+            });
         }
         public string[] GetStartArgs()
         {
@@ -137,7 +158,6 @@ namespace TSManager.Modules
         }
         public void Stop()
         {
-            Utils.Notice("正在关闭...");
             Info.IsServerRunning = false;
             Info.GameThread.Abort();
         }
@@ -151,7 +171,7 @@ namespace TSManager.Modules
         {
             if (!Directory.Exists(Info.PluginPath) || !Directory.GetFiles(Info.PluginPath).Exist(f => Path.GetFileName(f) == "TShockAPI.dll"))
             {
-                Utils.Notice($"未检测到TShock程序集. TSManager暂不支持原版服务器.", HandyControl.Data.InfoType.Error);
+                Utils.Notice($"未检测到TShock程序集. TSManager暂不支持原版服务器", HandyControl.Data.InfoType.Error);
                 TSMMain.GUIInvoke(() => {
                     TSMMain.GUI.Console_StartServer.IsEnabled = true;
                 });

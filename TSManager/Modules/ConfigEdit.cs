@@ -1,17 +1,28 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using HandyControl.Controls;
 using Newtonsoft.Json.Linq;
 using TShockAPI;
 using TShockAPI.Hooks;
+using TSManager.Data;
 
 namespace TSManager.Modules
 {
     class ConfigEdit
     {
+        public static void LoadAllConfig()
+        {
+            Info.Configs = new(ConfigData.ReadAllConfig());
+            TSMMain.GUIInvoke(() =>
+            {
+                TSMMain.GUI.ConfigEditor_List.ItemsSource = Info.Configs;
+                TSMMain.GUI.ConfigEditor_List.SelectedItem = Info.Configs.FirstOrDefault(c => c.Name == "config.json");
+            });
+        }
         public static void OnTextEntering(object sender, TextCompositionEventArgs e)
         {
 
@@ -78,7 +89,8 @@ namespace TSManager.Modules
             try
             {
                 if (Utils.TryParseJson(data.Text, out var json)) data.JsonData = json; //首先转换一下文本
-                if (force || !data.Error) {
+                if (force || !data.Error)
+                {
                     using (StreamWriter sw = new StreamWriter(data.Path))
                     {
                         sw.WriteLine(data.Text);

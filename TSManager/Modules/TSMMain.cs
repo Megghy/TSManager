@@ -74,6 +74,7 @@ namespace TSManager.Modules
         {
             try
             {
+                if (Settings.EnableDarkMode) GUI.ChangeNightMode(null, null);
                 GUI.ServerStatus.Visibility = Visibility.Hidden; //暂时隐藏服务器状态
                 GUI.Versions.Visibility = Visibility.Hidden; //暂时隐藏服务器版本
                 Info.TextureZip = ZipFile.Read(new MemoryStream(Properties.Resources.Texture)); //加载贴图
@@ -118,10 +119,8 @@ namespace TSManager.Modules
                 var foldingManager = FoldingManager.Install(GUI.ConfigEditor.TextArea);
                 var foldingStrategy = new XmlFoldingStrategy();
                 foldingStrategy.UpdateFoldings(foldingManager, GUI.ConfigEditor.Document);
-
-                Info.Configs = new(ConfigData.ReadAllConfig());
-                GUI.ConfigEditor_List.ItemsSource = Info.Configs;
-                GUI.ConfigEditor_List.SelectedItem = Info.Configs.FirstOrDefault(c => c.Name == "config.json");
+                ConfigEdit.LoadAllConfig();
+                
                 #endregion
                 #region 读取地图列表
                 var maps = Maps.GetAllMaps();

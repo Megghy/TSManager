@@ -19,7 +19,7 @@ namespace TSManager.Modules
                 {
                     info.Player = plr;
                     info.Online = true;
-                    
+                    TSMMain.GUIInvoke(() => { if (TSMMain.GUI.Bag_Tab.DataContext == info) BagManager.Refresh(false); });
                 }
             });
         }

@@ -55,15 +55,17 @@ namespace TSManager.Data
         public void Update()
         {
             try {
-                Player = TShock.Players.SingleOrDefault(p => p != null && p.Name == Name);
+                var tempPlayer = TShock.Players.SingleOrDefault(p => p != null && p.Name == Name);
                 if (TShock.Bans.Bans.Where(b => b.Value.Identifier == "uuid:" + Account.UUID).Any() || TShock.Bans.Bans.Where(b => b.Value.Identifier == "acc:" + Name).Any() || (Online ? TShock.Bans.Bans.Where(b => b.Value.Identifier == "ip:" + Player.IP).Any() : false)) Ban = true;
                 else Ban = false;
-                if (Player == null)
+                if (tempPlayer == null)
                 {
                     if (Online) Online = false;
                 }
                 else
                 {
+                    Data = tempPlayer.PlayerData;
+                    Account = tempPlayer.Account;
                     PlayTime += TSMMain.UpdateTime;
                     Online = true;
                 }
@@ -86,8 +88,8 @@ namespace TSManager.Data
         public string Status { get { return Online ? "在线" : "离线"; } set { } }
         public Brush StatusColor { get { return Online ? Color.FromRgb(178, 223, 120).ToBrush() : Color.FromRgb(253, 86, 86).ToBrush(); } set { } }
         public TSPlayer Player { get; set; } = new TSPlayer(-1);
-        public PlayerData Data { get; set; } = new PlayerData(null);
-        public UserAccount Account { get; set; } = new UserAccount();
+        public PlayerData Data { get; set; }
+        public UserAccount Account { get; set; }
         public string Name { get; set; }
         public int ID { get; set; }
         public int HP
@@ -154,7 +156,7 @@ namespace TSManager.Data
                 TShock.UserAccounts.SetUserGroup(Account, value.Name);
             }
         }
-        public List<TShockAPI.Group> Groups
+        public List<Group> Groups
         {
             get
             {
@@ -190,7 +192,7 @@ namespace TSManager.Data
         {
             get
             {
-                try { return DateTime.Parse((Account.Registered ?? "未知").Replace("T", " ")).ToString("F"); }
+                try { return Account == null ? "未知" : DateTime.Parse(Account.Registered?.Replace("T", " ")).ToString("F"); }
                 catch { return "未知"; }
             }
             set { }
@@ -199,7 +201,7 @@ namespace TSManager.Data
         {
             get
             {
-                try { return DateTime.Parse((Account.LastAccessed ?? "未知").Replace("T", " ")).ToString("F"); }
+                try { return Account == null ? "未知" : DateTime.Parse(Account.LastAccessed?.Replace("T", " ")).ToString("F"); }
                 catch { return "未知"; }
             }
             set { }
@@ -208,7 +210,7 @@ namespace TSManager.Data
         {
             get
             {
-                return Account.KnownIps;
+                return Account == null ? "未知" : Account.KnownIps;
             }
             set { }
         }

@@ -1,26 +1,100 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Terraria.Localization;
 using Terraria;
+using Terraria.Localization;
 using TShockAPI;
 using TSManager.Data;
-using System.Windows.Documents;
+using Item = Terraria.Item;
 
 namespace TSManager.Modules
 {
     class BagManager
     {
-        internal  static void CreateBox()
+        public static void Refresh(bool showNotice = true)
+        {
+            if (TSMMain.GUI.PlayerManage_List.SelectedItem is PlayerInfo info)
+            {
+                ChangeItemListAsync(GetPlayerBag(info, (BagType)TSMMain.GUI.Bag_Choose.SelectedIndex));
+            }
+            if(showNotice) Utils.Notice("已刷新背包", HandyControl.Data.InfoType.Success);
+        }
+        public static void DelItem(ItemData item)
+        {
+            if (item.Owner.Online)
+            {
+                ModifyItemOnline(new ItemData(item.Owner, new(), item.Slot));
+            }
+            else
+            {
+                item.Owner.Data.inventory[item.Slot] = new();
+                item.Owner.Save();
+            }
+            Utils.Notice("已删除物品", HandyControl.Data.InfoType.Success);
+            Refresh(false);
+        }
+        public static void ModifyItemOnline(ItemData data)
+        {
+            var player = data.Owner.Player;
+            player.PlayerData.inventory[data.Slot] = new(data.ID, data.Slot, (byte)data.Prefix);
+            var slot = data.Slot;
+            var item = data.Item;
+            int index;
+            //Inventory slots
+            if (slot < NetItem.InventorySlots)
+            {
+                index = slot;
+                player.TPlayer.inventory[slot] = item;
+
+                NetMessage.SendData((int)PacketTypes.PlayerSlot, -1, -1, NetworkText.FromLiteral(player.TPlayer.inventory[index].Name), player.Index, slot, item.stack, item.prefix, item.netID);
+                
+            }
+
+            //Armor & Accessory slots
+            else if (slot < NetItem.InventorySlots + NetItem.ArmorSlots)
+            {
+                index = slot - NetItem.InventorySlots;
+                player.TPlayer.armor[index] = item;
+
+                NetMessage.SendData((int)PacketTypes.PlayerSlot, -1, -1, NetworkText.FromLiteral(player.TPlayer.armor[index].Name), player.Index, slot, item.stack,item.prefix, item.netID);
+            }
+
+            //Dye slots
+            else if (slot < NetItem.InventorySlots + NetItem.ArmorSlots + NetItem.DyeSlots)
+            {
+                index = slot - (NetItem.InventorySlots + NetItem.ArmorSlots);
+                player.TPlayer.dye[index] = item;
+
+                NetMessage.SendData((int)PacketTypes.PlayerSlot, -1, -1, NetworkText.FromLiteral(player.TPlayer.dye[index].Name), player.Index, slot, player.TPlayer.dye[index].prefix);
+            }
+
+            //Misc Equipment slots
+            else if (slot < NetItem.InventorySlots + NetItem.ArmorSlots + NetItem.DyeSlots + NetItem.MiscEquipSlots)
+            {
+                index = slot - (NetItem.InventorySlots + NetItem.ArmorSlots + NetItem.DyeSlots);
+                player.TPlayer.miscEquips[index] = item;
+
+                NetMessage.SendData((int)PacketTypes.PlayerSlot, -1, -1, NetworkText.FromLiteral(player.TPlayer.miscEquips[index].Name), player.Index, slot, item.stack, item.prefix, item.netID);
+            }
+
+            //Misc Dyes slots
+            else if (slot < NetItem.InventorySlots + NetItem.ArmorSlots + NetItem.DyeSlots + NetItem.MiscEquipSlots + NetItem.MiscDyeSlots)
+            {
+                index = slot - (NetItem.InventorySlots + NetItem.ArmorSlots + NetItem.DyeSlots + NetItem.MiscEquipSlots);
+                player.TPlayer.miscDyes[index] = item;
+
+                NetMessage.SendData((int)PacketTypes.PlayerSlot, -1, -1, NetworkText.FromLiteral(player.TPlayer.miscDyes[index].Name), player.Index, slot, item.stack, item.prefix, item.netID);
+            }
+        }
+        public static void CreateBox()
         {
             var gui = TSMMain.GUI;
-            TSMMain.GUIInvoke(() => {
+            TSMMain.GUIInvoke(() =>
+            {
                 for (int i = 0; i < 5; i++)
                 {
                     gui.PlayerBagBox.RowDefinitions.Add(new RowDefinition { Height = new GridLength(65) });
@@ -37,7 +111,9 @@ namespace TSManager.Modules
                         Cursor = Cursors.Hand,
                         Background = null,
                         HorizontalAlignment = HorizontalAlignment.Stretch,
-                        VerticalAlignment = VerticalAlignment.Stretch
+                        HorizontalContentAlignment = HorizontalAlignment.Right,
+                        VerticalAlignment = VerticalAlignment.Stretch,
+                        VerticalContentAlignment = VerticalAlignment.Bottom
                     };
                     if (col + 1 > 10)
                     {
@@ -52,14 +128,14 @@ namespace TSManager.Modules
                 }
             });
         }
-        internal static void ClearAllItem()
-{
+        public static void ClearAllItem()
+        {
             for (int i = 0; i < 50; i++)
             {
                 ((Label)TSMMain.GUI.PlayerBagBox.Children[i]).Background = null;
-            } 
+            }
         }
-        internal static async void ChangeItemListAsync(List<ItemData> list)
+        public static async void ChangeItemListAsync(List<ItemData> list)
         {
             await Task.Run(() =>
             {
@@ -67,7 +143,7 @@ namespace TSManager.Modules
                 var gui = TSMMain.GUI;
                 for (int i = 0; i < list.Count; i++)
                 {
-                    if(i >= list.Count)
+                    if (i >= list.Count)
                     {
                         ((Label)TSMMain.GUI.PlayerBagBox.Children[i]).Background = null;
                         continue;
@@ -134,8 +210,10 @@ namespace TSManager.Modules
                     imageDrawings.Children.Add(smallKiwi1);
                     DrawingImage drawingImageSource = new(imageDrawings);
                     drawingImageSource.Freeze();
-                    TSMMain.GUIInvoke(() => {
+                    TSMMain.GUIInvoke(() =>
+                    {
                         var l = (Label)TSMMain.GUI.PlayerBagBox.Children[i];
+                        l.Content = list[i].Stack == 0 ? "" : list[i].Stack;
                         l.Background = new ImageBrush(drawingImageSource);
                         l.DataContext = list[i];
                     });
@@ -154,7 +232,7 @@ namespace TSManager.Modules
             _inventoty,
             buff
         }
-        internal static List<ItemData> GetPlayerBag(PlayerInfo info, BagType type)
+        public static List<ItemData> GetPlayerBag(PlayerInfo info, BagType type)
         {
             try
             {
@@ -195,7 +273,7 @@ namespace TSManager.Modules
                         for (int i = 100; i < 140; i++)
                         {
                             item = info.Data.inventory[i];
-                            list.Add(new ItemData( info, item, i));
+                            list.Add(new ItemData(info, item, i));
                         }
                         return list;
                     case BagType.safe:
@@ -232,7 +310,7 @@ namespace TSManager.Modules
             ChangeItemListAsync(GetPlayerBag(info, type));
             TSMMain.GUI.Bag_ItemInfo.DataContext = null;
         }
-        internal static void SelectItem(object sender, RoutedEventArgs e)
+        public static void SelectItem(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -242,29 +320,40 @@ namespace TSManager.Modules
             }
             catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
         }
-        public static void ChangePrefix(ItemData data, int prefix)
+        public static void ChangePrefix(ItemData item, int prefix)
         {
-            if (prefix == data.Prefix) return;
-            var plr = data.Owner;
-            data.Prefix = prefix;
-            if (TShock.Utils.GetItemById(plr.Data.inventory[data.Slot].NetId).type != data.ID)
+            if (item.Prefix == prefix) return;
+            else item.Prefix = prefix;
+            if (TShock.Utils.GetItemById(item.Owner.Data.inventory[item.Slot].NetId).type != item.ID)
             {
                 Utils.Notice("此物品所在位置已变动, 请刷新");
                 return;
             }
-            if (plr.Online)
+            if (item.Owner.Online)
             {
-                plr.Data.inventory[data.Slot] = new NetItem(data.ID, data.Stack, (byte)prefix);
-                NetworkText text = NetworkText.FromLiteral(plr.Player.TPlayer.inventory[data.Slot].Name);
-                NetMessage.SendData(5, -1, -1, text, plr.Player.Index, data.Slot, prefix);
+                ModifyItemOnline(item);
             }
             else
             {
-                plr.Data.inventory[data.Slot] = new NetItem(plr.ID, data.Stack, (byte)prefix);
-                plr.Save();
+                item.Owner.Data.inventory[item.Slot] = new NetItem(item.ID, item.Stack, (byte)item.Prefix);
+                item.Owner.Save();
             }
-
+            Refresh(false);
             Utils.Notice("已修改物品前缀", HandyControl.Data.InfoType.Success);
+        }
+        public static void ChangeStack(ItemData item)
+        {
+            if (item.Owner.Online)
+            {
+                ModifyItemOnline(item);
+            }
+            else
+            {
+                item.Owner.Data.inventory[item.Slot] = new NetItem(item.ID, item.Stack, (byte)item.Prefix);
+                item.Owner.Save();
+            }
+            Refresh(false);
+            Utils.Notice($"已修改 {item.Item.Name} 的堆叠为 {item.Stack}", HandyControl.Data.InfoType.Success);
         }
     }
 }

@@ -184,8 +184,7 @@
                                                 Grid.Row="1"
                                                 VerticalAlignment="Stretch"
                                                 Height="Auto"
-                                                Grid.Column="1"
-                                                Background="White" />
+                                                Grid.Column="1"/>
                                     </Grid>
                                 </GroupBox>
                                 <GroupBox Header="启动设置"
@@ -449,8 +448,22 @@
                                          HorizontalContentAlignment="Stretch"
                                          VerticalContentAlignment="Stretch"
                                          Margin="5,37,5,94"
-                                         VirtualizingPanel.IsVirtualizing="True"
-                                         DisplayMemberPath="{Binding Name}"></ListBox>
+                                         VirtualizingPanel.IsVirtualizing="True">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <WrapPanel>
+                                                <Ellipse  Width="10"
+                                                          Height="10"
+                                                          Fill="{Binding StatusColor}"
+                                                          VerticalAlignment="Center"
+                                                          HorizontalAlignment="Right" />
+                                                <hc:Divider Orientation="Vertical"/>
+                                                <TextBlock VerticalAlignment="Center"
+                                                           Text="{Binding Name}" />
+                                            </WrapPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
                                 <hc:TabControl x:Name="PlayerManage_MainTab"
                                                Grid.Column="1">
                                     <hc:TabItem x:Name="PlayerManage_Info"
@@ -462,7 +475,7 @@
                                             </Grid.ColumnDefinitions>
                                             <GroupBox x:Name="PlayerManage_DataGroup"
                                                       Header="{Binding Name}"
-                                                      Margin="10,10,5,19"
+                                                      Margin="10,10,5,0"
                                                       FontSize="13">
                                                 <Grid Margin="0,-8,1,-6">
                                                     <Grid.ColumnDefinitions>
@@ -582,7 +595,7 @@
                                                 </Grid>
                                             </GroupBox>
                                             <GroupBox Header="快捷功能"
-                                                      Margin="0,10,10,10"
+                                                      Margin="0,10,10,0"
                                                       Grid.Column="1">
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
@@ -662,7 +675,6 @@
                                                             Grid.Row="3"
                                                             IsEnabled="{Binding Ban}"
                                                             Click="OnButtonClick"
-                                                            Foreground="#FF1D1D1D"
                                                             Grid.Column="1" />
                                                     <tsm:ButtonTextBox x:Name="PlayerManage_Command"
                                                                        hc:InfoElement.Placeholder="使此玩家执行命令"
@@ -752,16 +764,22 @@
                                                                Grid.Row="1">
                                                 <Run Text="ID: " />
                                                 <Run Text="{Binding ID}" /></TextBlock>
-                                                    <Button Grid.Row="2"
+                                                    <Button x:Name="BagManage_ChangeStack"
+                                                            Click="OnButtonClick"
+                                                            Grid.Row="2"
                                                             Content="修改"
                                                             HorizontalAlignment="Right"
-                                                            VerticalAlignment="Stretch" />
+                                                            VerticalAlignment="Stretch"
+                                                            Height="Auto"
+                                                            Margin="0,0,0,3" />
                                                     <TextBlock Margin="7,3,0,3"
                                                                Grid.Row="2"
                                                                Text="堆叠"
                                                                FontSize="12"
                                                                HorizontalAlignment="Left" />
                                                     <hc:NumericUpDown  x:Name="Bag_Stack"
+                                                                       KeyDown="OnKeyDown"
+                                                                       Value="{Binding Stack}"
                                                                        Maximum="{Binding MaxStack}"
                                                                        Minimum="1"
                                                                        hc:TitleElement.Title="堆叠"
@@ -785,13 +803,15 @@
                                                                  Margin="0,5,0,0"
                                                                  FontSize="12"
                                                                  Grid.Row="5" />
-                                                    <Button Content="删除此物品"
+                                                    <Button x:Name="BagManage_Del"
+                                                            Content="删除此物品"
                                                             HorizontalAlignment="Stretch"
                                                             VerticalAlignment="Stretch"
                                                             Click="OnButtonClick"
                                                             Grid.Row="7"
                                                             Margin="0,4" />
-                                                    <Button Content="刷新数据"
+                                                    <Button x:Name="BagManage_Refresh"
+                                                            Content="刷新数据"
                                                             HorizontalAlignment="Stretch"
                                                             VerticalAlignment="Stretch"
                                                             Click="OnButtonClick"

@@ -15,7 +15,7 @@ namespace TSManager.Modules
         public static void ChangeDisplayInfo(PlayerInfo info)
         {
             TSMMain.GUI.PlayerManage_Info.DataContext = info;
-            TSMMain.GUI.PlayerManage_Group.SelectedItem = info.Group;
+            TSMMain.GUI.PlayerManage_Group.SelectedItem = info?.Group;
             //修改背包显示
             if (TSMMain.GUI.Bag_Choose.SelectedIndex == 0) BagManager.ChangeBag(info, BagManager.BagType.inventory);
             else TSMMain.GUI.Bag_Choose.SelectedIndex = 0;
@@ -41,7 +41,7 @@ namespace TSManager.Modules
         {
             if (password.Length < TShock.Config.Settings.MinimumPasswordLength)
             {
-                Utils.Notice($"密码长度应大于等于 {TShock.Config.Settings.MinimumPasswordLength}.", HandyControl.Data.InfoType.Error);
+                Utils.Notice($"密码长度应大于等于 {TShock.Config.Settings.MinimumPasswordLength}.", HandyControl.Data.InfoType.Warning);
                 return false;
             }
             if (!info.Account.VerifyPassword(password))
@@ -52,7 +52,7 @@ namespace TSManager.Modules
             }
             else
             {
-                Utils.Notice("此密码与原密码相同..", HandyControl.Data.InfoType.Error);
+                Utils.Notice("此密码与原密码相同..", HandyControl.Data.InfoType.Warning);
                 return false;
             }
         }
@@ -65,14 +65,14 @@ namespace TSManager.Modules
             }
             else
             {
-                Utils.Notice("踢出玩家 " + info + " 失败.", HandyControl.Data.InfoType.Error);
+                Utils.Notice("踢出玩家 " + info + " 失败.", HandyControl.Data.InfoType.Warning);
             }
         }
         public static void AddBan(this PlayerInfo info, string reason)
         {
             if (info == null)
             {
-                Utils.Notice("当前未选择玩家", HandyControl.Data.InfoType.Error);
+                Utils.Notice("当前未选择玩家", HandyControl.Data.InfoType.Warning);
                 return;
             }
             bool success = false;
@@ -92,7 +92,7 @@ namespace TSManager.Modules
                 if(info.Online && TShock.Bans.InsertBan($"{Identifier.IP}{info.Player.IP}", reason, "TSManager", DateTime.UtcNow, DateTime.MaxValue) != null) success = true;
             }
             if (success) { Utils.Notice("成功封禁玩家 " + info.Name, HandyControl.Data.InfoType.Success); TSMMain.GUI.PlayerManage_Ban.Text = ""; }
-            else Utils.Notice("封禁 " + info + " 失败", HandyControl.Data.InfoType.Error);
+            else Utils.Notice("封禁 " + info + " 失败", HandyControl.Data.InfoType.Warning);
         }
         public static void UnBan(this PlayerInfo info)
         {
@@ -112,7 +112,7 @@ namespace TSManager.Modules
         public static void Command(this PlayerInfo info, string text)
         {
             if (Commands.HandleCommand(info.Player, text.StartsWith(Commands.Specifier) ? text : "/" + text)) Utils.Notice("成功执行命令 " + text, HandyControl.Data.InfoType.Success);
-            else Utils.Notice("执行失败", HandyControl.Data.InfoType.Error);
+            else Utils.Notice("执行失败", HandyControl.Data.InfoType.Warning);
         }
         public static void Damage(this PlayerInfo info, int damage)
         {
