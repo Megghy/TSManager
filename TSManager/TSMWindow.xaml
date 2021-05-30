@@ -60,7 +60,7 @@
                         </hc:Col>
                     </hc:Row>
                     <Button x:Name="GoToStartServer"
-                            Click="GoToStartServer_Click"
+                            Click="OnButtonClick"
                             Content="前往启动服务器"
                             HorizontalAlignment="Stretch"
                             Margin="342,80,349,127"

@@ -69,7 +69,7 @@ namespace TSManager
             {
                 var b = sender as Button;
                 var plrInfo = PlayerManage_List.SelectedItem as PlayerInfo;
-                if(b.Name == "GoToStartServer") MainTab.SelectedIndex = 1
+                if (b.Name == "GoToStartServer") MainTab.SelectedIndex = 1;
                 else if (b.Name.StartsWith("Console"))
                 {
                     #region 控制台
