@@ -8,9 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using System.Windows.Shell;
 using HarmonyLib;
-using OTAPI;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
@@ -94,51 +92,82 @@ namespace TSManager.Modules
             }
             else return false;
         }
-        public async void OnGetText(string s)
+        struct QueueInfo
+        {
+            public QueueInfo(Color color, string text)
+            {
+                Text = text;
+                Color = color;
+            }
+            public string Text { get; set; }
+            public Color Color { get; set; }
+        }
+        Queue<QueueInfo> MessageQueue = new();
+        public void OnGetText(string s)
         {
             if (!Info.IsServerRunning) return;
-            await Task.Run(() => {
-                if (s == " \r\n")
+            MessageQueue.Enqueue(new(foregroundColor, s));
+        }
+        internal async void ProcessText()
+        {
+            await Task.Run(() =>
+            {
+                while (true)
                 {
-                    TSMMain.GUI.Console_ConsoleBox.AddLine(" ");
-                    return;
-                }
-                if (Info.IsEnterWorld)
-                {
-                    var color = foregroundColor;
-                    var nameList = Info.Players.Select(p => p.Name).ToList();
-                    var list = new List<TextInfo>() { new TextInfo(s, false) };
-                    if (nameList.Any())
+                    try
                     {
-                        nameList.ForEach(name =>
+                        if (!MessageQueue.Any())
                         {
-                            var tempList = new List<TextInfo>();
-                            list.ForEach(t =>
+                            Task.Delay(1).Wait();
+                            continue;
+                        }
+                        var info = MessageQueue.Dequeue();
+                        var s = info.Text;
+                        var color = info.Color;
+                        if (s == "\r\n")
+                        {
+                            TSMMain.GUI.Console_ConsoleBox.AddLine("");
+                        }
+                        else
+                        {
+                            if (Info.IsEnterWorld)
                             {
-                                var text = t.Text;
-                                if (!t.IsPlayer)
+                                var nameList = Info.Players.Select(p => p.Name).ToList();
+                                var list = new List<TextInfo>() { new TextInfo(s, false) };
+                                if (nameList.Any())
                                 {
-                                    while (SplitTextFromName(text, name, out var l))
+                                    nameList.ForEach(name =>
                                     {
-                                        text = l[2].Text;
-                                        tempList.Add(l[0]);
-                                        tempList.Add(l[1]);
-                                    }
-                                    tempList.Add(new(text));
+                                        var tempList = new List<TextInfo>();
+                                        list.ForEach(t =>
+                                        {
+                                            var text = t.Text;
+                                            if (!t.IsPlayer)
+                                            {
+                                                while (SplitTextFromName(text, name, out var l))
+                                                {
+                                                    text = l[2].Text;
+                                                    tempList.Add(l[0]);
+                                                    tempList.Add(l[1]);
+                                                }
+                                                tempList.Add(new(text));
+                                            }
+                                            else tempList.Add(t);
+                                        });
+                                        list = tempList;
+                                    });
+                                    list.ForEach(t => TSMMain.GUI.Console_ConsoleBox.Add(t.Text, t.IsPlayer, t.IsPlayer ? PlayerColor : color));
                                 }
-                                else tempList.Add(t);
-                            });
-                            list = tempList;
-                        });
-                        list.ForEach(t => TSMMain.GUI.Console_ConsoleBox.Add(t.Text, t.IsPlayer, t.IsPlayer ? PlayerColor : color));
-                        return;
+                                else
+                                {
+                                    TSMMain.GUI.Console_ConsoleBox.Add(s, color);
+                                }
+                            }
+                            else TSMMain.GUI.Console_ConsoleBox.Add(s, color);
+                        }
                     }
-                    else
-                    {
-                        TSMMain.GUI.Console_ConsoleBox.Add(s, color);
-                    }
+                    catch (Exception ex) { TSMMain.AddLine(ex); }
                 }
-                TSMMain.GUI.Console_ConsoleBox.Add(s, foregroundColor);
             });
         }
         public string[] GetStartArgs()
@@ -174,7 +203,8 @@ namespace TSManager.Modules
             if (!Directory.Exists(Info.PluginPath) || !Directory.GetFiles(Info.PluginPath).Exist(f => Path.GetFileName(f) == "TShockAPI.dll"))
             {
                 Utils.Notice($"未检测到TShock程序集. TSManager暂不支持原版服务器", HandyControl.Data.InfoType.Error);
-                TSMMain.GUIInvoke(() => {
+                TSMMain.GUIInvoke(() =>
+                {
                     TSMMain.GUI.Console_StartServer.IsEnabled = true;
                 });
                 Info.IsServerRunning = false;
@@ -212,7 +242,8 @@ namespace TSManager.Modules
 
         public async void AppendText(string text)
         {
-            await Task.Run(() => {
+            await Task.Run(() =>
+            {
                 TSMMain.GUI.Console_ConsoleBox.AddLine(text, Color.FromRgb(208, 171, 233));
                 if (Info.IsEnterWorld)
                 {
@@ -231,15 +262,15 @@ namespace TSManager.Modules
         public ConsoltOut()
         {
         }
-        public override Encoding Encoding
+        public override Encoding Encoding
         {
             get { return Encoding.UTF8; }
         }
-        public override void Write(string value)
+        public override void Write(string value)
         {
             Info.Server.OnGetText(value);
         }
-        public override void WriteLine(string value)
+        public override void WriteLine(string value)
         {
             Info.Server.OnGetText(value + "\r\n");
         }

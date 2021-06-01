@@ -10,6 +10,7 @@ namespace TSManager.Modules
 {
     class HookManager
     {
+        
         public async static void OnPlayerJoin(JoinEventArgs args)
         {
             await Task.Run(() => {
@@ -21,6 +22,7 @@ namespace TSManager.Modules
                     info.Online = true;
                     TSMMain.GUIInvoke(() => { if (TSMMain.GUI.Bag_Tab.DataContext == info) BagManager.Refresh(false); });
                 }
+                ScriptManager.ExcuteScript(Data.ScriptData.Triggers.PlayerJoin);
             });
         }
         public async static void OnPlayerLeave(LeaveEventArgs args)
@@ -32,6 +34,7 @@ namespace TSManager.Modules
                 {
                     info.Online = false;
                 }
+                ScriptManager.ExcuteScript(Data.ScriptData.Triggers.PlayerLeave);
             });
         }
         public static void OnAccountCreate(TShockAPI.Hooks.AccountCreateEventArgs args)

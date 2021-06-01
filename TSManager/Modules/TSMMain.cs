@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using System.Xml;
 using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -32,6 +33,12 @@ namespace TSManager.Modules
             catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
         }
         internal const int UpdateTime = 333;
+        public static void AddText(object text, Color color = default)
+        {
+            color = default ? Color.FromRgb(255, 255, 255) : color;
+            GUI.Console_ConsoleBox.Add(text.ToString(), color);
+        }
+        public static void AddLine(object text, Color color = default) => AddText(text + "\r\n", color);
         public async void Stop()
         {
             await Task.Run(() =>
@@ -73,6 +80,8 @@ namespace TSManager.Modules
         {
             try
             {
+                Info.Server.ProcessText(); //循环处理消息队列
+                #region 玩家管理器加载代码
                 if (Settings.EnableDarkMode) GUI.ChangeNightMode(null, null);
                 GUI.ServerStatus.Visibility = Visibility.Hidden; //暂时隐藏服务器状态
                 GUI.Versions.Visibility = Visibility.Hidden; //暂时隐藏服务器版本
@@ -104,6 +113,7 @@ namespace TSManager.Modules
                 };
 
                 GUI.Bag_Choose.ItemsSource = bags;
+                #endregion
                 #region 设置编辑器加载部分
                 //快速搜索功能
                 SearchPanel.Install(GUI.ConfigEditor.TextArea);
@@ -137,6 +147,10 @@ namespace TSManager.Modules
                     }
                 }
                 #endregion
+                ScriptManager.LoadAllBlock(); //加载脚本编辑器
+                Info.Scripts = new(ScriptData.GetAllScripts());
+                GUI.Script_List.ItemsSource = Info.Scripts;
+                GUI.Script_TriggerCondition.ItemsSource = Enum.GetValues(typeof(ScriptData.Triggers)).Cast<ScriptData.Triggers>(); ;
 
                 if (Settings.AutoStart)
                 {

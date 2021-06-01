@@ -96,7 +96,7 @@ namespace TSManager.Data
         {
             get
             {
-                return Online ? Player.TPlayer.statLife: Data.health;
+                return (int)(Online ? Player.TPlayer?.statLife: Data.health);
             }
             set { }
         }
@@ -104,7 +104,7 @@ namespace TSManager.Data
         {
             get
             {
-                return Online ? Player.TPlayer.statLifeMax2 : Data.maxHealth;
+                return (int)(Online ? Player.TPlayer?.statLifeMax2 : Data.maxHealth);
             }
             set
             {
@@ -120,12 +120,12 @@ namespace TSManager.Data
                 }
             }
         }
-        public int MP { get { return Online ? Player.TPlayer.statMana : Data.mana; } set { } }
+        public int MP { get { return (int)(Online ? Player.TPlayer?.statMana : Data.mana); } set { } }
         public int MaxMP
         {
             get
             {
-                return Online ? Player.TPlayer.statManaMax2 : Data.maxMana;
+                return (int)(Online ? Player.TPlayer?.statManaMax2 : Data.maxMana);
             }
             set
             {

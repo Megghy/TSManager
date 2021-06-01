@@ -1,0 +1,10 @@
+﻿[*.cs]
+
+# IDE0008: 使用显式类型
+csharp_style_var_for_built_in_types = false
+
+# IDE0011: 添加大括号
+csharp_prefer_braces = when_multiline
+
+# IDE0008: 使用显式类型
+dotnet_diagnostic.IDE0008.severity = none

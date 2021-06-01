@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,6 +12,8 @@ using Terraria.GameContent.Creative;
 using TShockAPI;
 using TSManager.Modules;
 using TSManager.UI.Control;
+using ScratchNet;
+using Expression = ScratchNet.Expression;
 
 namespace TSManager
 {
@@ -140,6 +143,19 @@ namespace TSManager
             //调用
             m.Invoke(b, new object[] { b, null });
             return;
+        }
+        public static bool TryExcute<T>(this Expression exp, ExecutionEnvironment environment, out T value)
+        {
+            value = default;
+            if (exp is null) return false;
+            var result = exp.Execute(environment);
+            if (result.Type == CompletionType.Value)
+            {
+                value = (T)result.ReturnValue;
+                return true;
+            }
+            else if (result.Type == CompletionType.Exception) ScriptManager.Log($"[Warn] 脚本运行时发生错误, 位于 {exp.Type} - {result.ReturnValue}");
+            return false;
         }
     }
 }

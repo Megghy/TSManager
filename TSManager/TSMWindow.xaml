@@ -9,6 +9,7 @@
            xmlns:setting="clr-namespace:TSManager.Properties"
            xmlns:tsm="clr-namespace:TSManager.UI.Control"
            xmlns:local="clr-namespace:TSManager"
+           xmlns:scratchnet="clr-namespace:ScratchNet;assembly=ScriptEditor"
            mc:Ignorable="d"
            Title="TSManager"
            Height="550"
@@ -419,7 +420,8 @@
                     <TabControl Name="Tab_PlayerManage"
                                 Grid.RowSpan="2">
                         <TabItem x:Name="Tab_PlayerManage_Info"
-                                 Header="玩家">
+                                 Header="玩家"
+                                 DataContext="{Binding ElementName=PlayerManage_List, Path=SelectedItem}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="117*" />
@@ -480,7 +482,8 @@
                                                 <StackPanel>
                                                     <hc:Row>
                                                         <hc:Col Span="8">
-                                                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Center">
+                                                            <TextBlock TextWrapping="Wrap"
+                                                                       VerticalAlignment="Center">
                                                 <Run Text="Uid: " />
                                                 <Run Text="{Binding ID}" /></TextBlock>
                                                         </hc:Col>
@@ -525,7 +528,7 @@
                                                         <hc:Col Span="12">
                                                             <hc:TextBox hc:TitleElement.Title="当前血量"
                                                                         hc:TitleElement.TitlePlacement="Left"
-                                                                        Text="{Binding HP}"/>
+                                                                        Text="{Binding HP}" />
                                                         </hc:Col>
                                                         <hc:Col Span="12">
                                                             <hc:TextBox hc:TitleElement.Title="最大血量"
@@ -549,7 +552,7 @@
                                                                        ButtonClick="OnButtonTextBoxClick"
                                                                        Title="密码    "
                                                                        hc:InfoElement.Placeholder="键入新密码"
-                                                                       ButtonText="确认"/>
+                                                                       ButtonText="确认" />
                                                 </StackPanel>
                                             </GroupBox>
                                             <GroupBox Header="快捷功能"
@@ -1028,8 +1031,107 @@
                     </TabControl>
                 </Grid>
             </hc:TabItem>
-            <hc:TabItem Name="Tab_Script" Header="脚本">
-                <Grid></Grid>
+            <hc:TabItem Name="Tab_Script"
+                        Header="脚本">
+                <TabControl Name="Script_Tab">
+                    <TabItem Header="脚本列表">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="777*" />
+                                <ColumnDefinition Width="152*" />
+                            </Grid.ColumnDefinitions>
+                            <DataGrid x:Name="Script_List" AutoGenerateColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="名称" Binding="{Binding Name}" Width="2*"/>
+                                    <DataGridTextColumn Header="作者"
+                                                        Binding="{Binding Author}"
+                                                        Width="*" />
+                                    <DataGridTextColumn Header="描述"
+                                                        Binding="{Binding Description}"
+                                                        Width="4*" />
+                                    <DataGridTextColumn Header="版本"
+                                                        Binding="{Binding Version}"
+                                                        Width="*" />
+                                    <DataGridTextColumn Header="函数量"
+                                                        Binding="{Binding FunctionCount}"
+                                                        Width="*" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <StackPanel Orientation="Vertical"
+                                        Grid.Column="1"
+                                        Margin="5,5,5,5">
+                                <ToggleButton IsChecked="{Binding ElementName=Script_Create_Drawer, Path=IsOpen}"
+                                              Content="新建"
+                                              HorizontalAlignment="Stretch" />
+                                <Button x:Name="Script_GoToEdit"
+                                        Content="编辑"
+                                        Click="OnButtonClick"
+                                        HorizontalAlignment="Stretch" />
+                            </StackPanel>
+                            <hc:Drawer Name="Script_Create_Drawer"
+                                       Dock="Right"
+                                       ShowMode="Cover">
+                                <Border Background="{DynamicResource BackgroundBrush}"
+                                        Width="250">
+                                    <StackPanel>
+                                        <hc:TextBox Name="Script_Create_Name" hc:TitleElement.Title="名称"
+                                                    hc:TitleElement.TitlePlacement="Left"
+                                                    Text="NewScript"
+                                                    Margin="5,5,5,0"/>
+                                        <hc:TextBox Name="Script_Create_Author"
+                                                    hc:TitleElement.Title="作者"
+                                                    hc:TitleElement.TitlePlacement="Left"
+                                                    Text="未知"
+                                                    Margin="5,5,5,0" />
+                                        <hc:TextBox Name="Script_Create_Description"
+                                                    hc:TitleElement.Title="描述"
+                                                    hc:TitleElement.TitlePlacement="Left"
+                                                    Text="无"
+                                                    Margin="5,5,5,0" />
+                                        <hc:TextBox Name="Script_Create_Version"
+                                                    hc:TitleElement.Title="版本"
+                                                    hc:TitleElement.TitlePlacement="Left"
+                                                    Margin="5,5,5,0"
+                                                    Text="1.0.0.0"/>
+                                        <hc:Divider />
+                                        <Button x:Name="Script_Confirm" Content="确认"
+                                                Click="OnButtonClick"
+                                                HorizontalAlignment="Stretch"
+                                                Margin="5,5,5,0" />
+                                        <Button x:Name="Script_Cancel"
+                                                Content="取消"
+                                                Click="OnButtonClick"
+                                                HorizontalAlignment="Stretch"
+                                                Margin="5,5,5,0"
+                                                Background="{DynamicResource DangerBrush}"/>
+                                    </StackPanel>
+                                </Border>
+                            </hc:Drawer>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="编辑"
+                             IsEnabled="True">
+                        <DockPanel>
+                            <ToolBar x:Name="Script_ToolBar"
+                                     DockPanel.Dock="Top"
+                                     Height="40"
+                                     DataContext="{Binding ElementName=Script_List, Path=SelectedItem}">
+                                <Button x:Name="Script_Save"
+                                        Click="OnButtonClick"
+                                        Content="保存" />
+                                <hc:Divider Orientation="Vertical" Margin="0,3,0,3"/>
+                                <hc:ComboBox x:Name="Script_TriggerCondition"
+                                             hc:TitleElement.Title="触发条件" hc:TitleElement.TitlePlacement="Left"
+                                             Margin="0,3,0,3"
+                                             SelectedItem="{Binding TriggerCondition, Mode=OneWay}"
+                                             SelectionChanged="OnComboSelect"
+                                             Width="200" />
+                            </ToolBar>
+                            <scratchnet:GraphicScriptEditor Name="Script_Editor"
+                                                            DockPanel.Dock="Bottom" />
+                        </DockPanel>
+                    </TabItem>
+                </TabControl>
             </hc:TabItem>
             <hc:TabItem Name="Tab_Setting"
                         Header="设置">

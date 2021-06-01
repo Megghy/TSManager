@@ -11,7 +11,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>TSManager</RootNamespace>
     <AssemblyName>TSManager</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -47,11 +47,26 @@
     <Reference Include="0Harmony, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lib.Harmony.2.0.4\lib\net45\0Harmony.dll</HintPath>
     </Reference>
+    <Reference Include="Array">
+      <HintPath>Resources\Script\Array.dll</HintPath>
+    </Reference>
     <Reference Include="BCrypt.Net, Version=0.1.4141.31969, Culture=neutral, PublicKeyToken=f3bc8f8c31beeb49, processorArchitecture=MSIL">
       <HintPath>..\packages\BCrypt.Net.0.1.0\lib\net35\BCrypt.Net.dll</HintPath>
     </Reference>
+    <Reference Include="Canvas">
+      <HintPath>Resources\Script\Canvas.dll</HintPath>
+    </Reference>
+    <Reference Include="Collection">
+      <HintPath>Resources\Script\Collection.dll</HintPath>
+    </Reference>
+    <Reference Include="Console">
+      <HintPath>Resources\Script\Console.dll</HintPath>
+    </Reference>
     <Reference Include="Costura, Version=4.1.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
       <HintPath>..\packages\Costura.Fody.4.1.0\lib\net40\Costura.dll</HintPath>
+    </Reference>
+    <Reference Include="DataStructure">
+      <HintPath>Resources\Script\DataStructure.dll</HintPath>
     </Reference>
     <Reference Include="DotNetZip, Version=1.15.0.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
       <HintPath>..\packages\DotNetZip.1.15.0\lib\net40\DotNetZip.dll</HintPath>
@@ -67,6 +82,9 @@
     </Reference>
     <Reference Include="ICSharpCode.AvalonEdit, Version=6.1.1.20, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
       <HintPath>..\packages\AvalonEdit.6.1.1\lib\net45\ICSharpCode.AvalonEdit.dll</HintPath>
+    </Reference>
+    <Reference Include="Math">
+      <HintPath>Resources\Script\Math.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Data.Sqlite, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <HintPath>..\packages\TerrariaServer.TShock.4.5.2\lib\net452\Mono.Data.Sqlite.dll</HintPath>
@@ -84,10 +102,16 @@
       <HintPath>..\packages\PropertyChanged.Fody.3.3.3\lib\net40\PropertyChanged.dll</HintPath>
     </Reference>
     <Reference Include="ScriptEditor">
-      <HintPath>Resources\ScriptEditor.dll</HintPath>
+      <HintPath>Resources\Script\ScriptEditor.dll</HintPath>
     </Reference>
     <Reference Include="ScriptEngine">
-      <HintPath>Resources\ScriptEngine.dll</HintPath>
+      <HintPath>Resources\Script\ScriptEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="Speech">
+      <HintPath>Resources\Script\Speech.dll</HintPath>
+    </Reference>
+    <Reference Include="String">
+      <HintPath>Resources\Script\String.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -106,6 +130,9 @@
     <Reference Include="TerrariaServer, Version=1.4.2.2, Culture=neutral, processorArchitecture=x86">
       <HintPath>..\packages\TerrariaServer.TShock.4.5.2\lib\net452\TerrariaServer.exe</HintPath>
     </Reference>
+    <Reference Include="Thread">
+      <HintPath>Resources\Script\Thread.dll</HintPath>
+    </Reference>
     <Reference Include="TShockAPI, Version=4.5.2.0, Culture=neutral, processorArchitecture=x86">
       <HintPath>..\packages\TerrariaServer.TShock.4.5.2\lib\net452\TShockAPI.dll</HintPath>
     </Reference>
@@ -119,6 +146,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Data\GroupData.cs" />
+    <Compile Include="Data\ScriptData.cs" />
     <Compile Include="Modules\BagManager.cs" />
     <Compile Include="Data\ConfigData.cs" />
     <Compile Include="Data\ItemData.cs" />
@@ -127,6 +155,9 @@
     <Compile Include="Modules\GroupManager.cs" />
     <Compile Include="Modules\HookManager.cs" />
     <Compile Include="Modules\PlayerManager.cs" />
+    <Compile Include="Modules\ScriptManager.cs" />
+    <Compile Include="Script\GetPlayer.cs" />
+    <Compile Include="Script\SendMessage.cs" />
     <Compile Include="UI\Control\ButtonTextBox.xaml.cs">
       <DependentUpon>ButtonTextBox.xaml</DependentUpon>
     </Compile>
@@ -177,6 +208,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Resources\Script\NewScript.tsms" />
     <None Include="Resources\Texture.zip" />
   </ItemGroup>
   <ItemGroup>
@@ -194,6 +226,19 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="UI\View\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Script\Array.dll" />
+    <Content Include="Resources\Script\Canvas.dll" />
+    <Content Include="Resources\Script\Collection.dll" />
+    <Content Include="Resources\Script\Console.dll" />
+    <Content Include="Resources\Script\DataStructure.dll" />
+    <Content Include="Resources\Script\Math.dll" />
+    <Content Include="Resources\Script\ScriptEditor.dll" />
+    <Content Include="Resources\Script\ScriptEngine.dll" />
+    <Content Include="Resources\Script\Speech.dll" />
+    <Content Include="Resources\Script\String.dll" />
+    <Content Include="Resources\Script\Thread.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.6.5.1\build\Fody.targets" Condition="Exists('..\packages\Fody.6.5.1\build\Fody.targets')" />

@@ -14,7 +14,7 @@ namespace TSManager.Modules
     {
         public static void ChangeDisplayInfo(PlayerInfo info)
         {
-            TSMMain.GUI.PlayerManage_Info.DataContext = info;
+            //TSMMain.GUI.PlayerManage_Info.DataContext = info;
             TSMMain.GUI.PlayerManage_Group.SelectedItem = info?.Group;
             //修改背包显示
             if (TSMMain.GUI.Bag_Choose.SelectedIndex == 0) BagManager.ChangeBag(info, BagManager.BagType.inventory);

@@ -212,6 +212,25 @@ namespace TSManager
                             break;
                     }
                 }
+                else if (b.Name.StartsWith("Script"))
+                {
+                    switch (b.Name)
+                    {
+                        case "Script_Confirm":
+                            ScriptManager.Create(Script_Create_Name.Text, Script_Create_Author.Text, Script_Create_Description.Text, Script_Create_Version.Text);
+                            break;
+                        case "Script_Cancel":
+                            Script_Create_Drawer.IsOpen = false;
+                            break;
+                        case "Script_GoToEdit":
+                            if (Script_List.SelectedItem is { } script) ScriptManager.ChangeScript(Script_List.SelectedItem as ScriptData);
+                            else Utils.Notice("未选择脚本");
+                            break;
+                        case "Script_Save":
+                            ScriptManager.Save(Script_Editor.Script as ScriptData);
+                            break;
+                    }
+                }
             }
             catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
         }
@@ -375,6 +394,12 @@ namespace TSManager
                         break;
                     case "Bag_Prefix":
                         if (c.DataContext is ItemData data) BagManager.ChangePrefix(data, c.SelectedIndex);
+                        break;
+                    case "Script_TriggerCondition":
+                        if (Script_List.SelectedItem is { } script && ((ScriptData)script).TriggerCondition != (ScriptData.Triggers)Script_TriggerCondition.SelectedItem)
+                        {
+                            ScriptManager.ChangeTriggerCondition((ScriptData)script, (ScriptData.Triggers)Script_TriggerCondition.SelectedItem);
+                        }
                         break;
                 }
             }
