@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
-using Newtonsoft.Json.Linq;
 using Terraria.GameContent.Creative;
 using TShockAPI;
 using TShockAPI.DB;
@@ -89,14 +87,14 @@ namespace TSManager.Modules
             {
                 if (TShock.Bans.InsertBan($"{Identifier.UUID}{(info.Account ?? new UserAccount()).UUID}", reason, "TSManager", DateTime.UtcNow, DateTime.MaxValue) != null) success = true;
                 if (TShock.Bans.InsertBan($"{Identifier.Account}{info.Name}", reason, "TSManager", DateTime.UtcNow, DateTime.MaxValue) != null) success = true;
-                if(info.Online && TShock.Bans.InsertBan($"{Identifier.IP}{info.Player.IP}", reason, "TSManager", DateTime.UtcNow, DateTime.MaxValue) != null) success = true;
+                if (info.Online && TShock.Bans.InsertBan($"{Identifier.IP}{info.Player.IP}", reason, "TSManager", DateTime.UtcNow, DateTime.MaxValue) != null) success = true;
             }
             if (success) { Utils.Notice("成功封禁玩家 " + info.Name, HandyControl.Data.InfoType.Success); TSMMain.GUI.PlayerManage_Ban.Text = ""; }
             else Utils.Notice("封禁 " + info + " 失败", HandyControl.Data.InfoType.Warning);
         }
         public static void UnBan(this PlayerInfo info)
         {
-            var list = new List<Ban>(); 
+            var list = new List<Ban>();
             //tolist相当于clone以下免得foreach的时候报错
             TShock.Bans.Bans.Where(b => b.Value.Identifier == "uuid:" + info.Account.UUID).ToList().ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
             TShock.Bans.Bans.Where(b => b.Value.Identifier == "acc:" + info).ToList().ForEach(b => TShock.Bans.RemoveBan(b.Key, true));

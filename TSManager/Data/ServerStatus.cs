@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Management;
 using System.Reflection;
 using System.Threading.Tasks;
 using PropertyChanged;
@@ -18,7 +16,8 @@ namespace TSManager.Data
         public ServerStatus() => LoadInfo();
         async void LoadInfo()
         {
-            await Task.Run(() => {
+            await Task.Run(() =>
+            {
                 TSManagerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
                 TerrariaVersion = Main.versionNumber2.ToString();
                 TShockVersion = TShock.VersionNum.ToString();
@@ -34,7 +33,7 @@ namespace TSManager.Data
         public string TSManagerVersion { get; set; }
         public string TerrariaVersion { get; set; }
         public string TShockVersion { get; set; }
-        [AlsoNotifyFor("RunTime_Text", new string[]{"CPUUsed", "MemoryUsed", "PlayerCount" })]
+        [AlsoNotifyFor("RunTime_Text", new string[] { "CPUUsed", "MemoryUsed", "PlayerCount" })]
         public long RunTime { get; set; }
         public string RunTime_Text { get { TimeSpan ts = new TimeSpan(0, 0, (int)(RunTime / 1000)); return $"{ts.Days}日 {ts.Hours}时 {ts.Minutes}分 {ts.Seconds}秒"; } set { } }
         public struct PluginInfo
@@ -61,7 +60,7 @@ namespace TSManager.Data
             {
                 return Math.Round(CPUPerformance.NextValue(), 2);
             }
-            set { } 
+            set { }
         }
         public double MemoryUsed
         {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using TerrariaApi.Server;
 using TShockAPI;
@@ -10,10 +7,11 @@ namespace TSManager.Modules
 {
     class HookManager
     {
-        
+
         public async static void OnPlayerJoin(JoinEventArgs args)
         {
-            await Task.Run(() => {
+            await Task.Run(() =>
+            {
                 var plr = TShock.Players[args.Who];
                 if (!Info.OnlinePlayers.Contains(plr)) TSMMain.GUIInvoke(() => Info.OnlinePlayers.Add(plr));
                 if (plr.TryGetPlayerInfo(out var info))
@@ -22,20 +20,25 @@ namespace TSManager.Modules
                     info.Online = true;
                     TSMMain.GUIInvoke(() => { if (TSMMain.GUI.Bag_Tab.DataContext == info) BagManager.Refresh(false); });
                 }
-                ScriptManager.ExcuteScript(Data.ScriptData.Triggers.PlayerJoin);
+                ScriptManager.ExcuteScript(Data.ScriptData.Triggers.PlayerJoin, plr);
             });
         }
         public async static void OnPlayerLeave(LeaveEventArgs args)
         {
-            await Task.Run(() => {
+            await Task.Run(() =>
+            {
                 var plr = TShock.Players[args.Who];
                 TSMMain.GUIInvoke(() => Info.OnlinePlayers.Remove(plr));
                 if (plr.TryGetPlayerInfo(out var info))
                 {
                     info.Online = false;
                 }
-                ScriptManager.ExcuteScript(Data.ScriptData.Triggers.PlayerLeave);
+                ScriptManager.ExcuteScript(Data.ScriptData.Triggers.PlayerLeave, plr);
             });
+        }
+        public static void OnPlayerDead(object o, GetDataHandlers.KillMeEventArgs args)
+        {
+            ScriptManager.ExcuteScript(Data.ScriptData.Triggers.PlayerDead, args.Player);
         }
         public static void OnAccountCreate(TShockAPI.Hooks.AccountCreateEventArgs args)
         {
@@ -46,7 +49,8 @@ namespace TSManager.Modules
         {
             if (Utils.TryGetPlayerInfo(args.Account.Name, out var info))
             {
-                TSMMain.GUIInvoke(() => {
+                TSMMain.GUIInvoke(() =>
+                {
                     Info.Players.Remove(Info.Players.SingleOrDefault(p => p.Name == args.Account.Name));
                     TSMMain.GUI.PlayerManage_MainTab.DataContext = null;
                     TSMMain.GUI.Bag_Tab.DataContext = null;

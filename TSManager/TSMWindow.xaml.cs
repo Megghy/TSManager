@@ -8,6 +8,7 @@ using System.Windows.Input;
 using HandyControl.Controls;
 using HandyControl.Themes;
 using HandyControl.Tools;
+using ScratchNet;
 using TShockAPI;
 using TSManager.Data;
 using TSManager.Modules;
@@ -35,7 +36,6 @@ namespace TSManager
         private void Window_Loaded(object sender, EventArgs e)
         {
             Instance = this;
-
             TSMMain.Instance.OnInitialize();
         }
         public bool forceClose = false;
@@ -229,12 +229,18 @@ namespace TSManager
                         case "Script_Save":
                             ScriptManager.Save(Script_Editor.Script as ScriptData);
                             break;
+                        case "Script_Paste":
+                            Script_Editor.Paste(new(10, 10));
+                            break;
+                        case "Script_Copy":
+                            Script_Editor.Copy();
+                            break;
                     }
                 }
             }
             catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
         }
-        bool CheckItemSlot(PlayerInfo plrInfo, ItemData item) =>  TShock.Utils.GetItemById(plrInfo.Data.inventory[item.Slot].NetId).type != item.ID;
+        bool CheckItemSlot(PlayerInfo plrInfo, ItemData item) => TShock.Utils.GetItemById(plrInfo.Data.inventory[item.Slot].NetId).type != item.ID;
         private void OnButtonTextBoxClick(object sender, RoutedEventArgs e)
         {
             try
@@ -351,26 +357,48 @@ namespace TSManager
         }
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
-            switch (e.Key)
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control)
             {
-                case Key.Enter:
-                    if (sender is TextBox)
+                if (sender is GraphicScriptEditor)
+                {
+                    var s = sender as GraphicScriptEditor;
+                    switch (e.Key)
                     {
-                        var t = sender as TextBox;
-                        if (t.Name == "Console_CommandBox")
+                        case Key.C:
+                            s.Copy();
+                            break;
+                        case Key.V:
+                            VisualBox.Focus();
+                            s.Paste(Mouse.GetPosition(s));
+                            break;
+                    }
+                    
+                }
+                
+            }
+            else
+            {
+                switch (e.Key)
+                {
+                    case Key.Enter:
+                        if (sender is TextBox)
                         {
-                            if (!Info.IsServerRunning) return;
-                            Info.Server.AppendText(t.Text);
-                            t.Clear();
+                            var t = sender as TextBox;
+                            if (t.Name == "Console_CommandBox")
+                            {
+                                if (!Info.IsServerRunning) return;
+                                Info.Server.AppendText(t.Text);
+                                t.Clear();
+                            }
                         }
-                    }
-                    else if (sender is ButtonTextBox)
-                    {
-                        var b = sender as ButtonTextBox;
-                        b.Text = "";
-                        b.CallOnClick();
-                    }
-                    break;
+                        else if (sender is ButtonTextBox)
+                        {
+                            var b = sender as ButtonTextBox;
+                            b.Text = "";
+                            b.CallOnClick();
+                        }
+                        break;
+            }
             }
         }
         private void OnComboSelect(object sender, SelectionChangedEventArgs e)
@@ -471,6 +499,15 @@ namespace TSManager
             { //Utils.Notice(ex, HandyControl.Data.InfoType.Error);
             }
         }
+
+        private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is GraphicScriptEditor)
+            {
+                var s = sender as GraphicScriptEditor;
+                VisualBox.Focus();
+            }
+        }
         internal void ChangeNightMode(object sender, RoutedEventArgs e)
         {
             var checkbox = sender as CheckBox;
@@ -481,5 +518,6 @@ namespace TSManager
             ResourceHelper.GetTheme("HandyTheme", Application.Current.Resources).Skin = TSMMain.Settings.EnableDarkMode ? HandyControl.Data.SkinType.Dark : HandyControl.Data.SkinType.Default;
             OnApplyTemplate();
         }
+
     }
 }

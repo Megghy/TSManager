@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Management.Instrumentation;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Threading;
 using System.Xml;
 using ScratchNet;
+using TShockAPI;
 using TSManager.Data;
 using TSManager.Modules;
 
@@ -33,6 +29,7 @@ namespace TSManager
                 typeof(NewArray2Expression), typeof(Array2ValueExpression),
                 typeof(ArrayLengthExpression));  //数组的颜色
             TSMMain.GUI.Script_Editor.Register((Color)ColorConverter.ConvertFromString("#EFBC94"), typeof(VariableDeclarationExpression), typeof(Identifier)); //变量的颜色
+            TSMMain.GUI.Script_Editor.Register<Script.ExcuteCommand, Script.ExcuteCommandInConsole, Script.GetPlayer, Script.GetPlayerBag, Script.SendMessage, Script.CheckPermission, Script.TargetPlayer>((Color)ColorConverter.ConvertFromString("#EABEB0")); //玩家操作的颜色
             toolbar.Add(new ScriptStepGroup()
             {
                 Name = Properties.Resources.CommentCollection,
@@ -87,6 +84,7 @@ namespace TSManager
                     new ScriptStep(new BinaryExpression() { ValueType = "boolean", Operator = Operator.Equal }, true, Properties.Resources.BinaryExpressionDescription),//compare operator
                     new ScriptStep(new BinaryExpression() { ValueType = "boolean", Operator = Operator.And }, true, Properties.Resources.BinaryExpressionDescription),//logical operator
                     new ScriptStep(new NotExpression(), true, Properties.Resources.NotExpressionDescription),
+                    new ScriptStep(new NullExpression(), true),
                 }
             });
             toolbar.Add(new ScriptStepGroup()
@@ -105,7 +103,7 @@ namespace TSManager
                     new ScriptStep(new LastIndexOfStringExpression(), true, Properties.Resources.StringLastIndexDescription),
                     new ScriptStep(new SubStringExpression(), true, Properties.Resources.StringSubDescription),
 
-                    new Label() { Content = "数字" },
+                    new Label() { Content = "运算" },
                     new ScriptStep(new BinaryExpression(), true, Properties.Resources.BinaryExpressionDescription),
                     new ScriptStep(new UpdateExpression(), true, Properties.Resources.UpdateExpressionDescription),
                     new ScriptStep(new UpdateExpression() { IsPrefix = true }, true, Properties.Resources.UpdateExpressionDescription),
@@ -121,9 +119,10 @@ namespace TSManager
                 Name = "变量",
                 Types = new()
                 {
-                    new Label() { Content = "声明全局变量" },
+                    new Label() { Content = "声明变量" },
                     "CreateVariable",
                     new Label() { Content = Properties.Resources.VariableDefCategory }, //声明变量
+                    new ScriptStep(new StringExpression(), true, Properties.Resources.NewStringDescription),
                     new ExpressionStatement() { Expression = new VariableDeclarationExpression() { CanAssignValue = false } },
                     new ExpressionStatement() { Expression = new VariableDeclarationExpression() },
                     new ScriptStep(new VariableDeclarationExpression() { CanAssignValue = false }, true, Properties.Resources.VariableDecDescription),
@@ -177,9 +176,15 @@ namespace TSManager
                 Name = "玩家操作",
                 Types = new()
                 {
+                    new Label() { Content = "预置变量" },
+                    new ScriptStep(new Script.TargetPlayer(), true, "引发,"),
                     new Label() { Content = "玩家信息" },
                     new ScriptStep(new Script.GetPlayer(), true, "获取指定名称的玩家对象"),
                     new ScriptStep(new Script.SendMessage(), true, "向指定玩家发送指定消息"),
+                    new ScriptStep(new Script.GetPlayerBag(), true, "获取指定玩家的背包, 类型为array"),
+                    new ScriptStep(new Script.ExcuteCommand(), true, "让目标玩家执行一条命令\r\n(命令中的 {name} 将被替换为玩家名称)"),
+                    new ScriptStep(new Script.ExcuteCommandInConsole(), true, "在控制台执行一条命令\r\n(命令中的 {name} 将被替换为玩家名称)"),
+                    new ScriptStep(new Script.CheckPermission(), true, "检查玩家是否拥有指定权限, 返回bool值"),
                 }
             });
             toolbar.Add(GetCommandsFromLib(new MathLibary())); //引入数学拓展库
@@ -221,11 +226,11 @@ namespace TSManager
                 MethodInfo method = typeof(Serialization).GetMethod("CreateClassNode", BindingFlags.IgnoreCase
                     | BindingFlags.NonPublic
                     | BindingFlags.Static);
-                
+
                 XmlDocument xmlDocument = new();
                 xmlDocument.CreateXmlDeclaration("1.0", "utf-8", "yes");
                 XmlNode scriptNode = xmlDocument.CreateElement("Script");
-                scriptNode.AppendChild(method.Invoke(null, new object[]{ script, xmlDocument }) as XmlNode);
+                scriptNode.AppendChild(method.Invoke(null, new object[] { script, xmlDocument }) as XmlNode);
                 var scriptInfo = xmlDocument.CreateElement("Info");
                 scriptInfo.SetAttribute("Name", script.Name);
                 scriptInfo.SetAttribute("Author", script.Author);
@@ -296,34 +301,41 @@ namespace TSManager
         /// 由hooks调用的脚本运行
         /// </summary>
         /// <param name="type"></param>
-        internal static void ExcuteScript(ScriptData.Triggers type)
+        internal static void ExcuteScript(ScriptData.Triggers type, TSPlayer player = null)
         {
-            var scripts = new List<ScriptData>();
-            Info.Scripts.Where(s => s.Enable && s.TriggerCondition == type).ForEach(s => {
-                s.Excute();
-                scripts.Add(s);
+            var scripts = Info.Scripts.Where(s => s.Enable && s.TriggerCondition == type);
+            if(scripts.Any()) Log($"[{player?.Name}] 事件: {type}, 执行脚本 {string.Join(", ", scripts.Select(s => s.Name))}");
+            else Log($"[{player?.Name}] 事件: {type}, 无可执行脚本");
+            scripts.ForEach(s =>
+            {
+                s.Variables.Where(v => v.Name == "TargetPlayer").ForEach(v => v.Value = player);
+                s.Excute(player);
             });
-            Log($"事件: {type}, 执行脚本 {string.Join(", ", scripts.Select(s => s.Name))}");
         }
         #region 脚本运行
-        public async static void Excute(this ScriptData script)
+        public async static void Excute(this ScriptData script, TSPlayer player = null)
         {
-            await Task.Run(() => {
-                try {
-                    if (script.Functions.Where(f => f.Name == "main").Any())
+            await Task.Run(() =>
+            {
+                try
+                {
+                    if (script.Functions.Any(f => f.Name == "main"))
                     {
-                        Stack<Node> stackTrace = new Stack<Node>();
+                        Stack<Node> stackTrace = new();
                         stackTrace.Clear();
-                        ExecutionEnvironment engine = new ExecutionEnvironment();
+                        ExecutionEnvironment engine = new();
+                        if (!engine.HasValue("TargetPlayer")) engine.RegisterValue("TargetPlayer", player);
+                        engine.SetValue("TargetPlayer", player);
                         //Editor.IsEnabled = false;
                         engine.ExecutionCompleted += Engine_ExecutionCompleted;
                         engine.ExecutionAborted += Engine_ExecutionAborted;
                         engine.ExecuteAsync(script);
                     }
+                    else Utils.Notice($"未找到脚本 {script.Name} 的入口点<main>函数");
                 }
                 catch (Exception ex)
                 {
-                    Utils.Notice($"脚本 {script.Name} 运行时发生错误.\r\n{ex}");
+                    Log($"脚本 {script.Name} 运行时发生错误.\r\n{ex}");
                 }
             });
         }
@@ -358,10 +370,10 @@ namespace TSManager
                     // var pe = Editor.FindEditorFor(p);
                 });
                 */
+                var script = sender as ScriptData;
+                //Utils.Notice($"脚本 {script.Name} 运行时发生错误");
+                TSMMain.AddLine($"[ScriptManager] 脚本异常终止. 发生于 {arg.Location}, 错误信息: {arg.ReturnValue}");
             }
-            var script = sender as ScriptData;
-            //Utils.Notice($"脚本 {script.Name} 运行时发生错误");
-            TSMMain.AddLine($"[ScriptManager] 脚本 {script.Name} 运行时发生错误");
         }
         #endregion
     }

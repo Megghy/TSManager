@@ -1,7 +1,5 @@
-﻿using System.Windows.Forms;
-using PropertyChanged;
+﻿using PropertyChanged;
 using Terraria;
-using Terraria.Localization;
 using TShockAPI;
 
 namespace TSManager.Data

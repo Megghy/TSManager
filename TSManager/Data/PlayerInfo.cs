@@ -4,12 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using PropertyChanged;
-using Terraria.GameContent;
 using TShockAPI;
 using TShockAPI.DB;
 using TSManager.Modules;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria;
 
 namespace TSManager.Data
 {
@@ -54,7 +51,8 @@ namespace TSManager.Data
         }
         public void Update()
         {
-            try {
+            try
+            {
                 var tempPlayer = TShock.Players.SingleOrDefault(p => p != null && p.Name == Name);
                 if (TShock.Bans.Bans.Where(b => b.Value.Identifier == "uuid:" + Account.UUID).Any() || TShock.Bans.Bans.Where(b => b.Value.Identifier == "acc:" + Name).Any() || (Online ? TShock.Bans.Bans.Where(b => b.Value.Identifier == "ip:" + Player.IP).Any() : false)) Ban = true;
                 else Ban = false;
@@ -64,6 +62,7 @@ namespace TSManager.Data
                 }
                 else
                 {
+                    Player = tempPlayer;
                     Data = tempPlayer.PlayerData;
                     Account = tempPlayer.Account;
                     PlayTime += TSMMain.UpdateTime;
@@ -96,7 +95,7 @@ namespace TSManager.Data
         {
             get
             {
-                return (int)(Online ? Player.TPlayer?.statLife: Data.health);
+                return (int)(Online ? Player.TPlayer?.statLife : Data.health);
             }
             set { }
         }

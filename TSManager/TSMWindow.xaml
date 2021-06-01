@@ -1111,7 +1111,7 @@
                     </TabItem>
                     <TabItem Header="编辑"
                              IsEnabled="True">
-                        <DockPanel>
+                        <DockPanel KeyDown="OnKeyDown">
                             <ToolBar x:Name="Script_ToolBar"
                                      DockPanel.Dock="Top"
                                      Height="40"
@@ -1119,7 +1119,39 @@
                                 <Button x:Name="Script_Save"
                                         Click="OnButtonClick"
                                         Content="保存" />
-                                <hc:Divider Orientation="Vertical" Margin="0,3,0,3"/>
+                                <hc:Divider LineStrokeThickness="2"
+                                            LineStroke="{DynamicResource DarkPrimaryBrush}"
+                                            Orientation="Vertical"
+                                            Margin="5,10,5,10" />
+                                <Button x:Name="Script_Copy"
+                                        Click="OnButtonClick"
+                                        IsEnabled="{Binding ElementName=Script_Editor,Path=IsCopyEnabled}"
+                                        Content="复制" />
+                                <hc:Divider LineStrokeThickness="2"
+                                            LineStroke="{DynamicResource DarkPrimaryBrush}"
+                                            Orientation="Vertical"
+                                            Margin="5,10,5,10" />
+                                <Button x:Name="Script_Paste"
+                                        Click="OnButtonClick"
+                                        IsEnabled="{Binding ElementName=Script_Editor,Path=IsPasteEnabled}"
+                                        Content="粘贴" />
+                                <hc:Divider LineStrokeThickness="2"
+                                            hc:Poptip.Content="未赋值的变量则为null\r\n注意区分大小写"
+                                            LineStroke="{DynamicResource DarkPrimaryBrush}"
+                                            Orientation="Vertical"
+                                            Margin="5,10,5,10" />
+                                <hc:TextBox  Width="200"
+                                             hc:TitleElement.Title="查找.获取变量块"
+                                             hc:TitleElement.TitlePlacement="Left"
+                                             Margin="3,3,0,3" />
+                                <Button Margin="5,0,0,0"
+                                        Content="搜索"
+                                        VerticalAlignment="Stretch"
+                                        HorizontalAlignment="Stretch" />
+                                <hc:Divider LineStrokeThickness="2"
+                                            LineStroke="{DynamicResource DarkPrimaryBrush}"
+                                            Orientation="Vertical"
+                                            Margin="5,10,5,10" />
                                 <hc:ComboBox x:Name="Script_TriggerCondition"
                                              hc:TitleElement.Title="触发条件" hc:TitleElement.TitlePlacement="Left"
                                              Margin="0,3,0,3"
@@ -1128,7 +1160,9 @@
                                              Width="200" />
                             </ToolBar>
                             <scratchnet:GraphicScriptEditor Name="Script_Editor"
-                                                            DockPanel.Dock="Bottom" />
+                                                            DockPanel.Dock="Bottom" 
+                                                            KeyDown="OnKeyDown"
+                                                            KeyUp="OnKeyDown" />
                         </DockPanel>
                     </TabItem>
                 </TabControl>
@@ -1149,5 +1183,6 @@
                     Margin="0,10"
                     HorizontalAlignment="Right"
                     Width="347" />
+        <TextBox x:Name="VisualBox" IsEnabled="False" Visibility="Hidden"/>
     </Grid>
 </hc:Window>

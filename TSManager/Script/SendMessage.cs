@@ -1,5 +1,4 @@
-﻿using System;
-using ScratchNet;
+﻿using ScratchNet;
 using TShockAPI;
 
 namespace TSManager.Script
@@ -17,7 +16,7 @@ namespace TSManager.Script
                 Descriptor desc = new();
                 desc.Add(new TextItemDescriptor(this, "发送消息: "));
                 desc.Add(new ExpressionDescriptor(this, "Text", "any"));
-                desc.Add(new TextItemDescriptor(this, "给: "));
+                desc.Add(new TextItemDescriptor(this, " 给: "));
                 desc.Add(new ExpressionDescriptor(this, "Target", "GetPlayer") { IsOnlyNumberAllowed = false });
                 return desc;
             }

@@ -198,46 +198,48 @@ namespace TSManager.Modules
             Stop();
         }
 
-        public void Start(string[] param)
+        public async void Start(string[] param)
         {
-            if (!Directory.Exists(Info.PluginPath) || !Directory.GetFiles(Info.PluginPath).Exist(f => Path.GetFileName(f) == "TShockAPI.dll"))
-            {
-                Utils.Notice($"未检测到TShock程序集. TSManager暂不支持原版服务器", HandyControl.Data.InfoType.Error);
-                TSMMain.GUIInvoke(() =>
+            await Task.Run(()=> {
+                if (!Directory.Exists(Info.PluginPath) || !Directory.GetFiles(Info.PluginPath).Exist(f => Path.GetFileName(f) == "TShockAPI.dll"))
                 {
-                    TSMMain.GUI.Console_StartServer.IsEnabled = true;
-                });
-                Info.IsServerRunning = false;
-                return;
-            }
-            Info.GameThread = new Thread(new ThreadStart(() =>
-            {
-                mainasm.EntryPoint.Invoke(null, new object[] { param });
-            }))
-            {
-                IsBackground = true
-            };
-            Info.IsServerRunning = true;
-
-            Info.GameThread.Start();
-            new Thread(new ThreadStart(delegate
-            {
-                while (true)
-                {
-                    if (Netplay.Disconnect)
+                    Utils.Notice($"未检测到TShock程序集. TSManager暂不支持原版服务器", HandyControl.Data.InfoType.Error);
+                    TSMMain.GUIInvoke(() =>
                     {
-                        TSMMain.Instance.Exit();
-                        return;
-                    }
-                    Task.Delay(50).Wait();
+                        TSMMain.GUI.Console_StartServer.IsEnabled = true;
+                    });
+                    Info.IsServerRunning = false;
+                    return;
                 }
-            }))
-            {
-                IsBackground = true
-            }.Start();  //似乎只能这样判断服务器是否关闭
-            ServerApi.Hooks.GamePostInitialize.Register(TSMMain.Instance, TSMMain.Instance.OnServerPostInitialize, -1);  //注册服务器加载完成的钩子
-            TSMMain.Instance.OnServerPreInitializing();
-            TSMMain.GUIInvoke(() => TSMMain.GUI.GoToStartServer.IsEnabled = false);
+                Info.GameThread = new Thread(new ThreadStart(() =>
+                {
+                    mainasm.EntryPoint.Invoke(null, new object[] { param });
+                }))
+                {
+                    IsBackground = true
+                };
+                Info.IsServerRunning = true;
+
+                Info.GameThread.Start();
+                new Thread(new ThreadStart(delegate
+                {
+                    while (true)
+                    {
+                        if (Netplay.Disconnect)
+                        {
+                            TSMMain.Instance.Exit();
+                            return;
+                        }
+                        Task.Delay(50).Wait();
+                    }
+                }))
+                {
+                    IsBackground = true
+                }.Start();  //似乎只能这样判断服务器是否关闭
+                ServerApi.Hooks.GamePostInitialize.Register(TSMMain.Instance, TSMMain.Instance.OnServerPostInitialize, -1);  //注册服务器加载完成的钩子
+                TSMMain.Instance.OnServerPreInitializing();
+                TSMMain.GUIInvoke(() => TSMMain.GUI.GoToStartServer.IsEnabled = false);
+            });
         }
 
         public async void AppendText(string text)

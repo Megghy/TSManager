@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static Terraria.ID.ContentSamples.CreativeHelper;
-using System.Windows.Forms;
-using System.Windows;
 using TShockAPI;
 using TSManager.Data;
-using HandyControl.Controls;
-using System.ComponentModel;
 
 namespace TSManager.Modules
 {
@@ -32,7 +27,7 @@ namespace TSManager.Modules
                         TSMMain.GUI.GroupManage_List.ItemsSource = new BindingList<GroupData>(groups);
                         //在最前面加一个表示没有父组的选项
                         var tempGroup = new List<GroupData>(groups);
-                        tempGroup.Insert(0, new(true) { Name = "<无>"});
+                        tempGroup.Insert(0, new(true) { Name = "<无>" });
                         TSMMain.GUI.GroupManage_Parents.ItemsSource = null;
                         TSMMain.GUI.GroupManage_Parents.ItemsSource = tempGroup;
                         if (index != -1)
@@ -225,7 +220,8 @@ namespace TSManager.Modules
         }
         public static void Search()
         {
-            TSMMain.GUIInvoke(() => {
+            TSMMain.GUIInvoke(() =>
+            {
                 try
                 {
                     if (TSMMain.GUI.GroupManage_List.ItemsSource != null)

@@ -198,6 +198,8 @@ namespace TSManager.Modules
                 ServerApi.Hooks.ServerLeave.Register(this, HookManager.OnPlayerLeave);
                 ServerApi.Hooks.ServerJoin.Register(this, HookManager.OnPlayerJoin);
 
+                GetDataHandlers.KillMe += HookManager.OnPlayerDead;
+
                 TShockAPI.Hooks.AccountHooks.AccountCreate += HookManager.OnAccountCreate;
                 TShockAPI.Hooks.AccountHooks.AccountDelete += HookManager.OnAccountDelete;
                 #endregion

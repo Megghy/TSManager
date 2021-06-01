@@ -1,18 +1,16 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 using HandyControl.Controls;
 using HandyControl.Data;
-using Newtonsoft.Json.Linq;
+using Ionic.Zip;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using TShockAPI;
 using TShockAPI.DB;
 using TSManager.Data;
-using System.Linq;
-using Microsoft.Xna.Framework.Graphics;
-using System.Drawing;
-using Ionic.Zip;
-using System.Windows.Media.Imaging;
-using System.Threading.Tasks;
 
 namespace TSManager
 {
@@ -97,7 +95,7 @@ namespace TSManager
             if (info == null) return false;
             return true;
         }
-        public static void Notice(object text, InfoType type = InfoType.Info, int delayTime = 6)
+        public static void Notice(object text, InfoType type = InfoType.Info, int delayTime = 4)
         {
             switch (type)
             {
@@ -151,7 +149,8 @@ namespace TSManager
         }
         public async static Task<BitmapImage> GetTexture(string filename)
         {
-            return await Task.Run(() => {
+            return await Task.Run(() =>
+            {
                 try
                 {
                     using (Stream tempstream = new MemoryStream())

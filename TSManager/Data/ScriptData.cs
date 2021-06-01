@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows;
 using System.Xml;
 using ScratchNet;
 using Expression = ScratchNet.Expression;

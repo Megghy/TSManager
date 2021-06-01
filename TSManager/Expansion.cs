@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using ScratchNet;
 using Terraria.GameContent.Creative;
 using TShockAPI;
 using TSManager.Modules;
 using TSManager.UI.Control;
-using ScratchNet;
 using Expression = ScratchNet.Expression;
 
 namespace TSManager

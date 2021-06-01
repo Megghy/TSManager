@@ -156,8 +156,13 @@
     <Compile Include="Modules\HookManager.cs" />
     <Compile Include="Modules\PlayerManager.cs" />
     <Compile Include="Modules\ScriptManager.cs" />
+    <Compile Include="Script\CheckPermission.cs" />
+    <Compile Include="Script\ExcuteCommand.cs" />
+    <Compile Include="Script\ExcuteCommandInConsole.cs" />
     <Compile Include="Script\GetPlayer.cs" />
+    <Compile Include="Script\GetPlayerBag.cs" />
     <Compile Include="Script\SendMessage.cs" />
+    <Compile Include="Script\TargetPlayer.cs" />
     <Compile Include="UI\Control\ButtonTextBox.xaml.cs">
       <DependentUpon>ButtonTextBox.xaml</DependentUpon>
     </Compile>

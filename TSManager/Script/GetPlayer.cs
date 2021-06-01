@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using ScratchNet;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace TSManager.Script
 {

@@ -30,7 +30,7 @@ namespace TSManager.UI.Control
         public string Text
         {
             get { return (string)GetValue(TextProperty); }
-            set { SetValue(TextProperty, value);}
+            set { SetValue(TextProperty, value); }
         }
         /*public static readonly RoutedEvent deleteEvent = EventManager.RegisterRoutedEvent("ButtonClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ButtonTextBox));
         public event RoutedEventHandler ButtonClick

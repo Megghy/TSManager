@@ -9,7 +9,6 @@ using Terraria;
 using Terraria.Localization;
 using TShockAPI;
 using TSManager.Data;
-using Item = Terraria.Item;
 
 namespace TSManager.Modules
 {
@@ -21,7 +20,7 @@ namespace TSManager.Modules
             {
                 ChangeItemListAsync(GetPlayerBag(info, (BagType)TSMMain.GUI.Bag_Choose.SelectedIndex));
             }
-            if(showNotice) Utils.Notice("已刷新背包", HandyControl.Data.InfoType.Success);
+            if (showNotice) Utils.Notice("已刷新背包", HandyControl.Data.InfoType.Success);
         }
         public static void DelItem(ItemData item)
         {
@@ -51,7 +50,7 @@ namespace TSManager.Modules
                 player.TPlayer.inventory[slot] = item;
 
                 NetMessage.SendData((int)PacketTypes.PlayerSlot, -1, -1, NetworkText.FromLiteral(player.TPlayer.inventory[index].Name), player.Index, slot, item.stack, item.prefix, item.netID);
-                
+
             }
 
             //Armor & Accessory slots
@@ -60,7 +59,7 @@ namespace TSManager.Modules
                 index = slot - NetItem.InventorySlots;
                 player.TPlayer.armor[index] = item;
 
-                NetMessage.SendData((int)PacketTypes.PlayerSlot, -1, -1, NetworkText.FromLiteral(player.TPlayer.armor[index].Name), player.Index, slot, item.stack,item.prefix, item.netID);
+                NetMessage.SendData((int)PacketTypes.PlayerSlot, -1, -1, NetworkText.FromLiteral(player.TPlayer.armor[index].Name), player.Index, slot, item.stack, item.prefix, item.netID);
             }
 
             //Dye slots

@@ -2,18 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using Newtonsoft.Json.Linq;
 using PropertyChanged;
-using TShockAPI;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace TSManager.Data
 {
@@ -42,15 +36,15 @@ namespace TSManager.Data
                             list.Add(new ConfigData(shortName, filename, text, null));
                         }
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Utils.Notice($"读取配置文件: {shortName} 时失败.\n{ex}", HandyControl.Data.InfoType.Error);
                     }
                 }
             }
             return list;
-        } 
-        public ConfigData(string name, string path,string text, JObject jobj)
+        }
+        public ConfigData(string name, string path, string text, JObject jobj)
         {
             Name = name;
             Path = path;
@@ -98,7 +92,7 @@ namespace TSManager.Data
 
         public void Complete(TextArea textArea, ISegment completionSegment,
             EventArgs insertionRequestEventArgs)
-        {            
+        {
             textArea.Document.Replace(completionSegment, this.Text);
         }
     }
