@@ -75,13 +75,13 @@
       <HintPath>..\packages\FontAwesome.WPF.4.7.0.9\lib\net40\FontAwesome.WPF.dll</HintPath>
     </Reference>
     <Reference Include="HandyControl, Version=3.1.0.0, Culture=neutral, PublicKeyToken=45be8712787a1e5b, processorArchitecture=MSIL">
-      <HintPath>..\packages\HandyControl.3.1.0\lib\net452\HandyControl.dll</HintPath>
+      <HintPath>..\packages\HandyControl.3.1.0\lib\net472\HandyControl.dll</HintPath>
     </Reference>
     <Reference Include="HttpServer, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5684c2c737cd4271, processorArchitecture=MSIL">
       <HintPath>..\packages\TerrariaServer.TShock.4.5.2\lib\net452\HttpServer.dll</HintPath>
     </Reference>
-    <Reference Include="ICSharpCode.AvalonEdit, Version=6.1.1.20, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
-      <HintPath>..\packages\AvalonEdit.6.1.1\lib\net45\ICSharpCode.AvalonEdit.dll</HintPath>
+    <Reference Include="ICSharpCode.AvalonEdit, Version=6.1.2.30, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
+      <HintPath>..\packages\AvalonEdit.6.1.2.30\lib\net45\ICSharpCode.AvalonEdit.dll</HintPath>
     </Reference>
     <Reference Include="Math">
       <HintPath>Resources\Script\Math.dll</HintPath>
@@ -98,10 +98,13 @@
     <Reference Include="OTAPI, Version=1.4.2.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\TerrariaServer.TShock.4.5.2\lib\net452\OTAPI.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="PropertyChanged, Version=3.3.3.0, Culture=neutral, PublicKeyToken=ee3ee20bcf148ddd, processorArchitecture=MSIL">
       <HintPath>..\packages\PropertyChanged.Fody.3.3.3\lib\net40\PropertyChanged.dll</HintPath>
     </Reference>
-    <Reference Include="ScriptEditor">
+    <Reference Include="ScriptEditor, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>Resources\Script\ScriptEditor.dll</HintPath>
     </Reference>
     <Reference Include="ScriptEngine">
@@ -137,8 +140,6 @@
       <HintPath>..\packages\TerrariaServer.TShock.4.5.2\lib\net452\TShockAPI.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -157,12 +158,14 @@
     <Compile Include="Modules\PlayerManager.cs" />
     <Compile Include="Modules\ScriptManager.cs" />
     <Compile Include="Script\CheckPermission.cs" />
+    <Compile Include="Script\TargetMessage.cs" />
     <Compile Include="Script\ExcuteCommand.cs" />
     <Compile Include="Script\ExcuteCommandInConsole.cs" />
     <Compile Include="Script\GetPlayer.cs" />
     <Compile Include="Script\GetPlayerBag.cs" />
     <Compile Include="Script\SendMessage.cs" />
     <Compile Include="Script\TargetPlayer.cs" />
+    <Compile Include="Script\TargetPlayerName.cs" />
     <Compile Include="UI\Control\ButtonTextBox.xaml.cs">
       <DependentUpon>ButtonTextBox.xaml</DependentUpon>
     </Compile>

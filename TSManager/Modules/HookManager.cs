@@ -20,7 +20,7 @@ namespace TSManager.Modules
                     info.Online = true;
                     TSMMain.GUIInvoke(() => { if (TSMMain.GUI.Bag_Tab.DataContext == info) BagManager.Refresh(false); });
                 }
-                ScriptManager.ExcuteScript(Data.ScriptData.Triggers.PlayerJoin, plr);
+                ScriptManager.ExcuteScript(new(Data.ScriptData.Triggers.PlayerJoin, plr, ""));
             });
         }
         public async static void OnPlayerLeave(LeaveEventArgs args)
@@ -33,12 +33,12 @@ namespace TSManager.Modules
                 {
                     info.Online = false;
                 }
-                ScriptManager.ExcuteScript(Data.ScriptData.Triggers.PlayerLeave, plr);
+                ScriptManager.ExcuteScript(new(Data.ScriptData.Triggers.PlayerLeave, plr, ""));
             });
         }
         public static void OnPlayerDead(object o, GetDataHandlers.KillMeEventArgs args)
         {
-            ScriptManager.ExcuteScript(Data.ScriptData.Triggers.PlayerDead, args.Player);
+            ScriptManager.ExcuteScript(new(Data.ScriptData.Triggers.PlayerDead, args.Player, ""));
         }
         public static void OnAccountCreate(TShockAPI.Hooks.AccountCreateEventArgs args)
         {

@@ -229,6 +229,14 @@ namespace TSManager
                         case "Script_Save":
                             ScriptManager.Save(Script_Editor.Script as ScriptData);
                             break;
+                        case "Script_Del":
+                            if (Script_List.SelectedItem is { } script_Del) Growl.Ask($"确定要删除脚本 {((ScriptData)script_Del).Name} 吗?", result =>
+                            {
+                                if (result) ScriptManager.Del(Script_List.SelectedItem as ScriptData);
+                                return true;
+                            });
+                            else Utils.Notice("未选择脚本");
+                            break;
                         case "Script_Paste":
                             Script_Editor.Paste(new(10, 10));
                             break;
@@ -372,9 +380,9 @@ namespace TSManager
                             s.Paste(Mouse.GetPosition(s));
                             break;
                     }
-                    
+
                 }
-                
+
             }
             else
             {
@@ -398,7 +406,7 @@ namespace TSManager
                             b.CallOnClick();
                         }
                         break;
-            }
+                }
             }
         }
         private void OnComboSelect(object sender, SelectionChangedEventArgs e)
@@ -458,7 +466,10 @@ namespace TSManager
                             else Utils.Notice("此玩家尚未注册", HandyControl.Data.InfoType.Info);
                             break;
                         case "GroupManage_List":
-                            GroupManager.ChangeSource((Data.GroupData)l.SelectedItem);
+                            GroupManager.ChangeSource((GroupData)l.SelectedItem);
+                            break;
+                        case "Script_List":
+                            ScriptManager.ChangeScript((ScriptData)l.SelectedItem);
                             break;
                     }
                 }

@@ -1036,13 +1036,21 @@
                 <TabControl Name="Script_Tab">
                     <TabItem Header="脚本列表">
                         <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="217*" />
+                                <RowDefinition Height="27*" />
+                            </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="777*" />
                                 <ColumnDefinition Width="152*" />
                             </Grid.ColumnDefinitions>
-                            <DataGrid x:Name="Script_List" AutoGenerateColumns="False">
+                            <DataGrid x:Name="Script_List"
+                                      AutoGenerateColumns="False"
+                                      Grid.RowSpan="2">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="名称" Binding="{Binding Name}" Width="2*"/>
+                                    <DataGridTextColumn Header="名称"
+                                                        Binding="{Binding Name}"
+                                                        Width="2*" />
                                     <DataGridTextColumn Header="作者"
                                                         Binding="{Binding Author}"
                                                         Width="*" />
@@ -1059,25 +1067,40 @@
                             </DataGrid>
                             <StackPanel Orientation="Vertical"
                                         Grid.Column="1"
-                                        Margin="5,5,5,5">
+                                        Margin="5,5,5,10">
                                 <ToggleButton IsChecked="{Binding ElementName=Script_Create_Drawer, Path=IsOpen}"
                                               Content="新建"
+                                              Height="40"
                                               HorizontalAlignment="Stretch" />
                                 <Button x:Name="Script_GoToEdit"
+                                        Margin="0,5,0,0"
+                                        Height="40"
                                         Content="编辑"
                                         Click="OnButtonClick"
                                         HorizontalAlignment="Stretch" />
                             </StackPanel>
+                            <Button Content="删除"
+                                    Name="Script_Del"
+                                    Click="OnButtonClick"
+                                    Background="{DynamicResource DangerBrush}"
+                                    VerticalAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
+                                    Margin="5,4"
+                                    Grid.Column="1"
+                                    Grid.Row="1"
+                                    Height="Auto" />
                             <hc:Drawer Name="Script_Create_Drawer"
                                        Dock="Right"
-                                       ShowMode="Cover">
+                                       ShowMode="Cover"
+                                       Grid.RowSpan="2">
                                 <Border Background="{DynamicResource BackgroundBrush}"
                                         Width="250">
                                     <StackPanel>
-                                        <hc:TextBox Name="Script_Create_Name" hc:TitleElement.Title="名称"
+                                        <hc:TextBox Name="Script_Create_Name"
+                                                    hc:TitleElement.Title="名称"
                                                     hc:TitleElement.TitlePlacement="Left"
                                                     Text="NewScript"
-                                                    Margin="5,5,5,0"/>
+                                                    Margin="5,5,5,0" />
                                         <hc:TextBox Name="Script_Create_Author"
                                                     hc:TitleElement.Title="作者"
                                                     hc:TitleElement.TitlePlacement="Left"
@@ -1092,9 +1115,10 @@
                                                     hc:TitleElement.Title="版本"
                                                     hc:TitleElement.TitlePlacement="Left"
                                                     Margin="5,5,5,0"
-                                                    Text="1.0.0.0"/>
+                                                    Text="1.0.0.0" />
                                         <hc:Divider />
-                                        <Button x:Name="Script_Confirm" Content="确认"
+                                        <Button x:Name="Script_Confirm"
+                                                Content="确认"
                                                 Click="OnButtonClick"
                                                 HorizontalAlignment="Stretch"
                                                 Margin="5,5,5,0" />
@@ -1103,14 +1127,14 @@
                                                 Click="OnButtonClick"
                                                 HorizontalAlignment="Stretch"
                                                 Margin="5,5,5,0"
-                                                Background="{DynamicResource DangerBrush}"/>
+                                                Background="{DynamicResource DangerBrush}" />
                                     </StackPanel>
                                 </Border>
                             </hc:Drawer>
                         </Grid>
                     </TabItem>
                     <TabItem Header="编辑"
-                             IsEnabled="True">
+                             IsEnabled="{Binding ElementName=Script_List, Path=SelectedItems.Count}">
                         <DockPanel KeyDown="OnKeyDown">
                             <ToolBar x:Name="Script_ToolBar"
                                      DockPanel.Dock="Top"
@@ -1140,11 +1164,12 @@
                                             LineStroke="{DynamicResource DarkPrimaryBrush}"
                                             Orientation="Vertical"
                                             Margin="5,10,5,10" />
-                                <hc:TextBox  Width="200"
+                                <hc:TextBox IsEnabled="False"  Width="200"
                                              hc:TitleElement.Title="查找.获取变量块"
                                              hc:TitleElement.TitlePlacement="Left"
                                              Margin="3,3,0,3" />
-                                <Button Margin="5,0,0,0"
+                                <Button IsEnabled="False"
+                                        Margin="5,0,0,0"
                                         Content="搜索"
                                         VerticalAlignment="Stretch"
                                         HorizontalAlignment="Stretch" />
@@ -1153,14 +1178,15 @@
                                             Orientation="Vertical"
                                             Margin="5,10,5,10" />
                                 <hc:ComboBox x:Name="Script_TriggerCondition"
-                                             hc:TitleElement.Title="触发条件" hc:TitleElement.TitlePlacement="Left"
+                                             hc:TitleElement.Title="触发条件"
+                                             hc:TitleElement.TitlePlacement="Left"
                                              Margin="0,3,0,3"
                                              SelectedItem="{Binding TriggerCondition, Mode=OneWay}"
                                              SelectionChanged="OnComboSelect"
                                              Width="200" />
                             </ToolBar>
                             <scratchnet:GraphicScriptEditor Name="Script_Editor"
-                                                            DockPanel.Dock="Bottom" 
+                                                            DockPanel.Dock="Bottom"
                                                             KeyDown="OnKeyDown"
                                                             KeyUp="OnKeyDown" />
                         </DockPanel>
@@ -1183,6 +1209,8 @@
                     Margin="0,10"
                     HorizontalAlignment="Right"
                     Width="347" />
-        <TextBox x:Name="VisualBox" IsEnabled="False" Visibility="Hidden"/>
+        <TextBox x:Name="VisualBox"
+                 IsEnabled="False"
+                 Visibility="Hidden" />
     </Grid>
 </hc:Window>

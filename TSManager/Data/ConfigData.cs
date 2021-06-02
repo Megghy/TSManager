@@ -17,6 +17,7 @@ namespace TSManager.Data
         public static List<ConfigData> ReadAllConfig()
         {
             var list = new List<ConfigData>();
+            if (!Directory.Exists(Info.ConfigPath)) Directory.CreateDirectory(Info.ConfigPath);
             var files = Directory.GetFiles(Info.ConfigPath, "*.json");
             if (files.Any())
             {

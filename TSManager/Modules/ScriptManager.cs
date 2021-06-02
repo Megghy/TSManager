@@ -11,6 +11,7 @@ using ScratchNet;
 using TShockAPI;
 using TSManager.Data;
 using TSManager.Modules;
+using static TSManager.Data.ScriptData;
 
 namespace TSManager
 {
@@ -29,7 +30,7 @@ namespace TSManager
                 typeof(NewArray2Expression), typeof(Array2ValueExpression),
                 typeof(ArrayLengthExpression));  //数组的颜色
             TSMMain.GUI.Script_Editor.Register((Color)ColorConverter.ConvertFromString("#EFBC94"), typeof(VariableDeclarationExpression), typeof(Identifier)); //变量的颜色
-            TSMMain.GUI.Script_Editor.Register<Script.ExcuteCommand, Script.ExcuteCommandInConsole, Script.GetPlayer, Script.GetPlayerBag, Script.SendMessage, Script.CheckPermission, Script.TargetPlayer>((Color)ColorConverter.ConvertFromString("#EABEB0")); //玩家操作的颜色
+            TSMMain.GUI.Script_Editor.Register((Color)ColorConverter.ConvertFromString("#EABEB0"), typeof(Script.ExcuteCommand), new[] { typeof(Script.ExcuteCommandInConsole), typeof(Script.GetPlayer), typeof(Script.GetPlayerBag), typeof(Script.SendMessage), typeof(Script.CheckPermission), typeof(Script.TargetPlayer), typeof(Script.TargetPlayerName), typeof(Script.TargetMessage) }); //玩家操作的颜色
             toolbar.Add(new ScriptStepGroup()
             {
                 Name = Properties.Resources.CommentCollection,
@@ -177,14 +178,17 @@ namespace TSManager
                 Types = new()
                 {
                     new Label() { Content = "预置变量" },
-                    new ScriptStep(new Script.TargetPlayer(), true, "引发,"),
+                    new ScriptStep(new Script.TargetPlayer(), true, "引发脚本执行的玩家对象 <TSPlayer>\r\n仅在以下触发方式中有效:\r\nPlayerJoin\r\nPlayerLeave\r\nPlayerChat\r\nPlayerDead"),
+                    new ScriptStep(new Script.TargetPlayerName(), true, "引发脚本执行的玩家名 <string>\r\n仅在以下触发方式中有效:\r\nPlayerJoin\r\nPlayerLeave\r\nPlayerChat\r\nPlayerDead"),
+                    new ScriptStep(new Script.TargetMessage(), true, "玩家发送的消息 <string>\r\n仅在以下触发方式中有效:\r\nPlayerChat"),
+
                     new Label() { Content = "玩家信息" },
-                    new ScriptStep(new Script.GetPlayer(), true, "获取指定名称的玩家对象"),
-                    new ScriptStep(new Script.SendMessage(), true, "向指定玩家发送指定消息"),
-                    new ScriptStep(new Script.GetPlayerBag(), true, "获取指定玩家的背包, 类型为array"),
-                    new ScriptStep(new Script.ExcuteCommand(), true, "让目标玩家执行一条命令\r\n(命令中的 {name} 将被替换为玩家名称)"),
-                    new ScriptStep(new Script.ExcuteCommandInConsole(), true, "在控制台执行一条命令\r\n(命令中的 {name} 将被替换为玩家名称)"),
-                    new ScriptStep(new Script.CheckPermission(), true, "检查玩家是否拥有指定权限, 返回bool值"),
+                    new ScriptStep(new Script.GetPlayer(), true, "获取指定名称的玩家对象 <TSPlayer>"),
+                    new ScriptStep(new Script.SendMessage(), true, "向指定玩家发送指定消息  <无类型>"),
+                    new ScriptStep(new Script.GetPlayerBag(), true, "获取指定玩家的背包 <List>"),
+                    new ScriptStep(new Script.ExcuteCommand(), true, "让目标玩家执行一条命令 <无类型>\r\n(命令中的 {name} 将被替换为玩家名称)"),
+                    new ScriptStep(new Script.ExcuteCommandInConsole(), true, "在控制台执行一条命令 <无类型>\r\n(命令中的 {name} 将被替换为玩家名称)"),
+                    new ScriptStep(new Script.CheckPermission(), true, "检查玩家是否拥有指定权限 <bool>"),
                 }
             });
             toolbar.Add(GetCommandsFromLib(new MathLibary())); //引入数学拓展库
@@ -210,8 +214,10 @@ namespace TSManager
         }
         public static void ChangeScript(ScriptData script)
         {
-            TSMMain.GUI.Script_Editor.Script = script;
-            TSMMain.GUI.Script_Tab.SelectedIndex = 1;
+            TSMMain.GUIInvoke(() => {
+                TSMMain.GUI.Script_Editor.Script = script;
+                TSMMain.GUI.Script_Tab.SelectedIndex = 1;
+            });
         }
         public static void ChangeTriggerCondition(ScriptData script, ScriptData.Triggers type)
         {
@@ -241,7 +247,7 @@ namespace TSManager
                 scriptInfo.SetAttribute("Enable", script.Enable.ToString());
                 scriptNode.AppendChild(scriptInfo);
                 xmlDocument.AppendChild(scriptNode);
-                xmlDocument.Save(Info.Path + "\\Scripts\\" + script.Name + ".tsms");
+                xmlDocument.Save(Info.Path + "Scripts\\" + script.Name + ".tsms");
                 if (notice) Utils.Notice("已保存修改", HandyControl.Data.InfoType.Success);
                 //Info.Scripts.SingleOrDefault(s => s.ID = script.ID)?
             }
@@ -254,7 +260,7 @@ namespace TSManager
         }
         public static void Create(string name, string author, string description, string version)
         {
-            var path = $"{Info.Path}\\Scripts\\{name}.tsms";
+            var path = $"{Info.Path}Scripts\\{name}.tsms";
             if (name == string.Empty || author == string.Empty)
             {
                 Utils.Notice("脚本名称和作者为必填项", HandyControl.Data.InfoType.Error);
@@ -284,11 +290,10 @@ namespace TSManager
                         xmlDoc.Save(path);
                         var script = ScriptData.Read(path);
                         TSMMain.GUI.Script_Editor.Script = script;
-                        TSMMain.GUI.Script_Editor.Print();
                         TSMMain.GUI.Script_Create_Drawer.IsOpen = false;
+                        Info.Scripts.Add(script);
+                        Utils.Notice($"成功创建脚本 {name}", HandyControl.Data.InfoType.Success);
                     }
-                    Info.Scripts.Add(new() { Name = name, Description = description, Version = _version, Author = author });
-                    Utils.Notice($"成功创建脚本 {name}", HandyControl.Data.InfoType.Success);
                 }
                 catch { Utils.Notice($"创建脚本 {name} 失败", HandyControl.Data.InfoType.Error); }
             }
@@ -297,23 +302,44 @@ namespace TSManager
                 Utils.Notice("无效的版本号.\r\n应为x.x.x.x, 可减少位数", HandyControl.Data.InfoType.Error);
             }
         }
+        public static void Del(ScriptData script)
+        {
+            Info.Scripts.Remove(script);
+            TSMMain.GUI.Script_List.SelectedItem = null;
+            TSMMain.GUI.Script_Editor.Script = null;
+            var path = $"{Info.Path}Scripts\\{script.Name}.tsms";
+            if (File.Exists(path)) File.Delete(path);
+            Utils.Notice($"已删除脚本 {script.Name}", HandyControl.Data.InfoType.Success);
+        }
         /// <summary>
         /// 由hooks调用的脚本运行
         /// </summary>
         /// <param name="type"></param>
-        internal static void ExcuteScript(ScriptData.Triggers type, TSPlayer player = null)
+        internal static void ExcuteScript(ScriptExcuteArgs args)
         {
-            var scripts = Info.Scripts.Where(s => s.Enable && s.TriggerCondition == type);
-            if(scripts.Any()) Log($"[{player?.Name}] 事件: {type}, 执行脚本 {string.Join(", ", scripts.Select(s => s.Name))}");
-            else Log($"[{player?.Name}] 事件: {type}, 无可执行脚本");
-            scripts.ForEach(s =>
+            var scripts = Info.Scripts.Where(s => s.Enable && s.TriggerCondition == args.Type);
+            if(scripts.Any()) Log($"事件: {args.Type}, 执行脚本 {string.Join(", ", scripts.Select(s => s.Name))}");
+            else Log($"事件: {args.Type}, 无可执行脚本");
+            scripts?.ForEach(s =>
             {
-                s.Variables.Where(v => v.Name == "TargetPlayer").ForEach(v => v.Value = player);
-                s.Excute(player);
+                s.Variables.Where(v => v.Name == "TargetPlayer").ForEach(v => v.Value = args);
+                s.Excute(args);
             });
         }
         #region 脚本运行
-        public async static void Excute(this ScriptData script, TSPlayer player = null)
+        public class ScriptExcuteArgs
+        {
+            public ScriptExcuteArgs(Triggers type, TSPlayer target, string message)
+            {
+                Type = type;
+                Target = target;
+                Message = message;
+            }
+            public Triggers Type { get; set; }
+            public TSPlayer Target { get; set; }
+            public string Message { get; set; }
+        }
+        public async static void Excute(this ScriptData script, ScriptExcuteArgs args)
         {
             await Task.Run(() =>
             {
@@ -324,8 +350,8 @@ namespace TSManager
                         Stack<Node> stackTrace = new();
                         stackTrace.Clear();
                         ExecutionEnvironment engine = new();
-                        if (!engine.HasValue("TargetPlayer")) engine.RegisterValue("TargetPlayer", player);
-                        engine.SetValue("TargetPlayer", player);
+                        if (!engine.HasValue("ScriptExcuteArgs")) engine.RegisterValue("ScriptExcuteArgs", args);
+                        engine.SetValue("ScriptExcuteArgs", args);
                         //Editor.IsEnabled = false;
                         engine.ExecutionCompleted += Engine_ExecutionCompleted;
                         engine.ExecutionAborted += Engine_ExecutionAborted;

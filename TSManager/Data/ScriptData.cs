@@ -12,7 +12,8 @@ namespace TSManager.Data
     {
         public static List<ScriptData> GetAllScripts()
         {
-            if (!Directory.Exists(Info.Path + "Scripts")) Directory.CreateDirectory(Info.Path + "Sripts"); var list = new List<ScriptData>();
+            if (!Directory.Exists(Info.Path + "Scripts")) Directory.CreateDirectory(Info.Path + "Scripts"); 
+            var list = new List<ScriptData>();
             var files = Directory.GetFiles(Info.Path + "Scripts", "*.tsms");
             if (files.Any())
             {
