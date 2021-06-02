@@ -13,14 +13,17 @@ namespace TSManager.Modules
             await Task.Run(() =>
             {
                 var plr = TShock.Players[args.Who];
-                if (!Info.OnlinePlayers.Contains(plr)) TSMMain.GUIInvoke(() => Info.OnlinePlayers.Add(plr));
-                if (plr.TryGetPlayerInfo(out var info))
+                if (plr != null)
                 {
-                    info.Player = plr;
-                    info.Online = true;
-                    TSMMain.GUIInvoke(() => { if (TSMMain.GUI.Bag_Tab.DataContext == info) BagManager.Refresh(false); });
+                    if (!Info.OnlinePlayers.Contains(plr)) TSMMain.GUIInvoke(() => Info.OnlinePlayers.Add(plr));
+                    if (plr.TryGetPlayerInfo(out var info))
+                    {
+                        info.Player = plr;
+                        info.Online = true;
+                        TSMMain.GUIInvoke(() => { if (TSMMain.GUI.Bag_Tab.DataContext == info) BagManager.Refresh(false); });
+                    }
+                    ScriptManager.ExcuteScript(new(Data.ScriptData.Triggers.PlayerJoin, plr, ""));
                 }
-                ScriptManager.ExcuteScript(new(Data.ScriptData.Triggers.PlayerJoin, plr, ""));
             });
         }
         public async static void OnPlayerLeave(LeaveEventArgs args)
@@ -28,12 +31,18 @@ namespace TSManager.Modules
             await Task.Run(() =>
             {
                 var plr = TShock.Players[args.Who];
-                TSMMain.GUIInvoke(() => Info.OnlinePlayers.Remove(plr));
-                if (plr.TryGetPlayerInfo(out var info))
+                if (plr != null)
                 {
-                    info.Online = false;
+                    TSMMain.GUIInvoke(() => Info.OnlinePlayers.Remove(plr));
+                    if (plr.TryGetPlayerInfo(out var info))
+                    {
+                        info.Online = false;
+                        info.Account = TShock.UserAccounts.GetUserAccountByName(info.Name);
+                        info.Data = TShock.CharacterDB.GetPlayerData(info.Player, (int)(info.Account?.ID));
+                    }
+                    ScriptManager.ExcuteScript(new(Data.ScriptData.Triggers.PlayerLeave, plr, ""));
                 }
-                ScriptManager.ExcuteScript(new(Data.ScriptData.Triggers.PlayerLeave, plr, ""));
+                
             });
         }
         public static void OnPlayerDead(object o, GetDataHandlers.KillMeEventArgs args)

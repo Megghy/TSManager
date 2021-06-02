@@ -235,7 +235,7 @@ namespace TSManager.Modules
         {
             try
             {
-                if (info == null) return null;
+                if (info is null || info.Data is null) return null;
                 List<ItemData> list = new();
                 NetItem item;
                 switch (type)

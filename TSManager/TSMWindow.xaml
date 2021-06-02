@@ -420,9 +420,13 @@
                     <TabControl Name="Tab_PlayerManage"
                                 Grid.RowSpan="2">
                         <TabItem x:Name="Tab_PlayerManage_Info"
-                                 Header="玩家"
-                                 DataContext="{Binding ElementName=PlayerManage_List, Path=SelectedItem}">
+                                 Header="玩家">
                             <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="394*" />
+                                    <RowDefinition Height="45*" />
+                                    <RowDefinition Height="49*" />
+                                </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="117*" />
                                     <ColumnDefinition Width="812*" />
@@ -434,7 +438,8 @@
                                            VerticalAlignment="Top"
                                            FontFamily="Segoe UI"
                                            Margin="11,5,0,0"
-                                           Width="101">
+                                           Width="101"
+                                           Height="27">
                     <Run Foreground="#FF252525">玩 家</Run>
                     <Run Foreground="{DynamicResource DarkPrimaryBrush}">列 表</Run>
                                     <TextBlock.Effect>
@@ -449,7 +454,7 @@
                                          ScrollViewer.HorizontalScrollBarVisibility="Auto"
                                          HorizontalContentAlignment="Stretch"
                                          VerticalContentAlignment="Stretch"
-                                         Margin="5,37,5,94"
+                                         Margin="5,37,5,0"
                                          VirtualizingPanel.IsVirtualizing="True">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
@@ -466,10 +471,20 @@
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
                                 </ListBox>
+                                <Button Content="刷新数据"
+                                        Name="PlayerManage_Refresh"
+                                        Margin="5,5,10,5"
+                                        Width="102"
+                                        Grid.Row="1"
+                                        VerticalAlignment="Stretch"
+                                        HorizontalAlignment="Stretch"
+                                        Height="Auto" />
                                 <hc:TabControl x:Name="PlayerManage_MainTab"
-                                               Grid.Column="1">
+                                               Grid.Column="1"
+                                               Grid.RowSpan="3">
                                     <hc:TabItem x:Name="PlayerManage_Info"
-                                                Header="基本信息">
+                                                Header="基本信息"
+                                                DataContext="{Binding ElementName=PlayerManage_List, Path=SelectedItem}">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="329*" />
@@ -599,7 +614,7 @@
                                                                        KeyDown="OnKeyDown"
                                                                        Grid.Row="1"
                                                                        FontSize="12" />
-                                                    <tsm:ButtonTextBox x:Name="PlayerManage__Whisper"
+                                                    <tsm:ButtonTextBox x:Name="PlayerManage_Whisper"
                                                                        hc:InfoElement.Placeholder="发送文本"
                                                                        FontSize="12"
                                                                        Margin="0,5,5,0"
@@ -1164,10 +1179,11 @@
                                             LineStroke="{DynamicResource DarkPrimaryBrush}"
                                             Orientation="Vertical"
                                             Margin="5,10,5,10" />
-                                <hc:TextBox IsEnabled="False"  Width="200"
-                                             hc:TitleElement.Title="查找.获取变量块"
-                                             hc:TitleElement.TitlePlacement="Left"
-                                             Margin="3,3,0,3" />
+                                <hc:TextBox IsEnabled="False"
+                                            Width="200"
+                                            hc:TitleElement.Title="查找.获取变量块"
+                                            hc:TitleElement.TitlePlacement="Left"
+                                            Margin="3,3,0,3" />
                                 <Button IsEnabled="False"
                                         Margin="5,0,0,0"
                                         Content="搜索"

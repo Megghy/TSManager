@@ -186,9 +186,7 @@ namespace TSManager.Modules
                     Info.OnlinePlayers = new();
                     GUI.Console_PlayerList.ItemsSource = Info.OnlinePlayers; //设置玩家列表绑定数据
 
-                    Info.Players = new(PlayerInfo.GetAllPlayerInfo());
-                    GUI.PlayerManage_List.ItemsSource = Info.Players;
-                    if (Info.Players.Any()) GUI.PlayerManage_List.SelectedItem = Info.Players[0];
+                    PlayerManager.Refresh();
 
                     GUI.GroupManage_AllPermission.ItemsSource = GroupData.GetAllPermissions(); //尝试读取所有权限
                     GroupManager.RefreshGroupData();//读取所有组权限

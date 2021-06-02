@@ -12,15 +12,23 @@ namespace TSManager.Modules
     {
         public static void ChangeDisplayInfo(PlayerInfo info)
         {
-            //TSMMain.GUI.PlayerManage_Info.DataContext = info;
+            TSMMain.GUI.PlayerManage_Info.DataContext = info;
             TSMMain.GUI.PlayerManage_Group.SelectedItem = info?.Group;
             //修改背包显示
             if (TSMMain.GUI.Bag_Choose.SelectedIndex == 0) BagManager.ChangeBag(info, BagManager.BagType.inventory);
             else TSMMain.GUI.Bag_Choose.SelectedIndex = 0;
         }
+        public static void Refresh()
+        {
+            TSMMain.GUIInvoke(() => {
+                Info.Players = new(PlayerInfo.GetAllPlayerInfo());
+                TSMMain.GUI.PlayerManage_List.ItemsSource = Info.Players;
+                if (Info.Players.Any()) TSMMain.GUI.PlayerManage_List.SelectedItem = Info.Players[0];
+            });
+        }
         public static void ChangeGroup(this PlayerInfo info, object group)
         {
-            var g = group as TShockAPI.Group;
+            var g = group as Group;
             if (group != null && info.Group != group)
             {
                 TShock.UserAccounts.SetUserGroup(info.Account, g.Name);
@@ -42,6 +50,11 @@ namespace TSManager.Modules
                 Utils.Notice($"密码长度应大于等于 {TShock.Config.Settings.MinimumPasswordLength}.", HandyControl.Data.InfoType.Warning);
                 return false;
             }
+            if (info.Account is null)
+            {
+                Utils.Notice("无效的账号", HandyControl.Data.InfoType.Warning);
+                return false;
+            }
             if (!info.Account.VerifyPassword(password))
             {
                 TShock.UserAccounts.SetUserAccountPassword(info.Account, password);
@@ -50,13 +63,13 @@ namespace TSManager.Modules
             }
             else
             {
-                Utils.Notice("此密码与原密码相同..", HandyControl.Data.InfoType.Warning);
+                Utils.Notice("此密码与原密码相同", HandyControl.Data.InfoType.Warning);
                 return false;
             }
         }
         public static void Kick(this PlayerInfo info, string reason)
         {
-            if (info.Player.Kick(reason == "" ? "未指定原因" : reason, true, false, "TSManager", true))
+            if (info.Player.Kick(string.IsNullOrWhiteSpace(reason) ? "未指定原因" : reason, true, false, "TSManager", true))
             {
                 Utils.Notice("成功踢出玩家 " + info, HandyControl.Data.InfoType.Success);
                 TSMMain.GUI.PlayerManage_Kick.Text = "";
@@ -76,7 +89,7 @@ namespace TSManager.Modules
             bool success = false;
             if (info.Online)
             {
-                if (info.Player.Ban(reason == "" ? "未指定原因" : reason, true, "TSManager"))
+                if (info.Player.Ban(string.IsNullOrWhiteSpace(reason) ? "未指定原因" : reason, true, "TSManager"))
                 {
                     TSMMain.GUI.PlayerManage_Ban.IsEnabled = false;
                     TSMMain.GUI.PlayerManage_UnBan.IsEnabled = true;
@@ -96,9 +109,9 @@ namespace TSManager.Modules
         {
             var list = new List<Ban>();
             //tolist相当于clone以下免得foreach的时候报错
-            TShock.Bans.Bans.Where(b => b.Value.Identifier == "uuid:" + info.Account.UUID).ToList().ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
+            TShock.Bans.Bans.Where(b => b.Value.Identifier == "uuid:" + info.Account?.UUID).ToList().ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
             TShock.Bans.Bans.Where(b => b.Value.Identifier == "acc:" + info).ToList().ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
-            if (Utils.TryParseJson(info.Account.KnownIps, out var ips)) TShock.Bans.Bans.Where(b => b.Value.Identifier.StartsWith("ip") && ips.Children().Contains(b.Value.Identifier.Replace("ip:", ""))).ToList().ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
+            if (Utils.TryParseJson(info.Account?.KnownIps, out var ips)) TShock.Bans.Bans.Where(b => b.Value.Identifier.StartsWith("ip") && ips.Children().Contains(b.Value.Identifier.Replace("ip:", ""))).ToList().ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
             Utils.Notice("成功执行解禁操作", HandyControl.Data.InfoType.Success);
         }
         public static void Whisper(this PlayerInfo info, string text)
@@ -142,8 +155,12 @@ namespace TSManager.Modules
         }
         public static void Del(this PlayerInfo info)
         {
-            if (info.Online) info.Player.SendInfoMessage("该账号已被移除");
-            TShock.UserAccounts.RemoveUserAccount(info.Account);
+            if (info.Account is not null)
+            {
+                if (info.Online) info.Player.SendInfoMessage("该账号已被移除");
+                TShock.UserAccounts.RemoveUserAccount(info.Account);
+            }
+            else Utils.Notice("当前无法删除此账号, 请尝试刷新", HandyControl.Data.InfoType.Warning);
             //HookManager.OnAccountDelete(new(info.Account));
         }
     }

@@ -54,7 +54,7 @@ namespace TSManager.Data
             try
             {
                 var tempPlayer = TShock.Players.SingleOrDefault(p => p != null && p.Name == Name);
-                if (TShock.Bans.Bans.Where(b => b.Value.Identifier == "uuid:" + Account.UUID).Any() || TShock.Bans.Bans.Where(b => b.Value.Identifier == "acc:" + Name).Any() || (Online ? TShock.Bans.Bans.Where(b => b.Value.Identifier == "ip:" + Player.IP).Any() : false)) Ban = true;
+                if (TShock.Bans.Bans.Any(b => b.Value.Identifier == "uuid:" + Account?.UUID) || TShock.Bans.Bans.Any(b => b.Value.Identifier == "acc:" + Name) || (Online && TShock.Bans.Bans.Any(b => b.Value.Identifier == "ip:" + Player.IP))) Ban = true;
                 else Ban = false;
                 if (tempPlayer == null)
                 {

@@ -84,7 +84,7 @@ namespace TSManager.Modules
                 catch { data.Error = true; }
             });
         }
-        public static void Save(Data.ConfigData data, bool force = false)
+        public static void Save(ConfigData data, bool force = false)
         {
             try
             {
@@ -113,32 +113,23 @@ namespace TSManager.Modules
         /// <summary>
         /// 不加载程序集直接保存会报错
         /// </summary>
-        static void ReloadCfg(JObject jobj, bool istsconfig)
-        {
-            if (istsconfig)
-            {
-                TShock.Config.Settings = jobj.ToObject<TShockAPI.Configuration.TShockSettings>();
-                TShock.Config.Write(Info.ConfigPath);
-                //Utils.ShowNotice("成功重载TShock配置", "TSManager", 3000, MessageBoxIcon.Success);
-            }
-            GeneralHooks.OnReloadEvent(new TSPlayer(255));
-        }
-        public static void OpenFile(Data.ConfigData data)
+        static void ReloadCfg(JObject jobj, bool istsconfig) => GeneralHooks.OnReloadEvent(TSPlayer.Server);
+        public static void OpenFile(ConfigData data)
         {
             Process.Start("notepad.exe", data.Path);
         }
-        public static void ChangeConfig(Data.ConfigData data)
+        public static void ChangeConfig(ConfigData data)
         {
             if (data == null)
             {
-                Utils.Notice("配置文件无效.", HandyControl.Data.InfoType.Error);
+                //Utils.Notice("配置文件无效.", HandyControl.Data.InfoType.Error);
                 return;
             }
             data.ErrorCheck();
             TSMMain.GUI.Tab_Editor.DataContext = data;
             TSMMain.GUI.ConfigEditor.Text = data.Text;
         }
-        public static void Format(Data.ConfigData data)
+        public static void Format(ConfigData data)
         {
             try
             {

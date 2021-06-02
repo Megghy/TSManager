@@ -178,9 +178,9 @@ namespace TSManager
                 Types = new()
                 {
                     new Label() { Content = "预置变量" },
-                    new ScriptStep(new Script.TargetPlayer(), true, "引发脚本执行的玩家对象 <TSPlayer>\r\n仅在以下触发方式中有效:\r\nPlayerJoin\r\nPlayerLeave\r\nPlayerChat\r\nPlayerDead"),
-                    new ScriptStep(new Script.TargetPlayerName(), true, "引发脚本执行的玩家名 <string>\r\n仅在以下触发方式中有效:\r\nPlayerJoin\r\nPlayerLeave\r\nPlayerChat\r\nPlayerDead"),
-                    new ScriptStep(new Script.TargetMessage(), true, "玩家发送的消息 <string>\r\n仅在以下触发方式中有效:\r\nPlayerChat"),
+                    new ScriptStep(new Script.TargetPlayer(), true, "引发脚本执行的玩家对象 <TSPlayer>\r\n仅在以下触发方式中有效:\r\n▪ PlayerJoin\r\n▪ PlayerLeave\r\n▪ PlayerChat\r\n▪ PlayerDead"),
+                    new ScriptStep(new Script.TargetPlayerName(), true, "引发脚本执行的玩家名 <string>\r\n仅在以下触发方式中有效:\r\n▪ PlayerJoin\r\n▪ PlayerLeave\r\n▪ PlayerChat\r\n▪ PlayerDead"),
+                    new ScriptStep(new Script.TargetMessage(), true, "玩家发送的消息 <string>\r\n仅在以下触发方式中有效:\r\n▪ PlayerChat"),
 
                     new Label() { Content = "玩家信息" },
                     new ScriptStep(new Script.GetPlayer(), true, "获取指定名称的玩家对象 <TSPlayer>"),
@@ -398,7 +398,7 @@ namespace TSManager
                 */
                 var script = sender as ScriptData;
                 //Utils.Notice($"脚本 {script.Name} 运行时发生错误");
-                TSMMain.AddLine($"[ScriptManager] 脚本异常终止. 发生于 {arg.Location}, 错误信息: {arg.ReturnValue}");
+                Log($"脚本异常终止. 发生于 {arg.Location}, 错误信息: {arg.ReturnValue}");
             }
         }
         #endregion

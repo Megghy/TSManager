@@ -163,6 +163,9 @@ namespace TSManager
                         case "PlayerManage_UnBan":
                             plrInfo.UnBan();
                             break;
+                        case "PlayerManage_Refresh":
+                            
+                            break;
                     }
                     #endregion
                 }
