@@ -471,14 +471,6 @@
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
                                 </ListBox>
-                                <Button Content="刷新数据"
-                                        Name="PlayerManage_Refresh"
-                                        Margin="5,5,10,5"
-                                        Width="102"
-                                        Grid.Row="1"
-                                        VerticalAlignment="Stretch"
-                                        HorizontalAlignment="Stretch"
-                                        Height="Auto" />
                                 <hc:TabControl x:Name="PlayerManage_MainTab"
                                                Grid.Column="1"
                                                Grid.RowSpan="3">
@@ -1061,23 +1053,36 @@
                             </Grid.ColumnDefinitions>
                             <DataGrid x:Name="Script_List"
                                       AutoGenerateColumns="False"
-                                      Grid.RowSpan="2">
+                                      Grid.RowSpan="2"
+                                      SelectionMode="Single"
+                                      SelectionChanged="OnListSelect">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="名称"
+                                    <DataGridCheckBoxColumn Header="启用"
+                                                            Binding="{Binding Enable}"/>
+                                    <DataGridTextColumn Header="文件名"
+                                                        Binding="{Binding FileName}"
+                                                        Width="*"
+                                                        IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="脚本名"
                                                         Binding="{Binding Name}"
-                                                        Width="2*" />
+                                                        Width="2*"
+                                                        IsReadOnly="True" />
                                     <DataGridTextColumn Header="作者"
                                                         Binding="{Binding Author}"
-                                                        Width="*" />
+                                                        Width="*"
+                                                        IsReadOnly="True" />
                                     <DataGridTextColumn Header="描述"
                                                         Binding="{Binding Description}"
-                                                        Width="4*" />
+                                                        Width="4*"
+                                                        IsReadOnly="True" />
                                     <DataGridTextColumn Header="版本"
                                                         Binding="{Binding Version}"
-                                                        Width="*" />
+                                                        Width="*"
+                                                        IsReadOnly="True" />
                                     <DataGridTextColumn Header="函数量"
                                                         Binding="{Binding FunctionCount}"
-                                                        Width="*" />
+                                                        Width="*"
+                                                        IsReadOnly="True" />
                                 </DataGrid.Columns>
                             </DataGrid>
                             <StackPanel Orientation="Vertical"

@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Xml;
+using HandyControl.Controls;
 using ScratchNet;
 using TShockAPI;
 using TSManager.Data;
 using TSManager.Modules;
+using TSManager.Script;
 using static TSManager.Data.ScriptData;
 
 namespace TSManager
@@ -23,14 +25,56 @@ namespace TSManager
             //下面一大堆基本都是复制粘贴的, 有些本地化的东西懒得改, 将就将就
             TSMMain.GUI.Script_Editor.IsLibraryEnabled = false;
             List<ScriptStepGroup> toolbar = new List<ScriptStepGroup>();
-            TSMMain.GUI.Script_Editor.Register((Color)ColorConverter.ConvertFromString("#B1F1D4"), typeof(StringExpression), typeof(IndexOfStringExpression), typeof(LastIndexOfStringExpression), typeof(SubStringExpression), typeof(StringLengthExpression), typeof(ParseLongExpression), typeof(ParseIntExpression), typeof(ParseFloatExpression), typeof(ParseDoubleExpression)); //数据操作颜色
-            TSMMain.GUI.Script_Editor.Register((Color)ColorConverter.ConvertFromString("#93B5E4"), typeof(PrintLnStatement), typeof(PrintStatement), typeof(ReadLineExpression), typeof(ReadExpression), typeof(ClearStatement)); //控制台操作颜色
-            TSMMain.GUI.Script_Editor.Register<IfStatement, TrueExpression, FalseExpression>((Color)ColorConverter.ConvertFromString("#9CB5BB")); //布尔值的颜色
-            TSMMain.GUI.Script_Editor.Register((Color)ColorConverter.ConvertFromString("#D4E3AF"), typeof(NewArrayExpression), typeof(ArrayValueExpression),
-                typeof(NewArray2Expression), typeof(Array2ValueExpression),
-                typeof(ArrayLengthExpression));  //数组的颜色
-            TSMMain.GUI.Script_Editor.Register((Color)ColorConverter.ConvertFromString("#EFBC94"), typeof(VariableDeclarationExpression), typeof(Identifier)); //变量的颜色
-            TSMMain.GUI.Script_Editor.Register((Color)ColorConverter.ConvertFromString("#EABEB0"), typeof(Script.ExcuteCommand), new[] { typeof(Script.ExcuteCommandInConsole), typeof(Script.GetPlayer), typeof(Script.GetPlayerBag), typeof(Script.SendMessage), typeof(Script.CheckPermission), typeof(Script.TargetPlayer), typeof(Script.TargetPlayerName), typeof(Script.TargetMessage) }); //玩家操作的颜色
+            TSMMain.GUI.Script_Editor.Register((Color)ColorConverter.ConvertFromString("#B1F1D4"),
+                typeof(StringExpression),
+                typeof(Conditional),
+                typeof(IndexOfStringExpression),
+                typeof(LastIndexOfStringExpression),
+                typeof(SubStringExpression),
+                typeof(StringLengthExpression),
+                typeof(ParseLongExpression),
+                typeof(ParseIntExpression),
+                typeof(ParseFloatExpression),
+                typeof(ParseDoubleExpression)
+                ); //数据操作颜色
+            /* TSMMain.GUI.Script_Editor.Register((Color)ColorConverter.ConvertFromString("#93B5E4"),
+                 typeof(PrintLnStatement), 
+                 typeof(PrintStatement), 
+                 typeof(ReadLineExpression),
+                 typeof(ReadExpression),
+                 typeof(ClearStatement)
+                 ); //控制台操作颜色*/
+            TSMMain.GUI.Script_Editor.Register<IfEx, TrueExpression, FalseExpression>((Color)ColorConverter.ConvertFromString("#9CB5BB")); //布尔值的颜色
+            TSMMain.GUI.Script_Editor.Register((Color)ColorConverter.ConvertFromString("#D4E3AF"),
+                typeof(NewArrayExpression),
+                typeof(ArrayValueExpression),
+                typeof(NewArray2Expression),
+                typeof(Array2ValueExpression),
+                typeof(ArrayLengthExpression),
+                typeof(ListInsertExpression),
+                typeof(ListAddExpression),
+                typeof(ListRemoveAtExpression),
+                typeof(ListRemoveExpression),
+                typeof(ListValueExpression),
+                typeof(NewListExpression),
+                typeof(ListClear)
+                );  //数组的颜色
+            TSMMain.GUI.Script_Editor.Register((Color)ColorConverter.ConvertFromString("#EFBC94"),
+                typeof(VariableDeclarationExpression),
+                typeof(Identifier)
+                ); //变量的颜色
+            TSMMain.GUI.Script_Editor.Register((Color)ColorConverter.ConvertFromString("#EABEB0"),
+                typeof(ExcuteCommand),
+                new[] {
+                    typeof(ExcuteCommandInConsole),
+                    typeof(GetPlayer),
+                    typeof(GetPlayerBag),
+                    typeof(SendMessage),
+                    typeof(CheckPermission),
+                    typeof(TargetPlayer),
+                    typeof(TargetPlayerName),
+                    typeof(TargetMessage)
+                }); //玩家操作的颜色
             toolbar.Add(new ScriptStepGroup()
             {
                 Name = Properties.Resources.CommentCollection,
@@ -44,15 +88,21 @@ namespace TSManager
 
             toolbar.Add(new ScriptStepGroup()
             {
-                Name = "流程",
+                Name = "逻辑",
                 Types = new()
                 {
                     new Label() { Content = Properties.Resources.ExpressionStatementCategory },
                     new ScriptStep(new ExpressionStatement(), true, Properties.Resources.ExpressionStatementDescription + "如设置一条变量"),
                     //如果
                     new Label() { Content = Properties.Resources.IfCategory, ToolTip = Properties.Resources.IfDescription },
-                    new ScriptStep(new IfStatement(), true, Properties.Resources.IfStatementDescription),
-                    new ScriptStep(new IfStatement() { Alternate = new BlockStatement() }, true, Properties.Resources.IfElseStatementDescription),
+                    new ScriptStep(new IfEx(), true, "对填入的bool值进行判断, 如果为真则执行内部脚本"),
+                    new ScriptStep(new IfEx() { Alternate = new BlockStatement() }, true, Properties.Resources.IfElseStatementDescription),
+
+                    new Label() { Content = "比较" },
+                    new ScriptStep(new Conditional() { ValueType = "boolean", Operator = Operator.Equal }, true, Properties.Resources.BinaryExpressionDescription),//compare operator
+                    new ScriptStep(new Conditional() { ValueType = "boolean", Operator = Operator.And }, true, Properties.Resources.BinaryExpressionDescription),//logical operator
+                    new ScriptStep(new NotExpression(), true, Properties.Resources.NotExpressionDescription),
+                    new ScriptStep(new NullExpression(), true),
 
                     //返回
                     new Label() { Content = Properties.Resources.ReturnCategory },
@@ -69,7 +119,7 @@ namespace TSManager
                 Name = "循环",
                 Types = new()
                 {
-                    new ScriptStep(new ForStatement(), true, "for循环语句.\n 第一格为第一次进入循环时将会调用的语句, 可以在此处声明临时变量. \n第二格为每次循环完成后将会进行的逻辑运算, 如果为 true将会继续, 反之退出循环. \n第三格为每次循环完成后将会执行的语句."),
+                    new ScriptStep(new ForStatement(), true, "for循环语句.\r\n 第一格为第一次进入循环时将会调用的语句, 可以在此处声明临时变量. \r\n第二格为每次循环完成后将会进行的逻辑运算, 如果为 true将会继续, 反之退出循环. \r\n第三格为每次循环完成后将会执行的语句."),
                     new ScriptStep(new WhileStatement(), true, "每次循环完成后比较上方提供的表达式, 为true则继续循环, 反之退出. 使用此语句要注意退出循环的条件, 否则容易造成死循环"),
                     new ScriptStep(new DoStatement(), true, Properties.Resources.DoWhileDescription),
                     new ScriptStep(new BreakStatement(), true, "无视条件跳出正在运行的循环语句. (如有多层循环嵌套则只会跳出一层"),
@@ -78,19 +128,27 @@ namespace TSManager
             });
             toolbar.Add(new ScriptStepGroup()
             {
-                Name = "比较",
+                Name = "数组及列表",
                 Types = new()
                 {
-                    new Label() { Content = "比较" },
-                    new ScriptStep(new BinaryExpression() { ValueType = "boolean", Operator = Operator.Equal }, true, Properties.Resources.BinaryExpressionDescription),//compare operator
-                    new ScriptStep(new BinaryExpression() { ValueType = "boolean", Operator = Operator.And }, true, Properties.Resources.BinaryExpressionDescription),//logical operator
-                    new ScriptStep(new NotExpression(), true, Properties.Resources.NotExpressionDescription),
-                    new ScriptStep(new NullExpression(), true),
+                    new Label() { Content = "数组<Array>" },
+                    new ScriptStep(new ArrayValueExpression(), true, Properties.Resources.ArrayValueDescription),
+                    new ScriptStep(new Array2ValueExpression(), true, Properties.Resources.ArrayValueDescription),
+                    new ScriptStep(new ArrayLengthExpression(), true, Properties.Resources.ArrayLengthDescription),
+
+                    new Label() { Content = "列表<List>" },
+                    new ScriptStep(new NewListExpression(), true, "创建一个新的列表(List)类型的对象 <List>"),
+                    new ScriptStep(new ListValueExpression(), true, "获取指定位置处的对象\r\n注意: 列表是从0开始 <Object>"),
+                    new ScriptStep(new ListAddExpression(), true, "向指定列表的末尾处添加一个成员 <无类型>"),
+                    new ScriptStep(new ListRemoveExpression(), true, "移除指定列表内的指定成员 <无类型>"),
+                    new ScriptStep(new ListRemoveAtExpression(), true, "移除指定列表内指定位置的成员 <无类型>\r\n注意: 列表是从0开始"),
+                    new ScriptStep(new ListInsertExpression(), true, "在指定列表的指定位置处添加一个成员\r\n注意: 列表是从0开始 <无类型>"),
+                    new ScriptStep(new ListClear(), true, "清除列表内的所有成员 <无类型>"),
                 }
             });
             toolbar.Add(new ScriptStepGroup()
             {
-                Name = "数据操作",
+                Name = "数据",
                 Types = new()
                 {
                     new Label() { Content = Properties.Resources.VariableAssignmentCategory },
@@ -105,14 +163,9 @@ namespace TSManager
                     new ScriptStep(new SubStringExpression(), true, Properties.Resources.StringSubDescription),
 
                     new Label() { Content = "运算" },
-                    new ScriptStep(new BinaryExpression(), true, Properties.Resources.BinaryExpressionDescription),
+                    new ScriptStep(new Conditional(), true, Properties.Resources.BinaryExpressionDescription),
                     new ScriptStep(new UpdateExpression(), true, Properties.Resources.UpdateExpressionDescription),
                     new ScriptStep(new UpdateExpression() { IsPrefix = true }, true, Properties.Resources.UpdateExpressionDescription),
-
-                    new Label() { Content = "数组" },
-                    new ScriptStep(new ArrayValueExpression(), true, Properties.Resources.ArrayValueDescription),
-                    new ScriptStep(new Array2ValueExpression(), true, Properties.Resources.ArrayValueDescription),
-                    new ScriptStep(new ArrayLengthExpression(), true, Properties.Resources.ArrayLengthDescription),
                 }
             });
             toolbar.Add(new ScriptStepGroup()
@@ -142,10 +195,6 @@ namespace TSManager
                     new ScriptStep(new ParseLongExpression(), true, Properties.Resources.ParseIntDescription),
                     new ScriptStep(new ParseFloatExpression(), true, Properties.Resources.ParseFloatDescription),
                     new ScriptStep(new ParseDoubleExpression(), true, Properties.Resources.ParseDoubleDescription),
-
-                    new Label() { Content = Properties.Resources.ArrayCollection },
-                    new ScriptStep(new NewArrayExpression(), true, Properties.Resources.NewArrayDescription),
-                    new ScriptStep(new NewArray2Expression(), true, Properties.Resources.NewArray2Description)
                 }
             });
             toolbar.Add(new ScriptStepGroup()
@@ -158,7 +207,7 @@ namespace TSManager
                     new Label() { Content = Properties.Resources.FunctionCallCategory }
                 }
             });
-            toolbar.Add(new ScriptStepGroup()
+            /*toolbar.Add(new ScriptStepGroup()
             {
                 Name = Properties.Resources.IOCollection,
                 Types = new()
@@ -171,28 +220,27 @@ namespace TSManager
                     new ScriptStep(new ClearStatement(), true, Properties.Resources.ClearDescription)
                     //new Label(){Content="file"}
                 }
-            });
+            });*/
             toolbar.Add(new ScriptStepGroup()
             {
                 Name = "玩家操作",
                 Types = new()
                 {
                     new Label() { Content = "预置变量" },
-                    new ScriptStep(new Script.TargetPlayer(), true, "引发脚本执行的玩家对象 <TSPlayer>\r\n仅在以下触发方式中有效:\r\n▪ PlayerJoin\r\n▪ PlayerLeave\r\n▪ PlayerChat\r\n▪ PlayerDead"),
-                    new ScriptStep(new Script.TargetPlayerName(), true, "引发脚本执行的玩家名 <string>\r\n仅在以下触发方式中有效:\r\n▪ PlayerJoin\r\n▪ PlayerLeave\r\n▪ PlayerChat\r\n▪ PlayerDead"),
-                    new ScriptStep(new Script.TargetMessage(), true, "玩家发送的消息 <string>\r\n仅在以下触发方式中有效:\r\n▪ PlayerChat"),
+                    new ScriptStep(new TargetPlayer(), true, "引发脚本执行的玩家对象 <TSPlayer>\r\n仅在以下触发方式中有效:\r\n▪ PlayerJoin\r\n▪ PlayerLeave\r\n▪ PlayerChat\r\n▪ PlayerDead"),
+                    new ScriptStep(new TargetPlayerName(), true, "引发脚本执行的玩家名 <string>\r\n仅在以下触发方式中有效:\r\n▪ PlayerJoin\r\n▪ PlayerLeave\r\n▪ PlayerChat\r\n▪ PlayerDead"),
+                    new ScriptStep(new TargetMessage(), true, "玩家发送的消息 <string>\r\n仅在以下触发方式中有效:\r\n▪ PlayerChat"),
 
                     new Label() { Content = "玩家信息" },
-                    new ScriptStep(new Script.GetPlayer(), true, "获取指定名称的玩家对象 <TSPlayer>"),
-                    new ScriptStep(new Script.SendMessage(), true, "向指定玩家发送指定消息  <无类型>"),
-                    new ScriptStep(new Script.GetPlayerBag(), true, "获取指定玩家的背包 <List>"),
-                    new ScriptStep(new Script.ExcuteCommand(), true, "让目标玩家执行一条命令 <无类型>\r\n(命令中的 {name} 将被替换为玩家名称)"),
-                    new ScriptStep(new Script.ExcuteCommandInConsole(), true, "在控制台执行一条命令 <无类型>\r\n(命令中的 {name} 将被替换为玩家名称)"),
-                    new ScriptStep(new Script.CheckPermission(), true, "检查玩家是否拥有指定权限 <bool>"),
+                    new ScriptStep(new GetPlayer(), true, "获取指定名称的玩家对象 <TSPlayer>"),
+                    new ScriptStep(new SendMessage(), true, "向指定玩家发送指定消息  <无类型>"),
+                    new ScriptStep(new GetPlayerBag(), true, "获取指定玩家的背包 <List>"),
+                    new ScriptStep(new ExcuteCommand(), true, "让目标玩家执行一条命令 <无类型>\r\n(命令中的 {name} 将被替换为玩家名称)"),
+                    new ScriptStep(new ExcuteCommandInConsole(), true, "在控制台执行一条命令 <无类型>\r\n(命令中的 {name} 将被替换为玩家名称)"),
+                    new ScriptStep(new CheckPermission(), true, "检查玩家是否拥有指定权限 <bool>"),
                 }
             });
             toolbar.Add(GetCommandsFromLib(new MathLibary())); //引入数学拓展库
-            toolbar.Add(GetCommandsFromLib(new CollectionLibary())); //引入集合拓展库
             toolbar.Add(GetCommandsFromLib(new DataStructureLibrary())); //引入数据结构拓展库
             toolbar.Add(GetCommandsFromLib(new ThreadCollection())); //引入线程拓展库
             TSMMain.GUI.Script_Editor.SetToolBar(toolbar);
@@ -214,12 +262,22 @@ namespace TSManager
         }
         public static void ChangeScript(ScriptData script)
         {
-            TSMMain.GUIInvoke(() => {
+            if (TSMMain.GUI.Script_Editor.IsModified) Growl.Ask($"脚本 {script.FileName} 已改动, 确定要离开吗?", result =>
+             {
+                 if (result) TSMMain.GUIInvoke(() =>
+                 {
+                     TSMMain.GUI.Script_Editor.Script = script;
+                     TSMMain.GUI.Script_Tab.SelectedIndex = 1;
+                 });  //这东西属实不咋好用
+                 return true;
+             });
+            else TSMMain.GUIInvoke(() =>
+            {
                 TSMMain.GUI.Script_Editor.Script = script;
                 TSMMain.GUI.Script_Tab.SelectedIndex = 1;
             });
         }
-        public static void ChangeTriggerCondition(ScriptData script, ScriptData.Triggers type)
+        public static void ChangeTriggerCondition(ScriptData script, Triggers type)
         {
             script.TriggerCondition = type;
             Utils.Notice("已修改触发条件", HandyControl.Data.InfoType.Success);
@@ -238,6 +296,7 @@ namespace TSManager
                 XmlNode scriptNode = xmlDocument.CreateElement("Script");
                 scriptNode.AppendChild(method.Invoke(null, new object[] { script, xmlDocument }) as XmlNode);
                 var scriptInfo = xmlDocument.CreateElement("Info");
+                scriptInfo.SetAttribute("Command", script.Command ?? "");
                 scriptInfo.SetAttribute("Name", script.Name);
                 scriptInfo.SetAttribute("Author", script.Author);
                 scriptInfo.SetAttribute("Description", script.Description);
@@ -247,7 +306,7 @@ namespace TSManager
                 scriptInfo.SetAttribute("Enable", script.Enable.ToString());
                 scriptNode.AppendChild(scriptInfo);
                 xmlDocument.AppendChild(scriptNode);
-                xmlDocument.Save(Info.Path + "Scripts\\" + script.Name + ".tsms");
+                xmlDocument.Save(script.FilePath);
                 if (notice) Utils.Notice("已保存修改", HandyControl.Data.InfoType.Success);
                 //Info.Scripts.SingleOrDefault(s => s.ID = script.ID)?
             }
@@ -280,15 +339,16 @@ namespace TSManager
                         XmlDocument xmlDoc = new();
                         xmlDoc.Load(stream);
                         var scriptInfo = (XmlElement)xmlDoc.SelectSingleNode("/Script/Info");
+                        scriptInfo.SetAttribute("Command", "");
                         scriptInfo.SetAttribute("Name", name);
                         scriptInfo.SetAttribute("Author", author);
                         scriptInfo.SetAttribute("Description", description);
                         scriptInfo.SetAttribute("Version", _version.ToString());
                         scriptInfo.SetAttribute("ID", Guid.NewGuid().ToString());
-                        scriptInfo.SetAttribute("TriggerCondition", ScriptData.Triggers.None.ToString());
+                        scriptInfo.SetAttribute("TriggerCondition", Triggers.None.ToString());
                         scriptInfo.SetAttribute("Enable", true.ToString());
                         xmlDoc.Save(path);
-                        var script = ScriptData.Read(path);
+                        var script = Read(path);
                         TSMMain.GUI.Script_Editor.Script = script;
                         TSMMain.GUI.Script_Create_Drawer.IsOpen = false;
                         Info.Scripts.Add(script);
@@ -318,7 +378,7 @@ namespace TSManager
         internal static void ExcuteScript(ScriptExcuteArgs args)
         {
             var scripts = Info.Scripts.Where(s => s.Enable && s.TriggerCondition == args.Type);
-            if(scripts.Any()) Log($"事件: {args.Type}, 执行脚本 {string.Join(", ", scripts.Select(s => s.Name))}");
+            if (scripts.Any()) Log($"事件: {args.Type}, 执行脚本 {string.Join(", ", scripts.Select(s => s.Name))}");
             else Log($"事件: {args.Type}, 无可执行脚本");
             scripts?.ForEach(s =>
             {

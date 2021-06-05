@@ -54,8 +54,7 @@ namespace TSManager.Data
             try
             {
                 var tempPlayer = TShock.Players.SingleOrDefault(p => p != null && p.Name == Name);
-                if (TShock.Bans.Bans.Any(b => b.Value.Identifier == "uuid:" + Account?.UUID) || TShock.Bans.Bans.Any(b => b.Value.Identifier == "acc:" + Name) || (Online && TShock.Bans.Bans.Any(b => b.Value.Identifier == "ip:" + Player.IP))) Ban = true;
-                else Ban = false;
+                Ban = TShock.Bans.Bans.Any(b => b.Value.Identifier == "uuid:" + Account?.UUID) || TShock.Bans.Bans.Any(b => b.Value.Identifier == "acc:" + Name) || (Online && TShock.Bans.Bans.Any(b => b.Value.Identifier == "ip:" + Player.IP));
                 if (tempPlayer == null)
                 {
                     if (Online) Online = false;
@@ -84,8 +83,8 @@ namespace TSManager.Data
         public bool Online { get; set; }
         [AlsoNotifyFor("Online", new string[] { "HP", "MaxHP", "MP", "MaxMP", "Ban", "_Ban", "Mute", "GodMode", "KnownIP", "LastLoginTime", "RegisterTime", "Status", "StatusColor" })]
         public long PlayTime { get; set; }
-        public string Status { get { return Online ? "在线" : "离线"; } set { } }
-        public Brush StatusColor { get { return Online ? Color.FromRgb(178, 223, 120).ToBrush() : Color.FromRgb(253, 86, 86).ToBrush(); } set { } }
+        public string Status { get => Online ? "在线" : "离线"; set { } }
+        public Brush StatusColor { get => Online ? Color.FromRgb(178, 223, 120).ToBrush() : Color.FromRgb(253, 86, 86).ToBrush(); set { } }
         public TSPlayer Player { get; set; } = new TSPlayer(-1);
         public PlayerData Data { get; set; }
         public UserAccount Account { get; set; }
@@ -93,18 +92,12 @@ namespace TSManager.Data
         public int ID { get; set; }
         public int HP
         {
-            get
-            {
-                return (int)(Online ? Player.TPlayer?.statLife : Data.health);
-            }
+            get => (int)(Online ? Player.TPlayer?.statLife : Data.health);
             set { }
         }
         public int MaxHP
         {
-            get
-            {
-                return (int)(Online ? Player.TPlayer?.statLifeMax2 : Data.maxHealth);
-            }
+            get => (int)(Online ? Player.TPlayer?.statLifeMax2 : Data.maxHealth);
             set
             {
                 if (Online)
@@ -122,10 +115,7 @@ namespace TSManager.Data
         public int MP { get { return (int)(Online ? Player.TPlayer?.statMana : Data.mana); } set { } }
         public int MaxMP
         {
-            get
-            {
-                return (int)(Online ? Player.TPlayer?.statManaMax2 : Data.maxMana);
-            }
+            get => (int)(Online ? Player.TPlayer?.statManaMax2 : Data.maxMana);
             set
             {
                 if (Online)
@@ -141,19 +131,11 @@ namespace TSManager.Data
             }
         }
         public bool Ban { get; set; }
-        public bool _Ban { get { return !Ban; } set { } }
+        public bool _Ban { get => !Ban; set { } }
         public TShockAPI.Group Group
         {
-            get
-            {
-                if (Online) return Player.Group;
-                else return TShock.Groups.GetGroupByName(Account.Group);
-
-            }
-            set
-            {
-                TShock.UserAccounts.SetUserGroup(Account, value.Name);
-            }
+            get => Online ? Player.Group : TShock.Groups.GetGroupByName(Account.Group);
+            set => TShock.UserAccounts.SetUserGroup(Account, value.Name);
         }
         public List<Group> Groups
         {
@@ -167,7 +149,7 @@ namespace TSManager.Data
         }
         public bool Mute
         {
-            get { return Online ? Player.mute : false; }
+            get => Online && Player.mute;
             set
             {
                 if (Online)
@@ -178,7 +160,7 @@ namespace TSManager.Data
         }
         public bool GodMode
         {
-            get { return Online ? Player.GodMode : false; }
+            get => Online && Player.GodMode;
             set
             {
                 if (Online)
@@ -207,10 +189,7 @@ namespace TSManager.Data
         }
         public string KnownIP
         {
-            get
-            {
-                return Account == null ? "未知" : Account.KnownIps;
-            }
+            get => Account == null ? "未知" : Account.KnownIps;
             set { }
         }
     }

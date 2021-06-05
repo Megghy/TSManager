@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using HandyControl.Controls;
@@ -146,6 +148,19 @@ namespace TSManager
             {
                 return str;
             }
+        }
+        public static bool IsPortInUse(int port)
+        {
+            IPGlobalProperties ipProperties = IPGlobalProperties.GetIPGlobalProperties();
+            IPEndPoint[] ipEndPoints = ipProperties.GetActiveTcpListeners();
+            foreach (IPEndPoint endPoint in ipEndPoints)
+            {
+                if (endPoint.Port == port)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         public async static Task<BitmapImage> GetTexture(string filename)
         {

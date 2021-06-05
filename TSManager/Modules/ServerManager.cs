@@ -200,7 +200,8 @@ namespace TSManager.Modules
 
         public async void Start(string[] param)
         {
-            await Task.Run(()=> {
+            await Task.Run(() =>
+            {
                 if (!Directory.Exists(Info.PluginPath) || !Directory.GetFiles(Info.PluginPath).Exist(f => Path.GetFileName(f) == "TShockAPI.dll"))
                 {
                     Utils.Notice($"未检测到TShock程序集. TSManager暂不支持原版服务器", HandyControl.Data.InfoType.Error);
@@ -213,7 +214,7 @@ namespace TSManager.Modules
                 }
                 Info.GameThread = new Thread(new ThreadStart(() =>
                 {
-                    mainasm.EntryPoint.Invoke(null, new object[] { param });
+                    try { mainasm.EntryPoint.Invoke(null, new object[] { param }); } catch (Exception ex) { Utils.Notice($"服务器崩溃\r\n{ex.Message}", HandyControl.Data.InfoType.Fatal); }
                 }))
                 {
                     IsBackground = true

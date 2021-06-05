@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using Terraria.GameContent.Creative;
 using TShockAPI;
 using TShockAPI.DB;
@@ -20,7 +21,8 @@ namespace TSManager.Modules
         }
         public static void Refresh()
         {
-            TSMMain.GUIInvoke(() => {
+            TSMMain.GUIInvoke(() =>
+            {
                 Info.Players = new(PlayerInfo.GetAllPlayerInfo());
                 TSMMain.GUI.PlayerManage_List.ItemsSource = Info.Players;
                 if (Info.Players.Any()) TSMMain.GUI.PlayerManage_List.SelectedItem = Info.Players[0];
@@ -111,7 +113,7 @@ namespace TSManager.Modules
             //tolist相当于clone以下免得foreach的时候报错
             TShock.Bans.Bans.Where(b => b.Value.Identifier == "uuid:" + info.Account?.UUID).ToList().ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
             TShock.Bans.Bans.Where(b => b.Value.Identifier == "acc:" + info).ToList().ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
-            if (Utils.TryParseJson(info.Account?.KnownIps, out var ips)) TShock.Bans.Bans.Where(b => b.Value.Identifier.StartsWith("ip") && ips.Children().Contains(b.Value.Identifier.Replace("ip:", ""))).ToList().ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
+            if (JsonConvert.DeserializeObject<List<string>>(info.Account?.KnownIps) is { Count: > 0 } ips) TShock.Bans.Bans.Where(b => b.Value.Identifier.StartsWith("ip") && ips.Contains(b.Value.Identifier.Replace("ip:", ""))).ToList().ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
             Utils.Notice("成功执行解禁操作", HandyControl.Data.InfoType.Success);
         }
         public static void Whisper(this PlayerInfo info, string text)
@@ -160,7 +162,7 @@ namespace TSManager.Modules
                 if (info.Online) info.Player.SendInfoMessage("该账号已被移除");
                 TShock.UserAccounts.RemoveUserAccount(info.Account);
             }
-            else Utils.Notice("当前无法删除此账号, 请尝试刷新", HandyControl.Data.InfoType.Warning);
+            else Utils.Notice("当前无法删除此账号, 此玩家注册后尚未登录", HandyControl.Data.InfoType.Warning);
             //HookManager.OnAccountDelete(new(info.Account));
         }
     }

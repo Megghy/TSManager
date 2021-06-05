@@ -1,5 +1,5 @@
 <Script>
-<Info Name="NewScript" Description="无" Author="未知" Version="1.0.0.0" ID="0828bacf-deab-4bf6-a0dc-35c6a70cdc63"/>
+<Info Command="" Name="NewScript" Description="无" Author="未知" Version="1.0.0.0" ID="0828bacf-deab-4bf6-a0dc-35c6a70cdc63"/>
   <Class type="TSManager.Data.ScriptData, TSManager">
     <Variables />
     <Functions>

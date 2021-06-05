@@ -147,10 +147,12 @@ namespace TSManager.Modules
                     }
                 }
                 #endregion
+                #region 加载脚本相关
                 ScriptManager.LoadAllBlock(); //加载脚本编辑器
                 Info.Scripts = new(ScriptData.GetAllScripts());
                 GUI.Script_List.ItemsSource = Info.Scripts;
                 GUI.Script_TriggerCondition.ItemsSource = Enum.GetValues(typeof(ScriptData.Triggers)).Cast<ScriptData.Triggers>(); ;
+                #endregion
 
                 if (Settings.AutoStart)
                 {
@@ -167,6 +169,13 @@ namespace TSManager.Modules
                 GUI.Console_StopServer.IsEnabled = true; //也可以关闭
                 GUI.Console_StartServer.IsEnabled = false; //现在不能开启了
             });
+            if ((Info.Configs.SingleOrDefault(c => c.Name == "config.json") is { } c && c.JsonData.Value<int>("RestApiPort") is { } restPort && Utils.IsPortInUse(restPort)) || Utils.IsPortInUse(Settings.Port))
+            {
+                Utils.Notice($"服务器端口 {Settings.Port} 或REST端口被占用, 请在配置文件修改后重新启动", HandyControl.Data.InfoType.Error);
+                GUIInvoke(() => GUI.Console_ConsoleBox.Document.Blocks.Clear());
+                Info.Server.Stop();
+                return;
+            }
             Update();
             Utils.Notice("正在启动服务器...", HandyControl.Data.InfoType.Info);
         }
@@ -174,7 +183,6 @@ namespace TSManager.Modules
         {
             await Task.Run(() =>
             {
-
                 //加载服务器状态信息
                 GUIInvoke(() =>
                 {

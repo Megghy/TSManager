@@ -163,9 +163,6 @@ namespace TSManager
                         case "PlayerManage_UnBan":
                             plrInfo.UnBan();
                             break;
-                        case "PlayerManage_Refresh":
-                            
-                            break;
                     }
                     #endregion
                 }
@@ -476,6 +473,16 @@ namespace TSManager
                             break;
                     }
                 }
+                else if (sender is DataGrid)
+                {
+                    var d = sender as DataGrid;
+                    switch (d.Name)
+                    {
+                        case "Script_List":
+                            ScriptManager.ChangeScript(d.SelectedItem as ScriptData);
+                            break;
+                    }
+                }
             }
             catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
         }
@@ -532,6 +539,5 @@ namespace TSManager
             ResourceHelper.GetTheme("HandyTheme", Application.Current.Resources).Skin = TSMMain.Settings.EnableDarkMode ? HandyControl.Data.SkinType.Dark : HandyControl.Data.SkinType.Default;
             OnApplyTemplate();
         }
-
     }
 }

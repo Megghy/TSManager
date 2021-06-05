@@ -53,15 +53,6 @@
     <Reference Include="BCrypt.Net, Version=0.1.4141.31969, Culture=neutral, PublicKeyToken=f3bc8f8c31beeb49, processorArchitecture=MSIL">
       <HintPath>..\packages\BCrypt.Net.0.1.0\lib\net35\BCrypt.Net.dll</HintPath>
     </Reference>
-    <Reference Include="Canvas">
-      <HintPath>Resources\Script\Canvas.dll</HintPath>
-    </Reference>
-    <Reference Include="Collection">
-      <HintPath>Resources\Script\Collection.dll</HintPath>
-    </Reference>
-    <Reference Include="Console">
-      <HintPath>Resources\Script\Console.dll</HintPath>
-    </Reference>
     <Reference Include="Costura, Version=4.1.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
       <HintPath>..\packages\Costura.Fody.4.1.0\lib\net40\Costura.dll</HintPath>
     </Reference>
@@ -158,6 +149,24 @@
     <Compile Include="Modules\PlayerManager.cs" />
     <Compile Include="Modules\ScriptManager.cs" />
     <Compile Include="Script\CheckPermission.cs" />
+    <Compile Include="Script\Common\ClearExpression.cs" />
+    <Compile Include="Script\Common\CountExpression.cs" />
+    <Compile Include="Script\Common\PeekExpression.cs" />
+    <Compile Include="Script\Conditional.cs" />
+    <Compile Include="Script\IfEx.cs" />
+    <Compile Include="Script\List\ListAddExpression.cs" />
+    <Compile Include="Script\List\ListClear.cs" />
+    <Compile Include="Script\List\ListInsertExpression.cs" />
+    <Compile Include="Script\List\ListRemoveAtExpression.cs" />
+    <Compile Include="Script\List\ListRemoveExpression.cs" />
+    <Compile Include="Script\List\ListValueExpression.cs" />
+    <Compile Include="Script\List\NewListExpression.cs" />
+    <Compile Include="Script\Queue\DequeueExpression.cs" />
+    <Compile Include="Script\Queue\EnqueueExpression.cs" />
+    <Compile Include="Script\Queue\NewQueueExpression.cs" />
+    <Compile Include="Script\Stack\NewStackExpression.cs" />
+    <Compile Include="Script\Stack\PopStackExpression.cs" />
+    <Compile Include="Script\Stack\PushStackExpression.cs" />
     <Compile Include="Script\TargetMessage.cs" />
     <Compile Include="Script\ExcuteCommand.cs" />
     <Compile Include="Script\ExcuteCommandInConsole.cs" />

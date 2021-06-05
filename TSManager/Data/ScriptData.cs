@@ -12,7 +12,7 @@ namespace TSManager.Data
     {
         public static List<ScriptData> GetAllScripts()
         {
-            if (!Directory.Exists(Info.Path + "Scripts")) Directory.CreateDirectory(Info.Path + "Scripts"); 
+            if (!Directory.Exists(Info.Path + "Scripts")) Directory.CreateDirectory(Info.Path + "Scripts");
             var list = new List<ScriptData>();
             var files = Directory.GetFiles(Info.Path + "Scripts", "*.tsms");
             if (files.Any())
@@ -36,6 +36,8 @@ namespace TSManager.Data
                 XmlNode scriptInfo = xmlDoc.SelectSingleNode("/Script/Info");
                 XmlNode scriptNode = xmlDoc.SelectSingleNode("/Script/Class");
                 ScriptData tempScript = Serialization.Load(path) as ScriptData;
+                tempScript.Command = scriptInfo.Attributes["Command"].Value;
+                tempScript.FilePath = path;
                 tempScript.Name = scriptInfo.Attributes["Name"].Value;
                 tempScript.Author = scriptInfo.Attributes["Author"].Value;
                 tempScript.Description = scriptInfo.Attributes["Description"].Value;
@@ -95,6 +97,9 @@ namespace TSManager.Data
         }
         public bool Enable { get; set; }
         public Triggers TriggerCondition { get; set; }
+        public string Command { get; set; }
+        public string FilePath { get; set; }
+        public string FileName { get => Path.GetFileNameWithoutExtension(FilePath); set { } }
         public string Name { get; set; }
         public string Author { get; set; }
         public string Description { get; set; }

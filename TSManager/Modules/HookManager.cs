@@ -42,7 +42,7 @@ namespace TSManager.Modules
                     }
                     ScriptManager.ExcuteScript(new(Data.ScriptData.Triggers.PlayerLeave, plr, ""));
                 }
-                
+
             });
         }
         public static void OnPlayerDead(object o, GetDataHandlers.KillMeEventArgs args)

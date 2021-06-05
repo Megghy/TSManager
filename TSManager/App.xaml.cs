@@ -25,7 +25,8 @@ namespace TSManager
                 //UI线程未捕获异常处理事件（UI主线程）
                 DispatcherUnhandledException += (object sender, DispatcherUnhandledExceptionEventArgs ex) => Utils.Notice("UI异常捕获:\r\n" + ex.Exception.Message);
                 //非UI线程未捕获异常处理事件(例如自己创建的一个子线程)
-                AppDomain.CurrentDomain.UnhandledException += (object sender, UnhandledExceptionEventArgs ex) => {
+                AppDomain.CurrentDomain.UnhandledException += (object sender, UnhandledExceptionEventArgs ex) =>
+                {
                     Utils.Notice($"发生无法处理的异常, 程序即将退出\r\n请向开发者报告此问题\r\n{ex}\r\n{ex.ExceptionObject.GetType().FullName}");
                 };
                 //Task线程内未捕获异常处理事件
