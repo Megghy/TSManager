@@ -4,9 +4,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Media;
 using System.Xml;
+using AutoUpdaterDotNET;
+using HandyControl.Controls;
 using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
@@ -36,7 +39,7 @@ namespace TSManager.Modules
         public static void AddText(object text, Color color = default)
         {
             color = default ? Color.FromRgb(255, 255, 255) : color;
-            GUI.Console_ConsoleBox.Add(text.ToString(), color);
+            Info.Server.OnGetText(text.ToString(), color);
         }
         public static void AddLine(object text, Color color = default) => AddText(text + "\r\n", color);
         public async void Stop()
@@ -67,7 +70,7 @@ namespace TSManager.Modules
                             if (Info.IsEnterWorld)
                             {
                                 ((ServerStatus)GUI.Tab_Index.DataContext).RunTime += UpdateTime;
-                                Info.Players.ForEach(p => p.Update());
+                                Info.Players?.ForEach(p => p.Update());
                             }
                         });
                         Task.Delay(UpdateTime).Wait();
@@ -76,11 +79,64 @@ namespace TSManager.Modules
                 }
             });
         }
+        bool firstCheckUpdate = true;
+        private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
+        {
+            if (args.IsUpdateAvailable)
+            {
+                if (args.Mandatory.Value)
+                {
+                    try
+                    {
+                        GUIInvoke(() =>
+                        {
+                            GUI.TSMVersion_Badge.ShowBadge = true;
+                            GUI.TSMVersion_Badge.Text = args.CurrentVersion;
+                            GUI.TSMVersion.Text = "当前版本: 发现新版本";
+                        });
+                        if (firstCheckUpdate)
+                        {
+                            if (Info.IsEnterWorld) Growl.Ask("发现新版本, 是否现在更新?", result =>
+                            {
+                                if (result) AutoUpdater.ShowUpdateForm(args);
+                                return true;
+                            });
+                            else AutoUpdater.ShowUpdateForm(args);
+                        }
+                        firstCheckUpdate = false;
+                        /*if (AutoUpdater.DownloadUpdate(args))
+                        {
+                            Environment.Exit(0);
+                        }*/
+                    }
+                    catch (Exception exception)
+                    {
+                        Utils.Notice("无法下载更新\r\n" + exception.Message, HandyControl.Data.InfoType.Error);
+                    }
+                }
+            }
+        }
         internal void OnInitialize()
         {
             try
             {
                 Info.Server.ProcessText(); //循环处理消息队列
+                #region 自动更新处理
+                AutoUpdater.Start("https://oss.suki.club/TSManager/Update.xml");
+                Timer t = new()
+                {
+                    Interval = 60000,
+                    AutoReset = true
+                };
+                t.Elapsed += (object o, ElapsedEventArgs args) => AutoUpdater.Start("https://oss.suki.club/TSManager/Update.xml");
+                t.Start();
+                AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
+                AutoUpdater.ApplicationExitEvent += delegate
+                {
+                    if (Info.IsEnterWorld) Info.Server.AppendText("save");
+                    else Environment.Exit(0);
+                };
+                #endregion
                 #region 玩家管理器加载代码
                 if (Settings.EnableDarkMode) GUI.ChangeNightMode(null, null);
                 GUI.ServerStatus.Visibility = Visibility.Hidden; //暂时隐藏服务器状态

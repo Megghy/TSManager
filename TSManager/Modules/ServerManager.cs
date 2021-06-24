@@ -103,10 +103,10 @@ namespace TSManager.Modules
             public Color Color { get; set; }
         }
         Queue<QueueInfo> MessageQueue = new();
-        public void OnGetText(string s)
+        public void OnGetText(string s, Color color = default)
         {
             if (!Info.IsServerRunning) return;
-            MessageQueue.Enqueue(new(foregroundColor, s));
+            MessageQueue.Enqueue(new(color == default ? foregroundColor : color, s));
         }
         internal async void ProcessText()
         {

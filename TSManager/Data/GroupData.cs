@@ -73,7 +73,7 @@ namespace TSManager.Data
         public Color ChatColor { get; set; }
         public Brush DisplayColor
         {
-            get { return ChatColor.ToBrush(); }
+            get => ChatColor.ToBrush();
             set
             {
                 if (ChatColor == null) return;

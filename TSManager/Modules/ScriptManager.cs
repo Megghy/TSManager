@@ -378,7 +378,7 @@ namespace TSManager
         internal static void ExcuteScript(ScriptExcuteArgs args)
         {
             var scripts = Info.Scripts.Where(s => s.Enable && s.TriggerCondition == args.Type);
-            if (scripts.Any()) Log($"事件: {args.Type}, 执行脚本 {string.Join(", ", scripts.Select(s => s.Name))}");
+            if (scripts.Any()) Log($"<{args.Target?.Name}> 事件: {args.Type}, 执行脚本 {string.Join(", ", scripts.Select(s => s.Name))}");
             else Log($"事件: {args.Type}, 无可执行脚本");
             scripts?.ForEach(s =>
             {

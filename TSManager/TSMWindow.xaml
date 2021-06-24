@@ -39,10 +39,12 @@
                             Margin="0,0,5,0"
                             Grid.Row="2">
                         <hc:Col Span="6">
-                            <TextBlock Margin="10,5"
-                                       FontSize="16">
+                            <hc:Badge x:Name="TSMVersion_Badge" Margin="10,5" ShowBadge="False">
+                                <TextBlock x:Name="TSMVersion"
+                                           FontSize="16">
                         <Run Text="当前版本: " />
                         <Run Text="{Binding TSManagerVersion}" /></TextBlock>
+                            </hc:Badge>
                         </hc:Col>
                         <hc:Col Span="6">
                             <TextBlock FontSize="16"
@@ -822,9 +824,12 @@
                                            Grid.RowSpan="5">
                                     <Border>
                                         <hc:ColorPicker x:Name="GroupManage_ChatColor"
+                                                        Canceled="GroupManage_ChatColor_Canceled"
                                                         hc:TitleElement.Title="聊天颜色"
                                                         hc:TitleElement.TitlePlacement="Left"
-                                                        DataContext="{Binding}" />
+                                                        DataContext="{Binding ElementName=GroupManage_List, Path=SelectedItem}" 
+                                                        SelectedBrush="{Binding DisplayColor}"
+                                                        SelectedColorChanged="GroupManage_ChatColor_SelectedColorChanged"/>
                                     </Border>
                                 </hc:Drawer>
                                 <Button x:Name="GroupManage_Refresh"
@@ -833,8 +838,6 @@
                                         Click="OnButtonClick"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
-                                        Foreground="#FF858585"
-                                        BorderBrush="#FF878787"
                                         Grid.Column="1"
                                         Margin="5,5,5,5"
                                         Height="Auto" />

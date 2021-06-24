@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using TerrariaApi.Server;
 using TShockAPI;
@@ -12,37 +13,40 @@ namespace TSManager.Modules
         {
             await Task.Run(() =>
             {
-                var plr = TShock.Players[args.Who];
-                if (plr != null)
-                {
-                    if (!Info.OnlinePlayers.Contains(plr)) TSMMain.GUIInvoke(() => Info.OnlinePlayers.Add(plr));
-                    if (plr.TryGetPlayerInfo(out var info))
+                try {
+                    if (TShock.Players[args.Who] is { } plr)
                     {
-                        info.Player = plr;
-                        info.Online = true;
-                        TSMMain.GUIInvoke(() => { if (TSMMain.GUI.Bag_Tab.DataContext == info) BagManager.Refresh(false); });
+                        if (!Info.OnlinePlayers.Contains(plr)) TSMMain.GUIInvoke(() => Info.OnlinePlayers.Add(plr));
+                        if (plr.TryGetPlayerInfo(out var info))
+                        {
+                            info.Player = plr;
+                            info.Online = true;
+                            TSMMain.GUIInvoke(() => { if (TSMMain.GUI.Bag_Tab.DataContext == info) BagManager.Refresh(false); });
+                        }
+                        ScriptManager.ExcuteScript(new(Data.ScriptData.Triggers.PlayerJoin, plr, ""));
                     }
-                    ScriptManager.ExcuteScript(new(Data.ScriptData.Triggers.PlayerJoin, plr, ""));
                 }
+                catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
             });
         }
         public async static void OnPlayerLeave(LeaveEventArgs args)
         {
             await Task.Run(() =>
             {
-                var plr = TShock.Players[args.Who];
-                if (plr != null)
-                {
-                    TSMMain.GUIInvoke(() => Info.OnlinePlayers.Remove(plr));
-                    if (plr.TryGetPlayerInfo(out var info))
+                try {
+                    if (TShock.Players[args.Who] is { } plr)
                     {
-                        info.Online = false;
-                        info.Account = TShock.UserAccounts.GetUserAccountByName(info.Name);
-                        info.Data = TShock.CharacterDB.GetPlayerData(info.Player, (int)(info.Account?.ID));
+                        TSMMain.GUIInvoke(() => Info.OnlinePlayers.Remove(plr));
+                        if (plr.TryGetPlayerInfo(out var info))
+                        {
+                            info.Online = false;
+                            info.Account = TShock.UserAccounts.GetUserAccountByName(info.Name);
+                            info.Data = TShock.CharacterDB.GetPlayerData(info.Player, (int)(info.Account?.ID));
+                        }
+                        ScriptManager.ExcuteScript(new(Data.ScriptData.Triggers.PlayerLeave, plr, ""));
                     }
-                    ScriptManager.ExcuteScript(new(Data.ScriptData.Triggers.PlayerLeave, plr, ""));
                 }
-
+                catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
             });
         }
         public static void OnPlayerDead(object o, GetDataHandlers.KillMeEventArgs args)

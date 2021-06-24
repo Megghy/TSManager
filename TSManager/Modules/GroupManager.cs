@@ -102,9 +102,8 @@ namespace TSManager.Modules
                 if (group == null) return;
                 TSMMain.GUI.GroupManage_Permission.ItemsSource = group.Permissions;
                 TSMMain.GUI.GroupManage.DataContext = group;
-                TSMMain.GUI.GroupManage_ChatColor.IsEnabled = true;
                 TSMMain.GUI.GroupManage_ChatColor.DataContext = group;
-                TSMMain.GUI.GroupManage_ChatColor.Background = group.DisplayColor;
+                TSMMain.GUI.GroupManage_ChatColor.SelectedBrush = (System.Windows.Media.SolidColorBrush)group.DisplayColor;
 
                 for (int i = 0; i < TSMMain.GUI.GroupManage_List.Items.Count; i++)
                 {
@@ -122,7 +121,6 @@ namespace TSManager.Modules
             });
 
         }
-
         public static void Save()
         {
             var group = TSMMain.GUI.GroupManage_List.SelectedItem as GroupData;

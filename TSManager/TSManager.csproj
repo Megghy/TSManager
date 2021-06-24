@@ -50,6 +50,9 @@
     <Reference Include="Array">
       <HintPath>Resources\Script\Array.dll</HintPath>
     </Reference>
+    <Reference Include="AutoUpdater.NET, Version=1.6.4.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autoupdater.NET.Official.1.6.4\lib\net45\AutoUpdater.NET.dll</HintPath>
+    </Reference>
     <Reference Include="BCrypt.Net, Version=0.1.4141.31969, Culture=neutral, PublicKeyToken=f3bc8f8c31beeb49, processorArchitecture=MSIL">
       <HintPath>..\packages\BCrypt.Net.0.1.0\lib\net35\BCrypt.Net.dll</HintPath>
     </Reference>
@@ -111,6 +114,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -245,6 +249,7 @@
     <Folder Include="UI\View\" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="ayjbz-m4wnb-002.ico" />
     <Content Include="Resources\Script\Array.dll" />
     <Content Include="Resources\Script\Canvas.dll" />
     <Content Include="Resources\Script\Collection.dll" />

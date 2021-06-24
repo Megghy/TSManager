@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 using HandyControl.Controls;
 using HandyControl.Themes;
 using HandyControl.Tools;
@@ -461,9 +462,15 @@ namespace TSManager
                             PlayerManager.ChangeDisplayInfo((PlayerInfo)l.SelectedItem);
                             break;
                         case "Console_PlayerList":
-                            var info = Info.Players.SingleOrDefault(p => p.Name == ((TSPlayer)l.SelectedItem).Name);
-                            if (info != null) PlayerManager.ChangeDisplayInfo(info);
+                            if (l.SelectedItem is null) return;
+                            if (Utils.TryGetPlayerInfo(((TSPlayer)l.SelectedItem).Name, out var info))
+                            {
+                                PlayerManager.ChangeDisplayInfo(info);
+                                MainTab.SelectedIndex = 2;
+                                Tab_PlayerManage.SelectedIndex = 0;
+                            }
                             else Utils.Notice("此玩家尚未注册", HandyControl.Data.InfoType.Info);
+                            l.SelectedItem = null;
                             break;
                         case "GroupManage_List":
                             GroupManager.ChangeSource((GroupData)l.SelectedItem);
@@ -538,6 +545,15 @@ namespace TSManager
             else LOGO.Effect = null;
             ResourceHelper.GetTheme("HandyTheme", Application.Current.Resources).Skin = TSMMain.Settings.EnableDarkMode ? HandyControl.Data.SkinType.Dark : HandyControl.Data.SkinType.Default;
             OnApplyTemplate();
+        }
+
+        private void GroupManage_ChatColor_Canceled(object sender, EventArgs e) => GroupManager_Drawer.IsOpen = false;
+
+        private void GroupManage_ChatColor_SelectedColorChanged(object sender, HandyControl.Data.FunctionEventArgs<System.Windows.Media.Color> e)
+        {
+            var group = (sender as ColorPicker).DataContext as GroupData;
+            GroupManager_Drawer.IsOpen = false;
+            group.ChatColor = e.Info;
         }
     }
 }
