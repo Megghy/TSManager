@@ -53,7 +53,7 @@ namespace TSManager.Data
         {
             try
             {
-                var tempPlayer = TShock.Players.SingleOrDefault(p => p != null && p.Name == Name);
+                var tempPlayer = TShock.Players.FirstOrDefault(p => p != null && p.Name == Name);
                 Ban = TShock.Bans.Bans.Any(b => b.Value.Identifier == "uuid:" + Account?.UUID) || TShock.Bans.Bans.Any(b => b.Value.Identifier == "acc:" + Name) || (Online && TShock.Bans.Bans.Any(b => b.Value.Identifier == "ip:" + Player.IP));
                 if (tempPlayer == null)
                 {
@@ -70,9 +70,9 @@ namespace TSManager.Data
             }
             catch { }
         }
-        public async void Save()
+        public void Save()
         {
-            await Task.Run(() =>
+            Task.Run(() =>
             {
                 if (Data != null)
                 {
@@ -83,6 +83,7 @@ namespace TSManager.Data
         public bool Online { get; set; }
         [AlsoNotifyFor("Online", new string[] { "HP", "MaxHP", "MP", "MaxMP", "Ban", "_Ban", "Mute", "GodMode", "KnownIP", "LastLoginTime", "RegisterTime", "Status", "StatusColor" })]
         public long PlayTime { get; set; }
+        public string PlayTime_Text { get { TimeSpan ts = new(0, 0, (int)(PlayTime / 1000)); return $"{ts.Days}日 {ts.Hours}时 {ts.Minutes}分 {ts.Seconds}秒"; } set { } }
         public string Status { get => Online ? "在线" : "离线"; set { } }
         public Brush StatusColor { get => Online ? Color.FromRgb(178, 223, 120).ToBrush() : Color.FromRgb(253, 86, 86).ToBrush(); set { } }
         public TSPlayer Player { get; set; } = new TSPlayer(-1);
@@ -132,7 +133,7 @@ namespace TSManager.Data
         }
         public bool Ban { get; set; }
         public bool _Ban { get => !Ban; set { } }
-        public TShockAPI.Group Group
+        public Group Group
         {
             get => Online ? Player.Group : TShock.Groups.GetGroupByName(Account.Group);
             set => TShock.UserAccounts.SetUserGroup(Account, value.Name);

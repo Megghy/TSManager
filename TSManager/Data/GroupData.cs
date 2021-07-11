@@ -26,9 +26,9 @@ namespace TSManager.Data
         }
         public async static Task<List<PermissionData>> GetPermissionsAsync(string groupName)
         {
-            var list = new List<PermissionData>();
-            await Task.Run(() =>
+            return await Task.Run(() =>
             {
+                var list = new List<PermissionData>();
                 var group = TShock.Groups.GetGroupByName(groupName);
                 if (group == null) return list;
                 else if (group.permissions == null) return list;
@@ -41,7 +41,6 @@ namespace TSManager.Data
                 templist.ForEach(p => { if (p != "" && p != " ") list.Add(new PermissionData(p, "未知")); });
                 return list;
             });
-            return list;
         }
         public GroupData(Group group, bool getpermission = false)
         {

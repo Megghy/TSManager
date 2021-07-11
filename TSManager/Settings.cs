@@ -14,7 +14,7 @@
         {
             // // 若要为保存和更改设置添加事件处理程序，请取消注释下列行: 
             //
-            this.SettingChanging += this.SettingChangingEventHandler;
+            //this.SettingChanging += this.SettingChangingEventHandler;
             //
             // this.SettingsSaving += this.SettingsSavingEventHandler;
             //
@@ -22,8 +22,7 @@
 
         private void SettingChangingEventHandler(object sender, System.Configuration.SettingChangingEventArgs e)
         {
-            // 在此处添加用于处理 SettingChangingEvent 事件的代码。
-            this.Save();
+            Default.Save();
         }
 
         private void SettingsSavingEventHandler(object sender, System.ComponentModel.CancelEventArgs e)

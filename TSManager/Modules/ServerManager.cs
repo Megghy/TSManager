@@ -102,15 +102,16 @@ namespace TSManager.Modules
             public string Text { get; set; }
             public Color Color { get; set; }
         }
-        Queue<QueueInfo> MessageQueue = new();
+
+        readonly Queue<QueueInfo> MessageQueue = new();
         public void OnGetText(string s, Color color = default)
         {
             if (!Info.IsServerRunning) return;
             MessageQueue.Enqueue(new(color == default ? foregroundColor : color, s));
         }
-        internal async void ProcessText()
+        internal void ProcessText()
         {
-            await Task.Run(() =>
+            Task.Run(() =>
             {
                 while (true)
                 {
@@ -198,9 +199,9 @@ namespace TSManager.Modules
             Stop();
         }
 
-        public async void Start(string[] param)
+        public void Start(string[] param)
         {
-            await Task.Run(() =>
+            Task.Run(() =>
             {
                 if (!Directory.Exists(Info.PluginPath) || !Directory.GetFiles(Info.PluginPath).Exist(f => Path.GetFileName(f) == "TShockAPI.dll"))
                 {
@@ -243,9 +244,9 @@ namespace TSManager.Modules
             });
         }
 
-        public async void AppendText(string text)
+        public void AppendText(string text)
         {
-            await Task.Run(() =>
+            Task.Run(() =>
             {
                 TSMMain.GUI.Console_ConsoleBox.AddLine(text, Color.FromRgb(208, 171, 233));
                 if (Info.IsEnterWorld)
@@ -254,8 +255,7 @@ namespace TSManager.Modules
                 }
                 else
                 {
-                    istream.AppendText(text == "" || text == null ? " " : text);
-                    istream.AppendText("");
+                    istream.AppendText(text == null ? "" : text);
                 }
             });
         }

@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Terraria;
+using Terraria.ID;
 using Terraria.Localization;
 using TShockAPI;
 using TSManager.Data;
@@ -18,7 +19,7 @@ namespace TSManager.Modules
         {
             if (TSMMain.GUI.PlayerManage_List.SelectedItem is PlayerInfo info)
             {
-                ChangeItemListAsync(GetPlayerBag(info, (BagType)TSMMain.GUI.Bag_Choose.SelectedIndex));
+                ChangeItemList(GetPlayerBag(info, (BagType)TSMMain.GUI.Bag_Choose.SelectedIndex));
             }
             if (showNotice) Utils.Notice("已刷新背包", HandyControl.Data.InfoType.Success);
         }
@@ -26,7 +27,7 @@ namespace TSManager.Modules
         {
             if (item.Owner.Online)
             {
-                ModifyItemOnline(new ItemData(item.Owner, new(), item.Slot));
+                ModifyItemOnline(new ItemData(item.Owner, new Item(), item.Slot));
             }
             else
             {
@@ -134,90 +135,92 @@ namespace TSManager.Modules
                 ((Label)TSMMain.GUI.PlayerBagBox.Children[i]).Background = null;
             }
         }
-        public static async void ChangeItemListAsync(List<ItemData> list)
+        public async static void ChangeItemList(List<ItemData> list)
         {
             await Task.Run(() =>
-            {
-                if (list == null) return;
-                var gui = TSMMain.GUI;
-                for (int i = 0; i < list.Count; i++)
-                {
-                    if (i >= list.Count)
-                    {
-                        ((Label)TSMMain.GUI.PlayerBagBox.Children[i]).Background = null;
-                        continue;
-                    }
-                    DrawingGroup imageDrawings = new();
-                    ImageDrawing background = new()
-                    {
-                        Rect = new Rect(0, 0, 60, 60),
-                        ImageSource = Utils.GetTexture("Bag.png").Result
-                    };
-                    imageDrawings.Children.Add(background);
+           {
+               lock (TSMMain.GUI.PlayerBagBox)
+               {
+                   if (list == null) return;
+                   for (int i = 0; i < list.Count; i++)
+                   {
+                       if (i >= list.Count)
+                       {
+                           ((Label)TSMMain.GUI.PlayerBagBox.Children[i]).Background = null;
+                           continue;
+                       }
+                       DrawingGroup imageDrawings = new();
+                       ImageDrawing background = new()
+                       {
+                           Rect = new Rect(0, 0, 60, 60),
+                           ImageSource = Utils.GetTexture("Bag.png").Result
+                       };
+                       imageDrawings.Children.Add(background);
 
-                    var item = Utils.GetTexture($"{list[i].ID}.png").Result;
-                    if (item == null) continue;
+                       var item = Utils.GetTexture($"{list[i].ID}.png").Result;
+                       if (item == null) continue;
 
-                    //十分憨批的图片缩放
-                    var width = item.Width;
-                    var height = item.Height;
-                    double top = 0;
-                    double left = 0;
-                    int size = 32;
-                    int blocksize = 60;
-                    if (height > size && width > size) //高宽都超过
-                    {
-                        if (width >= height)
+                        //十分憨批的图片缩放
+                        var width = item.Width;
+                       var height = item.Height;
+                       double top = 0;
+                       double left = 0;
+                       int size = 32;
+                       int blocksize = 60;
+                       if (height > size && width > size) //高宽都超过
                         {
-                            height = (size / width) * height;
-                            width = size;
-                            top = (blocksize - height) / 2;
-                            left = (blocksize - width) / 2;
-                        }
-                        else
+                           if (width >= height)
+                           {
+                               height = size / width * height;
+                               width = size;
+                               top = (blocksize - height) / 2;
+                               left = (blocksize - width) / 2;
+                           }
+                           else
+                           {
+                               width = size / height * width;
+                               height = size;
+                               top = (blocksize - height) / 2;
+                               left = (blocksize - width) / 2;
+                           }
+                       }
+                       else if (height > size && width <= size)  //贴图高度超过
                         {
-                            width = (size / height) * width;
-                            height = size;
-                            top = (blocksize - height) / 2;
-                            left = (blocksize - width) / 2;
-                        }
-                    }
-                    else if (height > size && width <= size)  //贴图高度超过
-                    {
-                        width = (size / height) * width;
-                        height = size;
-                        top = (blocksize - height) / 2;
-                        left = (blocksize - width) / 2;
-                    }
-                    else if (height <= size && width > size)  //贴图宽度超过
-                    {
-                        height = (size / width) * height;
-                        width = size;
-                        top = (blocksize - height) / 2;
-                        left = (blocksize - width) / 2;
-                    }
-                    else
-                    {
-                        top = (blocksize - height) / 2;
-                        left = (blocksize - width) / 2;
-                    }
-                    ImageDrawing smallKiwi1 = new ImageDrawing
-                    {
-                        Rect = new Rect(left, top, width, height),
-                        ImageSource = item
-                    }; //物品贴图位置
-                    imageDrawings.Children.Add(smallKiwi1);
-                    DrawingImage drawingImageSource = new(imageDrawings);
-                    drawingImageSource.Freeze();
-                    TSMMain.GUIInvoke(() =>
-                    {
-                        var l = (Label)TSMMain.GUI.PlayerBagBox.Children[i];
-                        l.Content = list[i].Stack == 0 ? "" : list[i].Stack;
-                        l.Background = new ImageBrush(drawingImageSource);
-                        l.DataContext = list[i];
-                    });
-                }
-            });
+                           width = size / height * width;
+                           height = size;
+                           top = (blocksize - height) / 2;
+                           left = (blocksize - width) / 2;
+                       }
+                       else if (height <= size && width > size)  //贴图宽度超过
+                        {
+                           height = size / width * height;
+                           width = size;
+                           top = (blocksize - height) / 2;
+                           left = (blocksize - width) / 2;
+                       }
+                       else
+                       {
+                           top = (blocksize - height) / 2;
+                           left = (blocksize - width) / 2;
+                       }
+                       ImageDrawing smallKiwi1 = new ImageDrawing
+                       {
+                           Rect = new Rect(left, top, width, height),
+                           ImageSource = item
+                       }; //物品贴图位置
+                        imageDrawings.Children.Add(smallKiwi1);
+                       DrawingImage drawingImageSource = new(imageDrawings);
+                       drawingImageSource.Freeze();
+                       TSMMain.GUIInvoke(() =>
+                       {
+                           var l = (Label)TSMMain.GUI.PlayerBagBox.Children[i];
+                           l.Content = list[i].Stack == 0 ? "" : list[i].Stack;
+                           l.Background = new ImageBrush(drawingImageSource);
+                           l.DataContext = list[i];
+                       });
+                   }
+               }
+           });
         }
         public enum BagType
         {
@@ -237,64 +240,89 @@ namespace TSManager.Modules
             {
                 if (info is null || info.Data is null) return null;
                 List<ItemData> list = new();
-                NetItem item;
+                var plr = info.Online ? info.Player.TPlayer : null;
                 switch (type)
                 {
                     case BagType.inventory:
-                        for (int i = 0; i < 50; i++)
+                        for (int i = 0; i < 50; i++) list.Add(new()
                         {
-                            item = info.Data.inventory[i];
-                            list.Add(new ItemData(info, item, i));
-                        }
+                            Owner = info,
+                            ID = info.Online ? plr.inventory[i].type : info.Data.inventory[i].NetId,
+                            Stack = info.Online ? plr.inventory[i].stack : info.Data.inventory[i].Stack,
+                            Prefix = info.Online ? plr.inventory[i].prefix : info.Data.inventory[i].PrefixId,
+                            Slot = i
+                        });
                         return list;
                     case BagType._inventoty:
-                        for (int i = 50; i < 59; i++)
+                        for (int i = 50; i < 58; i++) list.Add(new()
                         {
-                            item = info.Data.inventory[i];
-                            list.Add(new ItemData(info, item, i));
-                        }
+                            Owner = info,
+                            ID = (int)(info.Online ? plr.inventory[i]?.type : info.Data.inventory[i].NetId),
+                            Stack = (int)(info.Online ? plr.inventory[i]?.stack : info.Data.inventory[i].Stack),
+                            Prefix = (int)(info.Online ? plr.inventory[i]?.prefix : info.Data.inventory[i].PrefixId),
+                            Slot = i
+                        });
+                        if (info.Online) list.Add(new(info, plr.trashItem, 59));
                         return list;
                     case BagType.equipment:
-                        for (int i = 59; i < 79; i++)
+                        for (int i = 59; i < 79; i++) list.Add(new()
                         {
-                            item = info.Data.inventory[i];
-                            list.Add(new ItemData(info, item, i));
-                        }
+                            Owner = info,
+                            ID = info.Online ? plr.miscEquips[i - 59].type : info.Data.inventory[i].NetId,
+                            Stack = info.Online ? plr.miscEquips[i - 59].stack : info.Data.inventory[i].Stack,
+                            Prefix = info.Online ? plr.miscEquips[i - 59].prefix : info.Data.inventory[i].PrefixId,
+                            Slot = i
+                        });
                         return list;
                     case BagType.dyes:
-                        for (int i = 79; i < 89; i++)
+                        for (int i = 79; i < 89; i++) list.Add(new()
                         {
-                            item = info.Data.inventory[i];
-                            list.Add(new ItemData(info, item, i));
-                        }
+                            Owner = info,
+                            ID = info.Online ? plr.dye[i - 79].type : info.Data.inventory[i].NetId,
+                            Stack = info.Online ? plr.dye[i - 79].stack : info.Data.inventory[i].Stack,
+                            Prefix = info.Online ? plr.dye[i - 79].prefix : info.Data.inventory[i].PrefixId,
+                            Slot = i
+                        });
                         return list;
                     case BagType.piggy:
-                        for (int i = 100; i < 140; i++)
+                        for (int i = 100; i < 140; i++) list.Add(new()
                         {
-                            item = info.Data.inventory[i];
-                            list.Add(new ItemData(info, item, i));
-                        }
+                            Owner = info,
+                            ID = info.Online ? plr.bank.item[i - 100].type : info.Data.inventory[i].NetId,
+                            Stack = info.Online ? plr.bank.item[i - 100].stack : info.Data.inventory[i].Stack,
+                            Prefix = info.Online ? plr.bank.item[i - 100].prefix : info.Data.inventory[i].PrefixId,
+                            Slot = i
+                        });
                         return list;
                     case BagType.safe:
-                        for (int i = 140; i < 180; i++)
+                        for (int i = 140; i < 180; i++) list.Add(new()
                         {
-                            item = info.Data.inventory[i];
-                            list.Add(new ItemData(info, item, i));
-                        }
+                            Owner = info,
+                            ID = info.Online ? plr.bank2.item[i - 140].type : info.Data.inventory[i].NetId,
+                            Stack = info.Online ? plr.bank2.item[i - 140].stack : info.Data.inventory[i].Stack,
+                            Prefix = info.Online ? plr.bank2.item[i - 140].prefix : info.Data.inventory[i].PrefixId,
+                            Slot = i
+                        });
                         return list;
                     case BagType.forge:
-                        for (int i = 180; i < 220; i++)
+                        for (int i = 180; i < 220; i++) list.Add(new()
                         {
-                            item = info.Data.inventory[i];
-                            list.Add(new ItemData(info, item, i));
-                        }
+                            Owner = info,
+                            ID = info.Online ? plr.bank3.item[i - 180].type : info.Data.inventory[i].NetId,
+                            Stack = info.Online ? plr.bank3.item[i - 180].stack : info.Data.inventory[i].Stack,
+                            Prefix = info.Online ? plr.bank3.item[i - 180].prefix : info.Data.inventory[i].PrefixId,
+                            Slot = i
+                        });
                         return list;
                     case BagType.Void:
-                        for (int i = 220; i < 260; i++)
+                        for (int i = 220; i < 260; i++) list.Add(new()
                         {
-                            item = info.Data.inventory[i];
-                            list.Add(new ItemData(info, item, i));
-                        }
+                            Owner = info,
+                            ID = info.Online ? plr.bank4.item[i - 220].type : info.Data.inventory[i].NetId,
+                            Stack = info.Online ? plr.bank4.item[i - 220].stack : info.Data.inventory[i].Stack,
+                            Prefix = info.Online ? plr.bank4.item[i - 220].prefix : info.Data.inventory[i].PrefixId,
+                            Slot = i
+                        });
                         return list;
                     case BagType.buff:
                         Utils.Notice("还没写! 先用用别的⑧");
@@ -306,7 +334,7 @@ namespace TSManager.Modules
         }
         public static void ChangeBag(PlayerInfo info, BagType type)
         {
-            ChangeItemListAsync(GetPlayerBag(info, type));
+            ChangeItemList(GetPlayerBag(info, type));
             TSMMain.GUI.Bag_ItemInfo.DataContext = null;
         }
         public static void SelectItem(object sender, RoutedEventArgs e)

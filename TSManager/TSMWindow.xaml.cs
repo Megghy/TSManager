@@ -340,13 +340,14 @@ namespace TSManager
                 else if (b.Name.StartsWith("PlayerManage"))
                 {
                     #region 玩家管理器
-                    if (b.DataContext is not Data.PlayerInfo plrInfo)
+                    if (b.DataContext is not PlayerInfo plrInfo)
                     {
                         Utils.Notice("未选择玩家", HandyControl.Data.InfoType.Warning);
                         return;
                     }
                     if (!plrInfo.Online && b.Name is not "PlayerManage_Del" or "PlayerManage_Ban" or "PlayerManage_UnBan")
                     {
+                        b.IsChecked = false;
                         Utils.Notice("玩家 " + plrInfo.Name + " 未在线.", HandyControl.Data.InfoType.Warning);
                         return;
                     }
@@ -360,6 +361,30 @@ namespace TSManager
                             break;
                     }
                     #endregion
+                }
+                else if(b.Name.StartsWith("Console"))
+                {
+                    switch (b.Name)
+                    {
+                        case "Console_AutoStart":
+                            TSMMain.Settings.AutoStart = (bool)b.IsChecked;
+                            break;
+                        case "Console_EnableChinese":
+                            TSMMain.Settings.EnableChinese = (bool)b.IsChecked;
+                            break;
+                    }
+                    TSMMain.Settings.Save();
+                }
+                else if (b.Name.StartsWith("Setting"))
+                {
+                    switch (b.Name)
+                    {
+                        case "Setting_EnableDarkMode":
+                            TSMMain.Settings.EnableDarkMode = (bool)b.IsChecked;
+                            TSMMain.Settings.Save();
+                            ChangeNightMode((bool)b.IsChecked);
+                            break;
+                    }
                 }
             }
             catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
@@ -527,7 +552,6 @@ namespace TSManager
             { //Utils.Notice(ex, HandyControl.Data.InfoType.Error);
             }
         }
-
         private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (sender is GraphicScriptEditor)
@@ -536,19 +560,14 @@ namespace TSManager
                 VisualBox.Focus();
             }
         }
-        internal void ChangeNightMode(object sender, RoutedEventArgs e)
+        internal void ChangeNightMode(bool enable)
         {
-            var checkbox = sender as CheckBox;
-            SharedResourceDictionary.SharedDictionaries.Clear();
-            TSMMain.Settings.EnableDarkMode = (bool)checkbox.IsChecked;
-            if (TSMMain.Settings.EnableDarkMode) LOGO.Effect = new HandyControl.Media.Effects.ColorComplementEffect();
+            if (enable) LOGO.Effect = new HandyControl.Media.Effects.ColorComplementEffect();
             else LOGO.Effect = null;
-            ResourceHelper.GetTheme("HandyTheme", Application.Current.Resources).Skin = TSMMain.Settings.EnableDarkMode ? HandyControl.Data.SkinType.Dark : HandyControl.Data.SkinType.Default;
+            ResourceHelper.GetTheme("HandyTheme", Application.Current.Resources).Skin = enable ? HandyControl.Data.SkinType.Dark : HandyControl.Data.SkinType.Default;
             OnApplyTemplate();
         }
-
         private void GroupManage_ChatColor_Canceled(object sender, EventArgs e) => GroupManager_Drawer.IsOpen = false;
-
         private void GroupManage_ChatColor_SelectedColorChanged(object sender, HandyControl.Data.FunctionEventArgs<System.Windows.Media.Color> e)
         {
             var group = (sender as ColorPicker).DataContext as GroupData;

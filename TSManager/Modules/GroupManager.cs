@@ -10,11 +10,11 @@ namespace TSManager.Modules
 {
     class GroupManager
     {
-        public async static void RefreshGroupData()
+        public static void RefreshGroupData()
         {
-            try
+            Task.Run(() =>
             {
-                await Task.Run(() =>
+                try
                 {
                     //读取所有用户组
                     var groups = new List<GroupData>();
@@ -38,9 +38,10 @@ namespace TSManager.Modules
                         }
                         else if (groups.Count > 0) ChangeSource(groups[0]);
                     });
-                });
-            }
-            catch { }
+                }
+                catch (Exception ex) { TShock.Log.ConsoleError(ex.Message); }
+            });
+
         }
         public static void Del(GroupData group)
         {

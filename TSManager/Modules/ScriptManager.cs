@@ -399,9 +399,9 @@ namespace TSManager
             public TSPlayer Target { get; set; }
             public string Message { get; set; }
         }
-        public async static void Excute(this ScriptData script, ScriptExcuteArgs args)
+        public static void Excute(this ScriptData script, ScriptExcuteArgs args)
         {
-            await Task.Run(() =>
+            Task.Run(() =>
             {
                 try
                 {

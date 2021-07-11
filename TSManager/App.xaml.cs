@@ -31,6 +31,7 @@ namespace TSManager
                 };
                 //Task线程内未捕获异常处理事件
                 TaskScheduler.UnobservedTaskException += (object sender, UnobservedTaskExceptionEventArgs ex) => Utils.Notice("异步异常捕获:\r\n" + ex.Exception.Message);
+                Exit += (_, _) => TSManager.Properties.Settings.Default.Save();
 
                 if (TSManager.Properties.Settings.Default.UpgradeRequired)
                 {

@@ -42,23 +42,24 @@ namespace TSManager.Modules
             Info.Server.OnGetText(text.ToString(), color);
         }
         public static void AddLine(object text, Color color = default) => AddText(text + "\r\n", color);
-        public async void Stop()
+        public void Stop()
         {
-            await Task.Run(() =>
+            Task.Run(() =>
             {
                 TShock.Utils.StopServer();
             });
         }
         internal void Exit()
         {
+            Settings.Save();
             GUIInvoke(() => GUI.Visibility = Visibility.Hidden);
             Info.Server.Stop();
             if (GUI.restart) Process.Start(System.Reflection.Assembly.GetExecutingAssembly().Location);
             Environment.Exit(0);
         }
-        public async void Update()
+        public void Update()
         {
-            await Task.Run(() =>
+            Task.Run(() =>
             {
                 while (true)
                 {
@@ -71,6 +72,7 @@ namespace TSManager.Modules
                             {
                                 ((ServerStatus)GUI.Tab_Index.DataContext).RunTime += UpdateTime;
                                 Info.Players?.ForEach(p => p.Update());
+                                GUI.PlayerManage_Count.Content = Info.Players.Count;
                             }
                         });
                         Task.Delay(UpdateTime).Wait();
@@ -121,6 +123,7 @@ namespace TSManager.Modules
             try
             {
                 Info.Server.ProcessText(); //循环处理消息队列
+                GUI.ChangeNightMode(Settings.EnableDarkMode); //调整暗色模式
                 #region 自动更新处理
                 AutoUpdater.Start("https://oss.suki.club/TSManager/Update.xml");
                 Timer t = new()
@@ -138,7 +141,6 @@ namespace TSManager.Modules
                 };
                 #endregion
                 #region 玩家管理器加载代码
-                if (Settings.EnableDarkMode) GUI.ChangeNightMode(null, null);
                 GUI.ServerStatus.Visibility = Visibility.Hidden; //暂时隐藏服务器状态
                 GUI.Versions.Visibility = Visibility.Hidden; //暂时隐藏服务器版本
                 Info.TextureZip = ZipFile.Read(new MemoryStream(Properties.Resources.Texture)); //加载贴图
@@ -235,10 +237,12 @@ namespace TSManager.Modules
             Update();
             Utils.Notice("正在启动服务器...", HandyControl.Data.InfoType.Info);
         }
-        internal async void OnServerPostInitialize(EventArgs args)
+        internal void OnServerPostInitialize(EventArgs args)
         {
-            await Task.Run(() =>
+            Task.Run(() =>
             {
+                //检测一下开没开ssc
+                if (!Main.ServerSideCharacter) Utils.Notice("检测到你并未开启服务器云存档, 玩家管理的部分功能将无法生效.");
                 //加载服务器状态信息
                 GUIInvoke(() =>
                 {
@@ -256,15 +260,8 @@ namespace TSManager.Modules
                     GroupManager.RefreshGroupData();//读取所有组权限
                 });
 
-                #region 注册一些用得到的hook
-                ServerApi.Hooks.ServerLeave.Register(this, HookManager.OnPlayerLeave);
-                ServerApi.Hooks.ServerJoin.Register(this, HookManager.OnPlayerJoin);
-
-                GetDataHandlers.KillMe += HookManager.OnPlayerDead;
-
-                TShockAPI.Hooks.AccountHooks.AccountCreate += HookManager.OnAccountCreate;
-                TShockAPI.Hooks.AccountHooks.AccountDelete += HookManager.OnAccountDelete;
-                #endregion
+                // 注册一些用得到的hook
+                HookManager.RegisterHooks();
 
                 Utils.Notice("服务器启动完成", HandyControl.Data.InfoType.Success);
                 Info.IsEnterWorld = true;

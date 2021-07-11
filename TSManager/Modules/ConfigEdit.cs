@@ -71,9 +71,9 @@ namespace TSManager.Modules
                     break;
             }
         }
-        public async static void OnTextChange(Data.ConfigData data)
+        public static void OnTextChange(Data.ConfigData data)
         {
-            await Task.Run(() =>
+            Task.Run(() =>
             {
                 if (data == null) return;
                 try

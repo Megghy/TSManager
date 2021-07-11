@@ -8,19 +8,31 @@ namespace TSManager.Modules
 {
     class HookManager
     {
-
-        public async static void OnPlayerJoin(JoinEventArgs args)
+        internal static void RegisterHooks()
         {
-            await Task.Run(() =>
+            ServerApi.Hooks.ServerLeave.Register(TSMMain.Instance, OnPlayerLeave);
+            ServerApi.Hooks.NetGreetPlayer.Register(TSMMain.Instance, OnPlayerJoin);
+
+            GetDataHandlers.KillMe += OnPlayerDead;
+
+            TShockAPI.Hooks.AccountHooks.AccountCreate += OnAccountCreate;
+            TShockAPI.Hooks.AccountHooks.AccountDelete += OnAccountDelete;
+        }
+        public static void OnPlayerJoin(GreetPlayerEventArgs args)
+        {
+            Task.Run(() =>
             {
                 try {
                     if (TShock.Players[args.Who] is { } plr)
                     {
-                        if (!Info.OnlinePlayers.Contains(plr)) TSMMain.GUIInvoke(() => Info.OnlinePlayers.Add(plr));
+                        if (!Info.OnlinePlayers.Any(p => p.Name == plr.Name)) TSMMain.GUIInvoke(() => Info.OnlinePlayers.Add(plr));
                         if (plr.TryGetPlayerInfo(out var info))
                         {
                             info.Player = plr;
                             info.Online = true;
+                            info.PlayTime = 0;
+                            info.Account = TShock.UserAccounts.GetUserAccountByName(info.Name);
+                            info.Data = TShock.CharacterDB.GetPlayerData(info.Player, (int)(info.Account?.ID));
                             TSMMain.GUIInvoke(() => { if (TSMMain.GUI.Bag_Tab.DataContext == info) BagManager.Refresh(false); });
                         }
                         ScriptManager.ExcuteScript(new(Data.ScriptData.Triggers.PlayerJoin, plr, ""));
@@ -29,19 +41,17 @@ namespace TSManager.Modules
                 catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
             });
         }
-        public async static void OnPlayerLeave(LeaveEventArgs args)
+        public static void OnPlayerLeave(LeaveEventArgs args)
         {
-            await Task.Run(() =>
+            Task.Run(() =>
             {
                 try {
                     if (TShock.Players[args.Who] is { } plr)
                     {
-                        TSMMain.GUIInvoke(() => Info.OnlinePlayers.Remove(plr));
+                        TSMMain.GUIInvoke(() => Info.OnlinePlayers.Remove(Info.OnlinePlayers.FirstOrDefault(p => p.Name == plr.Name)));
                         if (plr.TryGetPlayerInfo(out var info))
                         {
                             info.Online = false;
-                            info.Account = TShock.UserAccounts.GetUserAccountByName(info.Name);
-                            info.Data = TShock.CharacterDB.GetPlayerData(info.Player, (int)(info.Account?.ID));
                         }
                         ScriptManager.ExcuteScript(new(Data.ScriptData.Triggers.PlayerLeave, plr, ""));
                     }

@@ -14,9 +14,9 @@ namespace TSManager.Data
     class ServerStatus
     {
         public ServerStatus() => LoadInfo();
-        async void LoadInfo()
+        void LoadInfo()
         {
-            await Task.Run(() =>
+            Task.Run(() =>
             {
                 TSManagerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
                 TerrariaVersion = Main.versionNumber2.ToString();
