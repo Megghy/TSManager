@@ -30,7 +30,6 @@ namespace TSManager.Modules
         public static void OnTextEntered(object sender, TextCompositionEventArgs e)
         {
             var editor = TSMMain.GUI.ConfigEditor;
-            var data = editor.DataContext as Data.ConfigData;
             switch (e.Text)
             {
                 /*case "t":
@@ -91,12 +90,12 @@ namespace TSManager.Modules
                 if (Utils.TryParseJson(data.Text, out var json)) data.JsonData = json; //首先转换一下文本
                 if (force || !data.Error)
                 {
-                    using (StreamWriter sw = new StreamWriter(data.Path))
+                    using (StreamWriter sw = new(data.Path))
                     {
                         sw.WriteLine(data.Text);
                         sw.Flush();
                     }
-                    if (Info.IsServerRunning) ReloadCfg(data.JsonData, data.Name == "config.json" || data.Name == "sscconfig.json");
+                    if (Info.IsServerRunning) ReloadCfg();
                     Utils.Notice($"已保存该配置文件.{(Info.IsServerRunning ? "\r\n仅有部分插件支持重载, 一些设置项修改后可能需要重启后才能生效." : "")}", HandyControl.Data.InfoType.Success);
                 }
                 else Growl.Ask("Json格式存在错误, 确定要保存吗?", b =>
@@ -113,7 +112,7 @@ namespace TSManager.Modules
         /// <summary>
         /// 不加载程序集直接保存会报错
         /// </summary>
-        static void ReloadCfg(JObject jobj, bool istsconfig) => GeneralHooks.OnReloadEvent(TSPlayer.Server);
+        static void ReloadCfg() => GeneralHooks.OnReloadEvent(TSPlayer.Server);
         public static void OpenFile(ConfigData data)
         {
             Process.Start("notepad.exe", data.Path);

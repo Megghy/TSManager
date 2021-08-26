@@ -12,7 +12,7 @@ namespace ScratchNet
         {
             get
             {
-                Descriptor desc = new Descriptor();
+                Descriptor desc = new();
                 desc.Add(new ExpressionDescriptor(this, "Queue", "any") { NothingAllowed = true });
                 desc.Add(new TextItemDescriptor(this, ".enqueue("));
                 desc.Add(new ExpressionDescriptor(this, "Value", "any"));

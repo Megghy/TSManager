@@ -17,7 +17,8 @@ namespace TSManager.Data
         public static List<ConfigData> ReadAllConfig()
         {
             var list = new List<ConfigData>();
-            if (!Directory.Exists(Info.ConfigPath)) Directory.CreateDirectory(Info.ConfigPath);
+            if (!Directory.Exists(Info.ConfigPath))
+                Directory.CreateDirectory(Info.ConfigPath);
             var files = Directory.GetFiles(Info.ConfigPath, "*.json");
             if (files.Any())
             {
@@ -29,7 +30,7 @@ namespace TSManager.Data
                         var text = File.ReadAllText(filename);
                         if (Utils.TryParseJson(text, out var jobj))
                         {
-                            if (jobj.TryGetValue("Settings", out var temp) && jobj.Count == 1) list.Add(new ConfigData(shortName, filename, text, (JObject)jobj["Settings"]));
+                            if (jobj.TryGetValue("Settings", out var temp) && jobj.Count == 1) list.Add(new(shortName, filename, text, (JObject)jobj["Settings"]));
                             else list.Add(new ConfigData(shortName, filename, text, jobj));
                         }
                         else

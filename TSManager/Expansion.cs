@@ -38,12 +38,12 @@ namespace TSManager
                 {
                     t.Document.Blocks.Add(new Paragraph());
                 }
-                Run run = new Run(content);
+                Run run = new(content);
                 run.Foreground = color.ToBrush();
                 run.FontFamily = new FontFamily("Consolas");
                 if (playerInfo)
                 {
-                    Hyperlink hl = new Hyperlink(run);
+                    Hyperlink hl = new(run);
                     hl.Foreground = color.ToBrush();
                     hl.MouseLeftButtonDown += PlayerClickEvent;
                     hl.Cursor = Cursors.Hand;
@@ -69,7 +69,7 @@ namespace TSManager
 
         public static SolidColorBrush ToBrush(this Color color)
         {
-            SolidColorBrush solidColorBrush = new SolidColorBrush(color);
+            SolidColorBrush solidColorBrush = new(color);
             solidColorBrush.Freeze();
             return solidColorBrush;
         }

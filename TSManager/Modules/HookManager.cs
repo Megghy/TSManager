@@ -38,7 +38,7 @@ namespace TSManager.Modules
                         ScriptManager.ExcuteScript(new(Data.ScriptData.Triggers.PlayerJoin, plr, ""));
                     }
                 }
-                catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
+                catch (Exception ex) { ex.ShowError(); }
             });
         }
         public static void OnPlayerLeave(LeaveEventArgs args)
@@ -56,7 +56,7 @@ namespace TSManager.Modules
                         ScriptManager.ExcuteScript(new(Data.ScriptData.Triggers.PlayerLeave, plr, ""));
                     }
                 }
-                catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
+                catch (Exception ex) { ex.ShowError(); }
             });
         }
         public static void OnPlayerDead(object o, GetDataHandlers.KillMeEventArgs args)

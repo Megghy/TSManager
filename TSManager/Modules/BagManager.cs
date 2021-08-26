@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Terraria;
-using Terraria.ID;
 using Terraria.Localization;
 using TShockAPI;
 using TSManager.Data;
@@ -135,10 +134,10 @@ namespace TSManager.Modules
                 ((Label)TSMMain.GUI.PlayerBagBox.Children[i]).Background = null;
             }
         }
-        public async static void ChangeItemList(List<ItemData> list)
+        public static void ChangeItemList(List<ItemData> list)
         {
-            await Task.Run(() =>
-           {
+            Task.Run(() =>
+            {
                lock (TSMMain.GUI.PlayerBagBox)
                {
                    if (list == null) return;
@@ -160,15 +159,15 @@ namespace TSManager.Modules
                        var item = Utils.GetTexture($"{list[i].ID}.png").Result;
                        if (item == null) continue;
 
-                        //十分憨批的图片缩放
-                        var width = item.Width;
+                       //十分憨批的图片缩放
+                       var width = item.Width;
                        var height = item.Height;
                        double top = 0;
                        double left = 0;
                        int size = 32;
                        int blocksize = 60;
                        if (height > size && width > size) //高宽都超过
-                        {
+                       {
                            if (width >= height)
                            {
                                height = size / width * height;
@@ -185,14 +184,14 @@ namespace TSManager.Modules
                            }
                        }
                        else if (height > size && width <= size)  //贴图高度超过
-                        {
+                       {
                            width = size / height * width;
                            height = size;
                            top = (blocksize - height) / 2;
                            left = (blocksize - width) / 2;
                        }
                        else if (height <= size && width > size)  //贴图宽度超过
-                        {
+                       {
                            height = size / width * height;
                            width = size;
                            top = (blocksize - height) / 2;
@@ -203,12 +202,12 @@ namespace TSManager.Modules
                            top = (blocksize - height) / 2;
                            left = (blocksize - width) / 2;
                        }
-                       ImageDrawing smallKiwi1 = new ImageDrawing
+                       ImageDrawing smallKiwi1 = new()
                        {
                            Rect = new Rect(left, top, width, height),
                            ImageSource = item
                        }; //物品贴图位置
-                        imageDrawings.Children.Add(smallKiwi1);
+                       imageDrawings.Children.Add(smallKiwi1);
                        DrawingImage drawingImageSource = new(imageDrawings);
                        drawingImageSource.Freeze();
                        TSMMain.GUIInvoke(() =>
@@ -345,7 +344,7 @@ namespace TSManager.Modules
                 var item = (ItemData)label.DataContext;
                 TSMMain.GUI.Bag_ItemInfo.DataContext = item;
             }
-            catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
+            catch (Exception ex) { ex.ShowError(); }
         }
         public static void ChangePrefix(ItemData item, int prefix)
         {

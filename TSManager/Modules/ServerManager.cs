@@ -1,15 +1,16 @@
-﻿using System;
+﻿using HarmonyLib;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
-using HarmonyLib;
-using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
 
@@ -21,12 +22,33 @@ namespace TSManager.Modules
         private readonly Assembly mainasm;
         private readonly BlockingStream istream;
         //private readonly HashSet<Thread> ThreadList = new HashSet<Thread>();
-        private static MethodInfo GetMethod(string name)
+        internal static HarmonyMethod GetMethod(string name)
         {
-            return typeof(ServerManger).GetMethod(name, BindingFlags.Static | BindingFlags.NonPublic);
+            return new(typeof(ServerManger).GetMethod(name, BindingFlags.Static | BindingFlags.NonPublic));
         }
-        private Color foregroundColor = ConsoleColor.White.ToColor();
+        internal Color foregroundColor = ConsoleColor.White.ToColor();
+        internal static readonly Harmony TSMHarmony = new("TSManager");
+        public ServerManger(Assembly server)
+        {
+            mainasm = server;
+            var console = typeof(Console);
 
+            istream = new BlockingStream();
+            Console.SetIn(new StreamReader(istream, Encoding.UTF8));
+            Console.SetOut(new ConsoltOut());
+            TSMHarmony.Patch(console.GetProperty("Title").SetMethod, GetMethod("OnSetTitle"));
+            TSMHarmony.Patch(console.GetMethod("ResetColor"), GetMethod("OnResetColor"));
+            TSMHarmony.Patch(console.GetProperty("ForegroundColor").SetMethod, GetMethod("OnSetForegroundColor"));
+            TSMHarmony.Patch(console.GetMethod("Clear"), GetMethod("ClearText"));
+        }
+        static void OnServerStop(bool save = true, string reason = "Server shutting down!")
+        {
+            TSMMain.Instance.OnExit();
+        }
+        private static void ClearText()
+        {
+            TSMMain.GUIInvoke(() => TSMMain.GUI.Console_ConsoleBox.Document.Blocks.Clear());
+        }
         private static bool OnSetForegroundColor(ConsoleColor value)
         {
             Console.Out.Flush();
@@ -39,25 +61,6 @@ namespace TSManager.Modules
             Console.Out.Flush();
             Instance.foregroundColor = ConsoleColor.White.ToColor();
             return false;
-        }
-        public ServerManger(Assembly server)
-        {
-            mainasm = server;
-            var console = typeof(Console);
-            var harmony = new Harmony("servermgr" + GetHashCode());
-
-            istream = new BlockingStream();
-            Console.SetIn(new StreamReader(istream, Encoding.UTF8));
-            Console.SetOut(new ConsoltOut());
-            harmony.Patch(console.GetProperty("Title").SetMethod, new HarmonyMethod(GetMethod("OnSetTitle")));
-            harmony.Patch(console.GetMethod("ResetColor"), new HarmonyMethod(GetMethod("OnResetColor")));
-            harmony.Patch(console.GetProperty("ForegroundColor").SetMethod, new HarmonyMethod(GetMethod("OnSetForegroundColor")));
-            harmony.Patch(console.GetMethod("Clear"), new HarmonyMethod(GetMethod("ClearText")));
-            var _ = Console.IsInputRedirected;
-        }
-        private static void ClearText()
-        {
-            TSMMain.GUIInvoke(() => TSMMain.GUI.Console_ConsoleBox.Document.Blocks.Clear());
         }
         private static bool OnSetTitle(string value)
         {
@@ -103,13 +106,12 @@ namespace TSManager.Modules
             public Color Color { get; set; }
         }
 
-        readonly Queue<QueueInfo> MessageQueue = new();
+        readonly ConcurrentQueue<QueueInfo> MessageQueue = new();
         public void OnGetText(string s, Color color = default)
         {
-            if (!Info.IsServerRunning) return;
             MessageQueue.Enqueue(new(color == default ? foregroundColor : color, s));
         }
-        internal void ProcessText()
+        internal void StartProcessText()
         {
             Task.Run(() =>
             {
@@ -117,21 +119,16 @@ namespace TSManager.Modules
                 {
                     try
                     {
-                        if (!MessageQueue.Any())
+                        if (MessageQueue.Count < 1)
                         {
-                            Task.Delay(1).Wait();
+                            Task.Delay(20).Wait();
                             continue;
                         }
-                        var info = MessageQueue.Dequeue();
-                        var s = info.Text;
-                        var color = info.Color;
-                        if (s == "\r\n")
+                        if (MessageQueue.TryDequeue(out var info))
                         {
-                            TSMMain.GUI.Console_ConsoleBox.AddLine("");
-                        }
-                        else
-                        {
-                            if (Info.IsEnterWorld)
+                            var s = info.Text;
+                            var color = info.Color;
+                            if (Info.IsEnterWorld && s != "\r\n")
                             {
                                 var nameList = Info.Players.Select(p => p.Name).ToList();
                                 var list = new List<TextInfo>() { new TextInfo(s, false) };
@@ -160,14 +157,13 @@ namespace TSManager.Modules
                                     list.ForEach(t => TSMMain.GUI.Console_ConsoleBox.Add(t.Text, t.IsPlayer, t.IsPlayer ? PlayerColor : color));
                                 }
                                 else
-                                {
                                     TSMMain.GUI.Console_ConsoleBox.Add(s, color);
-                                }
                             }
-                            else TSMMain.GUI.Console_ConsoleBox.Add(s, color);
+                            else
+                                TSMMain.GUI.Console_ConsoleBox.Add(s, color);
                         }
                     }
-                    catch (Exception ex) { TSMMain.AddLine(ex); }
+                    catch (Exception ex) { ex.ShowError(); }
                 }
             });
         }
@@ -221,43 +217,18 @@ namespace TSManager.Modules
                     IsBackground = true
                 };
                 Info.IsServerRunning = true;
-
                 Info.GameThread.Start();
-                new Thread(new ThreadStart(delegate
-                {
-                    while (true)
-                    {
-                        if (Netplay.Disconnect)
-                        {
-                            TSMMain.Instance.Exit();
-                            return;
-                        }
-                        Task.Delay(50).Wait();
-                    }
-                }))
-                {
-                    IsBackground = true
-                }.Start();  //似乎只能这样判断服务器是否关闭
+
                 ServerApi.Hooks.GamePostInitialize.Register(TSMMain.Instance, TSMMain.Instance.OnServerPostInitialize, -1);  //注册服务器加载完成的钩子
                 TSMMain.Instance.OnServerPreInitializing();
                 TSMMain.GUIInvoke(() => TSMMain.GUI.GoToStartServer.IsEnabled = false);
             });
         }
 
-        public void AppendText(string text)
+        public void ConsoleCommand(string text)
         {
-            Task.Run(() =>
-            {
-                TSMMain.GUI.Console_ConsoleBox.AddLine(text, Color.FromRgb(208, 171, 233));
-                if (Info.IsEnterWorld)
-                {
-                    Commands.HandleCommand(TSPlayer.Server, TShock.Config.Settings.CommandSpecifier + text);
-                }
-                else
-                {
-                    istream.AppendText(text == null ? "" : text);
-                }
-            });
+            Utils.AddLine(text, Color.FromRgb(208, 171, 233));
+            Commands.HandleCommand(TSPlayer.Server, Commands.Specifier + text);
         }
     }
     class ConsoltOut : TextWriter
@@ -287,7 +258,7 @@ namespace TSManager.Modules
         private class BlockingStream : Stream
         {
             private byte[] lasting = new byte[0];
-            private BlockingCollection<byte[]> queue = new BlockingCollection<byte[]>();
+            private readonly BlockingCollection<byte[]> queue = new();
 
             public override bool CanRead => true;
 

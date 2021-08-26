@@ -35,7 +35,7 @@ namespace TSManager.Data
         public string TShockVersion { get; set; }
         [AlsoNotifyFor("RunTime_Text", new string[] { "CPUUsed", "MemoryUsed", "PlayerCount" })]
         public long RunTime { get; set; }
-        public string RunTime_Text { get { TimeSpan ts = new TimeSpan(0, 0, (int)(RunTime / 1000)); return $"{ts.Days}日 {ts.Hours}时 {ts.Minutes}分 {ts.Seconds}秒"; } set { } }
+        public string RunTime_Text { get { TimeSpan ts = new(0, 0, (int)(RunTime / 1000)); return $"{ts.Days}日 {ts.Hours}时 {ts.Minutes}分 {ts.Seconds}秒"; } set { } }
         public struct PluginInfo
         {
             public PluginInfo(string n, string v, string a, string d)

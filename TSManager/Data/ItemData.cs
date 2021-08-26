@@ -28,14 +28,18 @@ namespace TSManager.Data
         public int Slot = -1;
         public Item Item { get; set; } = new();
 
-        public string Name { get { return Item != null ? Item.Name : "未知"; } set { } }
+        public string Name { get => Item != null ? Item.Name : "未知"; set { } }
 
-        public int ID { get { return Item != null ? Item.netID : 0; } set { var temp = new Item();
-                temp.SetDefaults(value);
-                temp.stack = Stack;
-                temp.prefix = (byte)Prefix;
-                Item = temp;
-            } }
+        public int ID
+        {
+            get => Item != null ? Item.netID : 0;
+            set
+            {
+                Item.SetDefaults(value);
+                Item.stack = Stack;
+                Item.prefix = (byte)Prefix;
+            }
+        }
 
         public int Stack { get { return Item != null ? Item.stack : -1; } set { Item.stack = value; } }
         public int MaxStack { get { return Item != null ? Item.maxStack : 30; } set { } }

@@ -12,7 +12,8 @@ namespace TSManager.Data
     {
         public static List<ScriptData> GetAllScripts()
         {
-            if (!Directory.Exists(Info.Path + "Scripts")) Directory.CreateDirectory(Info.Path + "Scripts");
+            if (!Directory.Exists(Info.Path + "Scripts"))
+                Directory.CreateDirectory(Info.Path + "Scripts");
             var list = new List<ScriptData>();
             var files = Directory.GetFiles(Info.Path + "Scripts", "*.tsms");
             if (files.Any())
@@ -53,10 +54,6 @@ namespace TSManager.Data
                 return null;
             }
         }
-        /*public ScriptData(string name, string author, string description, Version version, Guid id)
-        {
-
-        }*/
         public ScriptData(string name)
         {
             Name = name;
@@ -93,7 +90,6 @@ namespace TSManager.Data
             PlayerLeave,
             PlayerChat,
             PlayerDead,
-
         }
         public bool Enable { get; set; }
         public Triggers TriggerCondition { get; set; }
@@ -128,7 +124,7 @@ namespace TSManager.Data
             get;
             set;
         }
-        public List<ScratchNet.Expression> Expressions
+        public List<Expression> Expressions
         {
             get;
             set;

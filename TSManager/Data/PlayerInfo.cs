@@ -51,24 +51,27 @@ namespace TSManager.Data
         }
         public void Update()
         {
-            try
-            {
-                var tempPlayer = TShock.Players.FirstOrDefault(p => p != null && p.Name == Name);
-                Ban = TShock.Bans.Bans.Any(b => b.Value.Identifier == "uuid:" + Account?.UUID) || TShock.Bans.Bans.Any(b => b.Value.Identifier == "acc:" + Name) || (Online && TShock.Bans.Bans.Any(b => b.Value.Identifier == "ip:" + Player.IP));
-                if (tempPlayer == null)
+            Task.Run(() => {
+                try
                 {
-                    if (Online) Online = false;
+                    var tempPlayer = TShock.Players.FirstOrDefault(p => p != null && p.Name == Name);
+                    Ban = TShock.Bans.Bans.Any(b => b.Value.Identifier == "uuid:" + Account?.UUID) || TShock.Bans.Bans.Any(b => b.Value.Identifier == "acc:" + Name) || (Online && TShock.Bans.Bans.Any(b => b.Value.Identifier == "ip:" + Player.IP));
+                    if (tempPlayer == null)
+                    {
+                        if (Online)
+                            Online = false;
+                    }
+                    else
+                    {
+                        Player = tempPlayer;
+                        Data = tempPlayer.PlayerData;
+                        Account = tempPlayer.Account;
+                        PlayTime += TSMMain.UpdateTime;
+                        Online = true;
+                    }
                 }
-                else
-                {
-                    Player = tempPlayer;
-                    Data = tempPlayer.PlayerData;
-                    Account = tempPlayer.Account;
-                    PlayTime += TSMMain.UpdateTime;
-                    Online = true;
-                }
-            }
-            catch { }
+                catch  { }
+            });
         }
         public void Save()
         {

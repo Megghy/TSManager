@@ -10,7 +10,7 @@ namespace ScratchNet
         {
             get
             {
-                Descriptor desc = new Descriptor();
+                Descriptor desc = new();
                 desc.Add(new TextItemDescriptor(this, "new", true));
                 desc.Add(new TextItemDescriptor(this, " Queue()"));
                 return desc;

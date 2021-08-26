@@ -51,7 +51,7 @@ namespace TSManager
                 {
                     if (result)
                     {
-                        TSMMain.Instance.Stop();
+                        TSMMain.Instance.StopServer();
                         Console_RestartServer.IsEnabled = false;
                         forceClose = true;
                     }
@@ -89,7 +89,7 @@ namespace TSManager
                                 {
                                     if (result)
                                     {
-                                        TSMMain.Instance.Stop();
+                                        TSMMain.Instance.StopServer();
                                         restart = true;
                                     }
                                     return true;
@@ -104,8 +104,12 @@ namespace TSManager
                             break;
                         case "Console_DoCmd":
                             if (!Info.IsServerRunning) return;
-                            Info.Server.AppendText(Console_CommandBox.Text);
+                            Info.Server.ConsoleCommand(Console_CommandBox.Text);
                             Console_CommandBox.Clear();
+                            break;
+                        case "Console_Clear":
+                            Console_ConsoleBox.Document.Blocks.Clear();
+                            Utils.Notice("已清空控制台文本", HandyControl.Data.InfoType.Success);
                             break;
                     }
                     #endregion
@@ -202,7 +206,7 @@ namespace TSManager
                             GroupManager.AddPermission(group, b.DataContext as PermissionData);
                             break;
                         case "GroupManage_Refresh":
-                            GroupManager.RefreshGroupData();
+                            GroupManager.Refresh();
                             Utils.Notice("已刷新用户组数据", HandyControl.Data.InfoType.Success);
                             break;
                         case "GroupManage_Save":
@@ -247,7 +251,7 @@ namespace TSManager
                     }
                 }
             }
-            catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
+            catch (Exception ex) { ex.ShowError(); }
         }
         bool CheckItemSlot(PlayerInfo plrInfo, ItemData item) => TShock.Utils.GetItemById(plrInfo.Data.inventory[item.Slot].NetId).type != item.ID;
         private void OnButtonTextBoxClick(object sender, RoutedEventArgs e)
@@ -322,7 +326,7 @@ namespace TSManager
                     #endregion
                 }
             }
-            catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
+            catch (Exception ex) { ex.ShowError(); }
         }
         private void OnSwichClick(object sender, RoutedEventArgs e)
         {
@@ -332,9 +336,6 @@ namespace TSManager
                 if (b.Name.StartsWith("CongifEditor"))
                 {
                     #region 设置编辑器
-                    switch (b.Name)
-                    {
-                    }
                     #endregion
                 }
                 else if (b.Name.StartsWith("PlayerManage"))
@@ -387,7 +388,7 @@ namespace TSManager
                     }
                 }
             }
-            catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
+            catch (Exception ex) { ex.ShowError(); }
         }
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
@@ -421,7 +422,7 @@ namespace TSManager
                             if (t.Name == "Console_CommandBox")
                             {
                                 if (!Info.IsServerRunning) return;
-                                Info.Server.AppendText(t.Text);
+                                Info.Server.ConsoleCommand(t.Text);
                                 t.Clear();
                             }
                         }
@@ -465,7 +466,7 @@ namespace TSManager
                         break;
                 }
             }
-            catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
+            catch (Exception ex) { ex.ShowError(); }
         }
         private void OnListSelect(object sender, SelectionChangedEventArgs e)
         {
@@ -474,9 +475,6 @@ namespace TSManager
                 if (sender is ListView)
                 {
                     var l = sender as ListView;
-                    switch (l.Name)
-                    {
-                    }
                 }
                 else if (sender is ListBox)
                 {
@@ -516,7 +514,7 @@ namespace TSManager
                     }
                 }
             }
-            catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
+            catch (Exception ex) { ex.ShowError(); }
         }
         private void OnEditorTextChange(object sender, EventArgs e) => ConfigEdit.OnTextChange(ConfigEditor.DataContext as Data.ConfigData);
         private void OnTextInput(object sender, EventArgs e)
@@ -549,14 +547,15 @@ namespace TSManager
 
             }
             catch (Exception ex)
-            { //Utils.Notice(ex, HandyControl.Data.InfoType.Error);
+            {
+                ex.ShowError();
             }
         }
         private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (sender is GraphicScriptEditor)
             {
-                var s = sender as GraphicScriptEditor;
+                //var s = sender as GraphicScriptEditor;
                 VisualBox.Focus();
             }
         }

@@ -10,7 +10,7 @@ namespace TSManager.Modules
 {
     class GroupManager
     {
-        public static void RefreshGroupData()
+        public static void Refresh()
         {
             Task.Run(() =>
             {
@@ -52,7 +52,7 @@ namespace TSManager.Modules
             }
             TShock.Groups.DeleteGroup(group.Name);
             Utils.Notice($"已删除用户组 {group.Name}.", HandyControl.Data.InfoType.Success);
-            RefreshGroupData();
+            Refresh();
         }
         public static void AddPermission(GroupData group, PermissionData permission)
         {
@@ -124,19 +124,18 @@ namespace TSManager.Modules
         }
         public static void Save()
         {
-            var group = TSMMain.GUI.GroupManage_List.SelectedItem as GroupData;
-            if (group == null)
+            if (TSMMain.GUI.GroupManage_List.SelectedItem as GroupData == null)
             {
                 Utils.Notice("当前未选择用户组.", HandyControl.Data.InfoType.Error);
                 return;
             }
-            var tsGroup = TShock.Groups.GetGroupByName(group.Group.Name);
+            var tsGroup = TShock.Groups.GetGroupByName((TSMMain.GUI.GroupManage_List.SelectedItem as GroupData).Group.Name);
             if (tsGroup == null)
             {
-                Utils.Notice($"用户组 {group.Group.Name} 已不存在, 请尝试刷新用户组列表.", HandyControl.Data.InfoType.Error);
+                Utils.Notice($"用户组 {(TSMMain.GUI.GroupManage_List.SelectedItem as GroupData).Group.Name} 已不存在, 请尝试刷新用户组列表.", HandyControl.Data.InfoType.Error);
                 return;
             }
-            if (TSMMain.GUI.GroupManage_Parents.Text == tsGroup.Name || TSMMain.GUI.GroupManage_Parents.Text == group.Name)
+            if (TSMMain.GUI.GroupManage_Parents.Text == tsGroup.Name || TSMMain.GUI.GroupManage_Parents.Text == (TSMMain.GUI.GroupManage_List.SelectedItem as GroupData).Name)
             {
                 Utils.Notice($"请勿将用户组本身设为父组.", HandyControl.Data.InfoType.Error);
                 return;
@@ -154,7 +153,7 @@ namespace TSManager.Modules
                     try
                     {
                         Utils.Notice($"已重命名用户组.\n.{TShock.Groups.RenameGroup(tsGroup.Name, TSMMain.GUI.GroupManage_Name.Text)};", HandyControl.Data.InfoType.Info);
-                        group.Name = TSMMain.GUI.GroupManage_Name.Text;
+                        (TSMMain.GUI.GroupManage_List.SelectedItem as GroupData).Name = TSMMain.GUI.GroupManage_Name.Text;
                         tsGroup = TShock.Groups.GetGroupByName(TSMMain.GUI.GroupManage_Name.Text);
                     }
                     catch (Exception ex) { Utils.Notice($"未能重命名用户组.\n{ex.Message}", HandyControl.Data.InfoType.Error); return; }
@@ -162,8 +161,8 @@ namespace TSManager.Modules
             }
             try
             {
-                TShock.Groups.UpdateGroup(tsGroup.Name, ((GroupData)TSMMain.GUI.GroupManage_Parents.SelectedItem).NoParent ? "" : TSMMain.GUI.GroupManage_Parents.Text, string.Join(",", tsGroup.permissions), $"{group.ChatColor.R},{group.ChatColor.G},{group.ChatColor.B}", TSMMain.GUI.GroupManage_Suffix.Text, TSMMain.GUI.GroupManage_Prefix.Text); Utils.Notice($"已更新用户组.", HandyControl.Data.InfoType.Success);
-                RefreshGroupData();
+                TShock.Groups.UpdateGroup(tsGroup.Name, ((GroupData)TSMMain.GUI.GroupManage_Parents.SelectedItem).NoParent ? "" : TSMMain.GUI.GroupManage_Parents.Text, string.Join(",", tsGroup.permissions), $"{(TSMMain.GUI.GroupManage_List.SelectedItem as GroupData).ChatColor.R},{(TSMMain.GUI.GroupManage_List.SelectedItem as GroupData).ChatColor.G},{(TSMMain.GUI.GroupManage_List.SelectedItem as GroupData).ChatColor.B}", TSMMain.GUI.GroupManage_Suffix.Text, TSMMain.GUI.GroupManage_Prefix.Text); Utils.Notice($"已更新用户组.", HandyControl.Data.InfoType.Success);
+                Refresh();
                 foreach (GroupData g in TSMMain.GUI.GroupManage_List.Items)
                 {
                     if (g.Name == tsGroup.Name) ChangeSource(g);

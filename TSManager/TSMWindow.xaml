@@ -154,7 +154,8 @@
                                           Grid.ColumnSpan="2">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="757*" />
+                                            <ColumnDefinition Width="637*" />
+                                            <ColumnDefinition Width="120*"/>
                                             <ColumnDefinition Width="152*" />
                                         </Grid.ColumnDefinitions>
                                         <Grid.RowDefinitions>
@@ -164,7 +165,7 @@
                                         <ListBox x:Name="Console_PlayerList"
                                                  SelectionChanged="OnListSelect"
                                                  DisplayMemberPath="Name"
-                                                 Grid.Column="1"
+                                                 Grid.Column="2"
                                                  Margin="5,0,0,0"
                                                  Background="{x:Null}"
                                                  BorderBrush="{x:Null}" />
@@ -172,7 +173,7 @@
                                                      Background="#FF686868"
                                                      IsReadOnly="True"
                                                      FontSize="14"
-                                                     VerticalScrollBarVisibility="Auto" />
+                                                     VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2" />
                                         <hc:TextBox Name="Console_CommandBox"
                                                     hc:BorderElement.CornerRadius="1"
                                                     Grid.Row="1"
@@ -186,7 +187,15 @@
                                                 Grid.Row="1"
                                                 VerticalAlignment="Stretch"
                                                 Height="Auto"
-                                                Grid.Column="1" />
+                                                Grid.Column="2" />
+                                        <Button Content="清空控制台"
+                                                Name="Console_Clear"
+                                                Click="OnButtonClick"
+                                                HorizontalAlignment="Stretch"
+                                                Margin="5,5,0,0"
+                                                Grid.Row="1"
+                                                VerticalAlignment="Stretch"
+                                                Height="Auto" Grid.Column="1" />
                                     </Grid>
                                 </GroupBox>
                                 <GroupBox Header="启动设置"
@@ -889,7 +898,7 @@
                                                     KeyDown="OnKeyDown"
                                                     Grid.Row="1" />
                                         <hc:TextBox Name="GroupManage_Suffix"
-                                                    hc:TitleElement.Title="后缀  "
+                                                    hc:TitleElement.Title="后缀"
                                                     hc:TitleElement.TitlePlacement="Left"
                                                     Text="{Binding Suffix, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                     Margin="10,3,2,0"
@@ -931,7 +940,7 @@
                                                 Height="Auto" />
                                         <TextBlock TextWrapping="Wrap"
                                                    Text="聊天颜色"
-                                                   Margin="69,0,50,20"
+                                                   Margin="69,4,50,15"
                                                    Foreground="#FF7C7C7C"
                                                    Grid.Column="2" />
                                         <ToggleButton IsChecked="{Binding ElementName=GroupManager_Drawer, Path=IsOpen}"
@@ -939,8 +948,8 @@
                                                       Grid.Column="2"
                                                       Margin="69,22,62,3"
                                                       Grid.RowSpan="2"
-                                                      Width="55"
-                                                      Height="49" />
+                                                      Width="40"
+                                                      Height="40" />
                                     </Grid>
                                 </GroupBox>
                                 <TextBlock TextWrapping="Wrap"
@@ -1031,7 +1040,7 @@
                                                    IsEnabled="False"
                                                    Title="查找权限"
                                                    Text="这里还没写好"
-                                                   Margin="0,5,9,5"
+                                                   Margin="0,5"
                                                    ButtonText="查找"
                                                    ButtonClick="OnButtonTextBoxClick"
                                                    KeyDown="OnKeyDown"
@@ -1040,11 +1049,11 @@
                                 <tsm:ButtonTextBox x:Name="GroupManage_AddManually"
                                                    Title="手动添加"
                                                    ButtonClick="OnButtonTextBoxClick"
-                                                   Margin="10,7,5,2"
-                                                   Grid.Column="3"
+                                                   Margin="255,5,0,2"
+                                                   Grid.Column="2"
                                                    ButtonText="添加"
                                                    KeyDown="OnKeyDown"
-                                                   Grid.Row="2" />
+                                                   Grid.Row="2" Grid.ColumnSpan="2" />
                                 <tsm:ButtonTextBox x:Name="GroupManage_Create"
                                                    Title="新建"
                                                    ButtonText="创建"

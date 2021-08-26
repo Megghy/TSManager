@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using HandyControl.Controls;
 using HandyControl.Data;
@@ -13,10 +15,11 @@ using Newtonsoft.Json.Linq;
 using TShockAPI;
 using TShockAPI.DB;
 using TSManager.Data;
+using TSManager.Modules;
 
 namespace TSManager
 {
-    internal class Utils
+    internal static class Utils
     {
         public static bool SaveOffLinePlayerData(PlayerData data, int id)
         {
@@ -53,7 +56,7 @@ namespace TSManager
                 }
                 catch (Exception ex)
                 {
-                    TShock.Log.Error(ex.ToString());
+                    ex.ShowError();
                     return false;
                 }
             }
@@ -121,6 +124,23 @@ namespace TSManager
                     break;
             }
         }
+        public static void DisplayInfo(object text, string prefix = "TSManager")
+        {
+            AddText("[");
+            AddText(prefix, Color.FromRgb(145, 190, 215));
+            AddText("] ");
+            AddLine(text, Color.FromRgb(230, 230, 170));
+        }
+        public static void ShowError(this Exception ex, InfoType type = InfoType.Error)
+        {
+            Notice($"{new StackTrace(1)}\r\n{ex.Message}", type);
+        }
+        public static void AddText(object text, Color color = default)
+        {
+            color = color == default ? Color.FromRgb(255, 255, 255) : color;
+            Info.Server.OnGetText(text?.ToString(), color);
+        }
+        public static void AddLine(object text = null, Color color = default) => AddText(text + "\r\n", color);
         public static bool TryParseJson(string json, out JObject jobj)
         {
             try { jobj = JObject.Parse(json); return true; } catch { jobj = null; ; return false; }
@@ -128,14 +148,14 @@ namespace TSManager
         public static string ConvertJsonString(string str)
         {
             //格式化json字符串
-            JsonSerializer serializer = new JsonSerializer();
+            JsonSerializer serializer = new();
             TextReader tr = new StringReader(str);
-            JsonTextReader jtr = new JsonTextReader(tr);
+            JsonTextReader jtr = new(tr);
             object obj = serializer.Deserialize(jtr);
             if (obj != null)
             {
-                StringWriter textWriter = new StringWriter();
-                JsonTextWriter jsonWriter = new JsonTextWriter(textWriter)
+                StringWriter textWriter = new();
+                JsonTextWriter jsonWriter = new(textWriter)
                 {
                     Formatting = Formatting.Indented,
                     Indentation = 4,

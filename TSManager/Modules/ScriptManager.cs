@@ -24,7 +24,7 @@ namespace TSManager
 
             //下面一大堆基本都是复制粘贴的, 有些本地化的东西懒得改, 将就将就
             TSMMain.GUI.Script_Editor.IsLibraryEnabled = false;
-            List<ScriptStepGroup> toolbar = new List<ScriptStepGroup>();
+            List<ScriptStepGroup> toolbar = new();
             TSMMain.GUI.Script_Editor.Register((Color)ColorConverter.ConvertFromString("#B1F1D4"),
                 typeof(StringExpression),
                 typeof(Conditional),
@@ -245,9 +245,9 @@ namespace TSManager
             toolbar.Add(GetCommandsFromLib(new ThreadCollection())); //引入线程拓展库
             TSMMain.GUI.Script_Editor.SetToolBar(toolbar);
         }
-        static ScriptStepGroup GetCommandsFromLib(Library l)
+        private static ScriptStepGroup GetCommandsFromLib(Library l)
         {
-            ScriptStepGroup g = new ScriptStepGroup();
+            ScriptStepGroup g = new();
             g.Types = new List<object>();
             g.Name = l.Title;
             foreach (var gp in l)
@@ -314,8 +314,8 @@ namespace TSManager
         }
         public static void Log(object text)
         {
-            TSMMain.AddText($"[ScriptManager] ", Color.FromRgb(177, 241, 241));
-            TSMMain.AddLine(text);
+            Utils.AddText($"[ScriptManager] ", Color.FromRgb(177, 241, 241));
+            Utils.AddLine(text);
         }
         public static void Create(string name, string author, string description, string version)
         {
@@ -458,7 +458,7 @@ namespace TSManager
                 */
                 var script = sender as ScriptData;
                 //Utils.Notice($"脚本 {script.Name} 运行时发生错误");
-                Log($"脚本异常终止. 发生于 {arg.Location}, 错误信息: {arg.ReturnValue}");
+                Log($"脚本 {script.Name} 异常终止. 发生于 {arg.Location}, 错误信息: {arg.ReturnValue}");
             }
         }
         #endregion

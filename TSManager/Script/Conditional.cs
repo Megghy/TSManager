@@ -43,10 +43,11 @@ namespace TSManager.Script
         {
             get
             {
-                Descriptor descriptor = new Descriptor();
-                descriptor.Add(new ExpressionDescriptor(this, "Left", PropertyType));
-                descriptor.Add(new TextItemDescriptor(this, " "));
-                descriptor.Add(new SelectionItemDescriptor(this, "Operator", new object[18]
+                Descriptor descriptor = new()
+                {
+                    new ExpressionDescriptor(this, "Left", PropertyType),
+                    new TextItemDescriptor(this, " "),
+                    new SelectionItemDescriptor(this, "Operator", new object[18]
                 {
                     "==",
                     "!=",
@@ -86,9 +87,10 @@ namespace TSManager.Script
                     Operator.BitExclusiveOr,
                     Operator.BitRightShift,
                     Operator.BitLeftShift
-                }));
-                descriptor.Add(new TextItemDescriptor(this, " "));
-                descriptor.Add(new ExpressionDescriptor(this, "Right", PropertyType));
+                }),
+                    new TextItemDescriptor(this, " "),
+                    new ExpressionDescriptor(this, "Right", PropertyType)
+                };
                 return descriptor;
             }
         }
@@ -138,15 +140,12 @@ namespace TSManager.Script
             {
                 bool value = TypeConverters.GetValue<bool>(left);
                 bool value2 = TypeConverters.GetValue<bool>(right);
-                switch (Operator)
+                return Operator switch
                 {
-                    case Operator.And:
-                        return new Completion(value && value2);
-                    case Operator.Or:
-                        return new Completion(value || value2);
-                    default:
-                        return Completion.Exception("未知错误", this);
-                }
+                    Operator.And => new Completion(value && value2),
+                    Operator.Or => new Completion(value || value2),
+                    _ => Completion.Exception("未知错误", this),
+                };
             }
             catch (Exception ex)
             {
@@ -210,14 +209,14 @@ namespace TSManager.Script
                     return new Completion(completion2.ReturnValue is string && (completion2.ReturnValue as string).Equals(completion.ReturnValue));
                 }
 
-                if (completion.ReturnValue is bool)
+                if (completion.ReturnValue is bool boolean)
                 {
-                    return new Completion(completion2.ReturnValue is bool && (bool)completion2.ReturnValue == (bool)completion.ReturnValue);
+                    return new Completion(completion2.ReturnValue is bool boolean2 && boolean2 == boolean);
                 }
 
-                if (completion2.ReturnValue is bool)
+                if (completion2.ReturnValue is bool boolean1)
                 {
-                    return new Completion(completion.ReturnValue is bool && (bool)completion.ReturnValue == (bool)completion2.ReturnValue);
+                    return new Completion(completion.ReturnValue is bool boolean2 && boolean2 == boolean1);
                 }
 
                 if (completion.ReturnValue == null)
@@ -253,9 +252,9 @@ namespace TSManager.Script
                     return new Completion(!(completion2.ReturnValue as string).Equals(completion.ReturnValue));
                 }
 
-                if (completion.ReturnValue is bool)
+                if (completion.ReturnValue is bool boolean)
                 {
-                    return new Completion(!(completion2.ReturnValue is bool) || (bool)completion2.ReturnValue != (bool)completion.ReturnValue);
+                    return new Completion(!(completion2.ReturnValue is bool) || (bool)completion2.ReturnValue != boolean);
                 }
 
                 if (completion2.ReturnValue is bool)
@@ -306,43 +305,26 @@ namespace TSManager.Script
                 {
                     char value = TypeConverters.GetValue<char>(completion.ReturnValue);
                     char value2 = TypeConverters.GetValue<char>(completion2.ReturnValue);
-                    switch (Operator)
+                    return Operator switch
                     {
-                        case Operator.Add:
-                            return new Completion(value + value2);
-                        case Operator.Minus:
-                            return new Completion(value - value2);
-                        case Operator.Mulitiply:
-                            return new Completion(value * value2);
-                        case Operator.Divide:
-                            return new Completion((int)value / (int)value2);
-                        case Operator.Mod:
-                            return new Completion((int)value % (int)value2);
-                        case Operator.Great:
-                            return new Completion(value > value2);
-                        case Operator.GreatOrEqual:
-                            return new Completion(value >= value2);
-                        case Operator.Less:
-                            return new Completion(value < value2);
-                        case Operator.LessOrEqual:
-                            return new Completion(value <= value2);
-                        case Operator.Equal:
-                            return new Completion(value == value2);
-                        case Operator.NotEqual:
-                            return new Completion(value != value2);
-                        case Operator.BitAnd:
-                            return new Completion(value & value2);
-                        case Operator.BitOr:
-                            return new Completion(value | value2);
-                        case Operator.BitLeftShift:
-                            return new Completion((int)((uint)value << (int)value2));
-                        case Operator.BitRightShift:
-                            return new Completion((int)value >> (int)value2);
-                        case Operator.BitExclusiveOr:
-                            return new Completion(value ^ value2);
-                        default:
-                            return Completion.Exception("未知错误", this);
-                    }
+                        Operator.Add => new Completion(value + value2),
+                        Operator.Minus => new Completion(value - value2),
+                        Operator.Mulitiply => new Completion(value * value2),
+                        Operator.Divide => new Completion((int)value / (int)value2),
+                        Operator.Mod => new Completion((int)value % (int)value2),
+                        Operator.Great => new Completion(value > value2),
+                        Operator.GreatOrEqual => new Completion(value >= value2),
+                        Operator.Less => new Completion(value < value2),
+                        Operator.LessOrEqual => new Completion(value <= value2),
+                        Operator.Equal => new Completion(value == value2),
+                        Operator.NotEqual => new Completion(value != value2),
+                        Operator.BitAnd => new Completion(value & value2),
+                        Operator.BitOr => new Completion(value | value2),
+                        Operator.BitLeftShift => new Completion((int)((uint)value << (int)value2)),
+                        Operator.BitRightShift => new Completion((int)value >> (int)value2),
+                        Operator.BitExclusiveOr => new Completion(value ^ value2),
+                        _ => Completion.Exception("未知错误", this),
+                    };
                 }
                 catch (Exception ex)
                 {
@@ -357,43 +339,26 @@ namespace TSManager.Script
                 {
                     int value3 = TypeConverters.GetValue<int>(completion.ReturnValue);
                     int value4 = TypeConverters.GetValue<int>(completion2.ReturnValue);
-                    switch (Operator)
+                    return Operator switch
                     {
-                        case Operator.Add:
-                            return new Completion(value3 + value4);
-                        case Operator.Minus:
-                            return new Completion(value3 - value4);
-                        case Operator.Mulitiply:
-                            return new Completion(value3 * value4);
-                        case Operator.Divide:
-                            return new Completion(value3 / value4);
-                        case Operator.Mod:
-                            return new Completion(value3 % value4);
-                        case Operator.Great:
-                            return new Completion(value3 > value4);
-                        case Operator.GreatOrEqual:
-                            return new Completion(value3 >= value4);
-                        case Operator.Less:
-                            return new Completion(value3 < value4);
-                        case Operator.LessOrEqual:
-                            return new Completion(value3 <= value4);
-                        case Operator.Equal:
-                            return new Completion(value3 == value4);
-                        case Operator.NotEqual:
-                            return new Completion(value3 != value4);
-                        case Operator.BitAnd:
-                            return new Completion(value3 & value4);
-                        case Operator.BitOr:
-                            return new Completion(value3 | value4);
-                        case Operator.BitLeftShift:
-                            return new Completion(value3 << value4);
-                        case Operator.BitRightShift:
-                            return new Completion(value3 >> value4);
-                        case Operator.BitExclusiveOr:
-                            return new Completion(value3 ^ value4);
-                        default:
-                            return Completion.Exception("未知错误", this);
-                    }
+                        Operator.Add => new Completion(value3 + value4),
+                        Operator.Minus => new Completion(value3 - value4),
+                        Operator.Mulitiply => new Completion(value3 * value4),
+                        Operator.Divide => new Completion(value3 / value4),
+                        Operator.Mod => new Completion(value3 % value4),
+                        Operator.Great => new Completion(value3 > value4),
+                        Operator.GreatOrEqual => new Completion(value3 >= value4),
+                        Operator.Less => new Completion(value3 < value4),
+                        Operator.LessOrEqual => new Completion(value3 <= value4),
+                        Operator.Equal => new Completion(value3 == value4),
+                        Operator.NotEqual => new Completion(value3 != value4),
+                        Operator.BitAnd => new Completion(value3 & value4),
+                        Operator.BitOr => new Completion(value3 | value4),
+                        Operator.BitLeftShift => new Completion(value3 << value4),
+                        Operator.BitRightShift => new Completion(value3 >> value4),
+                        Operator.BitExclusiveOr => new Completion(value3 ^ value4),
+                        _ => Completion.Exception("未知错误", this),
+                    };
                 }
                 catch (Exception ex2)
                 {
@@ -408,31 +373,20 @@ namespace TSManager.Script
                 {
                     float value5 = TypeConverters.GetValue<float>(completion.ReturnValue);
                     float value6 = TypeConverters.GetValue<float>(completion2.ReturnValue);
-                    switch (Operator)
+                    return Operator switch
                     {
-                        case Operator.Add:
-                            return new Completion(value5 + value6);
-                        case Operator.Minus:
-                            return new Completion(value5 - value6);
-                        case Operator.Mulitiply:
-                            return new Completion(value5 * value6);
-                        case Operator.Divide:
-                            return new Completion(value5 / value6);
-                        case Operator.Great:
-                            return new Completion(value5 > value6);
-                        case Operator.GreatOrEqual:
-                            return new Completion(value5 >= value6);
-                        case Operator.Less:
-                            return new Completion(value5 < value6);
-                        case Operator.LessOrEqual:
-                            return new Completion(value5 <= value6);
-                        case Operator.Equal:
-                            return new Completion(value5 == value6);
-                        case Operator.NotEqual:
-                            return new Completion(value5 != value6);
-                        default:
-                            return Completion.Exception("未知错误", this);
-                    }
+                        Operator.Add => new Completion(value5 + value6),
+                        Operator.Minus => new Completion(value5 - value6),
+                        Operator.Mulitiply => new Completion(value5 * value6),
+                        Operator.Divide => new Completion(value5 / value6),
+                        Operator.Great => new Completion(value5 > value6),
+                        Operator.GreatOrEqual => new Completion(value5 >= value6),
+                        Operator.Less => new Completion(value5 < value6),
+                        Operator.LessOrEqual => new Completion(value5 <= value6),
+                        Operator.Equal => new Completion(value5 == value6),
+                        Operator.NotEqual => new Completion(value5 != value6),
+                        _ => Completion.Exception("未知错误", this),
+                    };
                 }
                 catch (Exception ex3)
                 {
@@ -446,31 +400,20 @@ namespace TSManager.Script
                 {
                     long value7 = TypeConverters.GetValue<long>(completion.ReturnValue);
                     long value8 = TypeConverters.GetValue<long>(completion2.ReturnValue);
-                    switch (Operator)
+                    return Operator switch
                     {
-                        case Operator.Add:
-                            return new Completion(value7 + value8);
-                        case Operator.Minus:
-                            return new Completion(value7 - value8);
-                        case Operator.Mulitiply:
-                            return new Completion(value7 * value8);
-                        case Operator.Divide:
-                            return new Completion(value7 / value8);
-                        case Operator.Great:
-                            return new Completion(value7 > value8);
-                        case Operator.GreatOrEqual:
-                            return new Completion(value7 >= value8);
-                        case Operator.Less:
-                            return new Completion(value7 < value8);
-                        case Operator.LessOrEqual:
-                            return new Completion(value7 <= value8);
-                        case Operator.Equal:
-                            return new Completion(value7 == value8);
-                        case Operator.NotEqual:
-                            return new Completion(value7 != value8);
-                        default:
-                            return Completion.Exception("未知错误", this);
-                    }
+                        Operator.Add => new Completion(value7 + value8),
+                        Operator.Minus => new Completion(value7 - value8),
+                        Operator.Mulitiply => new Completion(value7 * value8),
+                        Operator.Divide => new Completion(value7 / value8),
+                        Operator.Great => new Completion(value7 > value8),
+                        Operator.GreatOrEqual => new Completion(value7 >= value8),
+                        Operator.Less => new Completion(value7 < value8),
+                        Operator.LessOrEqual => new Completion(value7 <= value8),
+                        Operator.Equal => new Completion(value7 == value8),
+                        Operator.NotEqual => new Completion(value7 != value8),
+                        _ => Completion.Exception("未知错误", this),
+                    };
                 }
                 catch (Exception ex4)
                 {
@@ -482,31 +425,20 @@ namespace TSManager.Script
             {
                 double value9 = TypeConverters.GetValue<double>(completion.ReturnValue);
                 double value10 = TypeConverters.GetValue<double>(completion2.ReturnValue);
-                switch (Operator)
+                return Operator switch
                 {
-                    case Operator.Add:
-                        return new Completion(value9 + value10);
-                    case Operator.Minus:
-                        return new Completion(value9 - value10);
-                    case Operator.Mulitiply:
-                        return new Completion(value9 * value10);
-                    case Operator.Divide:
-                        return new Completion(value9 / value10);
-                    case Operator.Great:
-                        return new Completion(value9 > value10);
-                    case Operator.GreatOrEqual:
-                        return new Completion(value9 >= value10);
-                    case Operator.Less:
-                        return new Completion(value9 < value10);
-                    case Operator.LessOrEqual:
-                        return new Completion(value9 <= value10);
-                    case Operator.Equal:
-                        return new Completion(value9 == value10);
-                    case Operator.NotEqual:
-                        return new Completion(value9 != value10);
-                    default:
-                        return Completion.Exception("未知错误", this);
-                }
+                    Operator.Add => new Completion(value9 + value10),
+                    Operator.Minus => new Completion(value9 - value10),
+                    Operator.Mulitiply => new Completion(value9 * value10),
+                    Operator.Divide => new Completion(value9 / value10),
+                    Operator.Great => new Completion(value9 > value10),
+                    Operator.GreatOrEqual => new Completion(value9 >= value10),
+                    Operator.Less => new Completion(value9 < value10),
+                    Operator.LessOrEqual => new Completion(value9 <= value10),
+                    Operator.Equal => new Completion(value9 == value10),
+                    Operator.NotEqual => new Completion(value9 != value10),
+                    _ => Completion.Exception("未知错误", this),
+                };
             }
             catch (Exception ex5)
             {

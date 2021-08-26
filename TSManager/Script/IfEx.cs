@@ -41,14 +41,14 @@ namespace TSManager.Script
                 {
                     if (Consequent == null)
                         return Completion.Void;
-                    ExecutionEnvironment current = new ExecutionEnvironment(enviroment);
+                    ExecutionEnvironment current = new(enviroment);
                     return Consequent.Execute(current);
                 }
                 else
                 {
                     if (Alternate == null)
                         return Completion.Void;
-                    ExecutionEnvironment current = new ExecutionEnvironment(enviroment);
+                    ExecutionEnvironment current = new(enviroment);
                     return Alternate.Execute(current);
                 }
             }

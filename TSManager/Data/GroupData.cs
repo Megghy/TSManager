@@ -21,7 +21,7 @@ namespace TSManager.Data
                 if (c.Permissions.Count > 1) c.Permissions.ForEach(p => { if (p != "") permissions.Add(new PermissionData(p, "/" + string.Join(",", c.Names))); });
                 else if (c.Permissions.Any() && c.Permissions[0] != "") permissions.Add(new PermissionData(c.Permissions[0], "/" + string.Join(",", c.Names)));
             });
-            TShock.Groups.ForEach(g => g.permissions.ForEach(p => { if (!permissions.Where(_p => _p.Name == p).Any()) permissions.Add(new PermissionData(p, "未知")); }));
+            TShock.Groups.ForEach(g => g.permissions.ForEach(p => { if (!permissions.Any(_p => _p.Name == p)) permissions.Add(new PermissionData(p, "未知")); }));
             return permissions;
         }
         public async static Task<List<PermissionData>> GetPermissionsAsync(string groupName)
@@ -70,13 +70,13 @@ namespace TSManager.Data
         public string Prefix { get; set; }
         public string Suffix { get; set; }
         public Color ChatColor { get; set; }
-        public Brush DisplayColor
+        public SolidColorBrush DisplayColor
         {
             get => ChatColor.ToBrush();
             set
             {
                 if (ChatColor == null) return;
-                Color color = ((SolidColorBrush)value).Color;
+                var color = value.Color;
                 ChatColor = Color.FromRgb(color.R, color.G, color.B);
             }
         }

@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Xml;
 using AutoUpdaterDotNET;
 using HandyControl.Controls;
+using HarmonyLib;
 using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
@@ -27,33 +28,24 @@ namespace TSManager.Modules
     {
         public TSMMain(Main game) : base(game) { }
         public override void Initialize() { }
-        public static TSMMain Instance = new TSMMain(null);
+        public static TSMMain Instance = new(null);
         public static TSMWindow GUI { get; internal set; }
         internal static Properties.Settings Settings => Properties.Settings.Default;
         internal static void GUIInvoke(Action action)
         {
             try { GUI.Dispatcher.Invoke(action); }
-            catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
+            catch (Exception ex) { ex.ShowError(); }
         }
-        internal const int UpdateTime = 333;
-        public static void AddText(object text, Color color = default)
+        internal const int UpdateTime = 500;
+        public void StopServer()
         {
-            color = default ? Color.FromRgb(255, 255, 255) : color;
-            Info.Server.OnGetText(text.ToString(), color);
+            TShock.Utils.StopServer();
         }
-        public static void AddLine(object text, Color color = default) => AddText(text + "\r\n", color);
-        public void Stop()
+        internal void OnExit()
         {
-            Task.Run(() =>
-            {
-                TShock.Utils.StopServer();
-            });
-        }
-        internal void Exit()
-        {
+            Info.Server.Stop();
             Settings.Save();
             GUIInvoke(() => GUI.Visibility = Visibility.Hidden);
-            Info.Server.Stop();
             if (GUI.restart) Process.Start(System.Reflection.Assembly.GetExecutingAssembly().Location);
             Environment.Exit(0);
         }
@@ -77,7 +69,7 @@ namespace TSManager.Modules
                         });
                         Task.Delay(UpdateTime).Wait();
                     }
-                    catch (Exception ex) { Utils.Notice(ex, HandyControl.Data.InfoType.Error); }
+                    catch (Exception ex) { ex.ShowError(); }
                 }
             });
         }
@@ -122,9 +114,12 @@ namespace TSManager.Modules
         {
             try
             {
-                Info.Server.ProcessText(); //循环处理消息队列
+                Info.Server.StartProcessText(); //循环处理消息队列
+                Utils.DisplayInfo("正在初始化...");
+                
                 GUI.ChangeNightMode(Settings.EnableDarkMode); //调整暗色模式
                 #region 自动更新处理
+                Utils.DisplayInfo("正在检查更新...");
                 AutoUpdater.Start("https://oss.suki.club/TSManager/Update.xml");
                 Timer t = new()
                 {
@@ -136,7 +131,7 @@ namespace TSManager.Modules
                 AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
                 AutoUpdater.ApplicationExitEvent += delegate
                 {
-                    if (Info.IsEnterWorld) Info.Server.AppendText("save");
+                    if (Info.IsEnterWorld) Info.Server.ConsoleCommand("save");
                     else Environment.Exit(0);
                 };
                 #endregion
@@ -145,7 +140,8 @@ namespace TSManager.Modules
                 GUI.Versions.Visibility = Visibility.Hidden; //暂时隐藏服务器版本
                 Info.TextureZip = ZipFile.Read(new MemoryStream(Properties.Resources.Texture)); //加载贴图
                 //加载物品前缀
-                Dictionary<string, int> prefix = new Dictionary<string, int>();
+                Utils.DisplayInfo("加载玩家管理器...");
+                Dictionary<string, int> prefix = new();
                 var tempjobj = JObject.Parse(Properties.Resources.Prefix);
                 foreach (var jobj in tempjobj)
                 {
@@ -173,10 +169,11 @@ namespace TSManager.Modules
                 GUI.Bag_Choose.ItemsSource = bags;
                 #endregion
                 #region 设置编辑器加载部分
+                Utils.DisplayInfo("初始化设置编辑器...");
                 //快速搜索功能
                 SearchPanel.Install(GUI.ConfigEditor.TextArea);
                 //设置语法规则
-                using (XmlTextReader reader = new XmlTextReader(Properties.Resources.ResourceManager.GetString("json.xshd"), XmlNodeType.Document, null))
+                using (XmlTextReader reader = new(Properties.Resources.ResourceManager.GetString("json.xshd"), XmlNodeType.Document, null))
                 {
                     var xshd = HighlightingLoader.LoadXshd(reader);
                     GUI.ConfigEditor.SyntaxHighlighting = HighlightingLoader.Load(xshd, HighlightingManager.Instance);
@@ -190,6 +187,7 @@ namespace TSManager.Modules
 
                 #endregion
                 #region 读取地图列表
+                Utils.DisplayInfo("读取地图列表...");
                 var maps = Maps.GetAllMaps();
                 GUI.Console_MapBox.ItemsSource = maps;
                 if (Settings.World != string.Empty)
@@ -206,24 +204,26 @@ namespace TSManager.Modules
                 }
                 #endregion
                 #region 加载脚本相关
+                Utils.DisplayInfo("初始化脚本编辑器...");
                 ScriptManager.LoadAllBlock(); //加载脚本编辑器
+                ScriptManager.Log("正在加载所有脚本");
                 Info.Scripts = new(ScriptData.GetAllScripts());
+                ScriptManager.Log($"共载入 {Info.Scripts.Count} 条脚本");
                 GUI.Script_List.ItemsSource = Info.Scripts;
                 GUI.Script_TriggerCondition.ItemsSource = Enum.GetValues(typeof(ScriptData.Triggers)).Cast<ScriptData.Triggers>(); ;
                 #endregion
-
+                Utils.DisplayInfo("初始化完成. 欢迎使用 TSManager.");
                 if (Settings.AutoStart)
                 {
                     Info.Server.Start(Info.Server.GetStartArgs());
                 }
             }
-            catch (Exception ex) { Utils.Notice(ex.Message); }
+            catch (Exception ex) { ex.ShowError(); }
         }
         internal void OnServerPreInitializing()
         {
             GUIInvoke(delegate
             {
-                //TSM.MW.Restart_Button.IsEnabled = true; //可以重启了
                 GUI.Console_StopServer.IsEnabled = true; //也可以关闭
                 GUI.Console_StartServer.IsEnabled = false; //现在不能开启了
             });
@@ -239,33 +239,41 @@ namespace TSManager.Modules
         }
         internal void OnServerPostInitialize(EventArgs args)
         {
-            Task.Run(() =>
+            if (TShock.VersionNum < new Version(4, 5, 0))
             {
-                //检测一下开没开ssc
-                if (!Main.ServerSideCharacter) Utils.Notice("检测到你并未开启服务器云存档, 玩家管理的部分功能将无法生效.");
-                //加载服务器状态信息
-                GUIInvoke(() =>
-                {
-                    GUI.Tab_Manage.IsEnabled = true; //可以打开管理界面了
-                    GUI.Tab_Index.DataContext = new ServerStatus();
-                    GUI.Versions.Visibility = Visibility.Visible;
-                    GUI.ServerStatus.Visibility = Visibility.Visible;
+                Utils.Notice("TSManager 不支持版本低于 4.5.0 的TShock, 即将关闭服务器");
+                Task.Delay(2000).Wait();
+                StopServer();
+                return;
+            }
+            ServerManger.TSMHarmony.Patch(typeof(TShockAPI.Utils).GetMethod("StopServer"), null, ServerManger.GetMethod("OnServerStop")); //tshock加载完成后可以开始patch了
+                                                                                                                                          //检测一下开没开ssc
+            if (!Main.ServerSideCharacter)
+                Utils.Notice("检测到你并未开启服务器云存档, 玩家管理的部分功能将无法生效.");
+            //加载服务器状态信息
+            GUIInvoke(() =>
+            {
+                GUI.Tab_Manage.IsEnabled = true; //可以打开管理界面了
+                GUI.Tab_Index.DataContext = new ServerStatus();
+                GUI.Versions.Visibility = Visibility.Visible;
+                GUI.ServerStatus.Visibility = Visibility.Visible;
 
-                    Info.OnlinePlayers = new();
-                    GUI.Console_PlayerList.ItemsSource = Info.OnlinePlayers; //设置玩家列表绑定数据
+                Info.OnlinePlayers = new();
+                GUI.Console_PlayerList.ItemsSource = Info.OnlinePlayers; //设置玩家列表绑定数据
 
-                    PlayerManager.Refresh();
+                PlayerManager.Refresh();
 
-                    GUI.GroupManage_AllPermission.ItemsSource = GroupData.GetAllPermissions(); //尝试读取所有权限
-                    GroupManager.RefreshGroupData();//读取所有组权限
-                });
-
-                // 注册一些用得到的hook
-                HookManager.RegisterHooks();
-
-                Utils.Notice("服务器启动完成", HandyControl.Data.InfoType.Success);
-                Info.IsEnterWorld = true;
+                GUI.GroupManage_AllPermission.ItemsSource = GroupData.GetAllPermissions(); //尝试读取所有权限
+                GroupManager.Refresh();//读取所有组权限
+                Utils.DisplayInfo("已读取用户组信息");
             });
+
+            // 注册一些用得到的hook
+            HookManager.RegisterHooks();
+            Utils.DisplayInfo("成功注册Hooks");
+
+            Utils.Notice("服务器启动完成", HandyControl.Data.InfoType.Success);
+            Info.IsEnterWorld = true;
         }
     }
 }
