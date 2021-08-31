@@ -19,6 +19,15 @@ namespace TSManager
 {
     public static class ScriptManager
     {
+        internal static void Init()
+        {
+            LoadAllBlock(); //加载脚本编辑器
+            Log("正在加载所有脚本");
+            Info.Scripts = new(ScriptData.GetAllScripts());
+            Log($"共载入 {Info.Scripts.Count} 条脚本");
+            TSMMain.GUI.Script_List.ItemsSource = Info.Scripts;
+            TSMMain.GUI.Script_TriggerCondition.ItemsSource = Enum.GetValues(typeof(ScriptData.Triggers)).Cast<ScriptData.Triggers>(); ;
+        }
         internal static void LoadAllBlock()
         {
 

@@ -11,10 +11,10 @@ using TShockAPI;
 namespace TSManager.Data
 {
     [AddINotifyPropertyChangedInterface]
-    class ServerStatus
+    internal class ServerStatus
     {
-        public ServerStatus() => LoadInfo();
-        void LoadInfo()
+        public ServerStatus() => Init();
+        void Init()
         {
             Task.Run(() =>
             {
@@ -51,23 +51,17 @@ namespace TSManager.Data
             public string Description { get; set; }
         }
         public List<PluginInfo> PluginList { get; set; }
-        public int PlayerCount { get { return (int)(Info.IsEnterWorld ? Info.OnlinePlayers?.Count : 0); } set { } }
-        readonly PerformanceCounter CPUPerformance = new("Process", "% Processor Time", "TSManager");
-        readonly PerformanceCounter MemoryPerformance = new("Process", "Working Set", "TSManager");
+        public int PlayerCount { get => Info.IsEnterWorld ? Info.OnlinePlayers.Count : 0; set { } }
+        private readonly PerformanceCounter CPUPerformance = new("Process", "% Processor Time", "TSManager");
+        private readonly PerformanceCounter MemoryPerformance = new("Process", "Working Set", "TSManager");
         public double CPUUsed
         {
-            get
-            {
-                return Math.Round(CPUPerformance.NextValue(), 2);
-            }
+            get => Math.Round(CPUPerformance.NextValue(), 2);
             set { }
         }
         public double MemoryUsed
         {
-            get
-            {
-                return Math.Round(MemoryPerformance.NextValue() / 1024 / 1024, 2); ;
-            }
+            get => Math.Round(MemoryPerformance.NextValue() / 1024 / 1024, 2);
             set { }
         }
     }

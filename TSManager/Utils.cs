@@ -138,7 +138,7 @@ namespace TSManager
         public static void AddText(object text, Color color = default)
         {
             color = color == default ? Color.FromRgb(255, 255, 255) : color;
-            Info.Server.OnGetText(text?.ToString(), color);
+            Info.Server.DisplayText(text?.ToString(), color);
         }
         public static void AddLine(object text = null, Color color = default) => AddText(text + "\r\n", color);
         public static bool TryParseJson(string json, out JObject jobj)

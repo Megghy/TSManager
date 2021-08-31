@@ -12,7 +12,7 @@ using PropertyChanged;
 namespace TSManager.Data
 {
     [AddINotifyPropertyChangedInterface]
-    class ConfigData
+    public class ConfigData
     {
         public static List<ConfigData> ReadAllConfig()
         {
@@ -61,15 +61,14 @@ namespace TSManager.Data
         public string Text { get; set; }
         [AlsoNotifyFor("Status", new string[] { "StatusColor" })]
         public bool Error { get; set; }
-        public string Status { get { return Error ? "无效" : "有效"; } set { } }
-        public Brush StatusColor { get { return Error ? Color.FromRgb(253, 86, 86).ToBrush() : Color.FromRgb(178, 223, 120).ToBrush(); } set { } }
-
+        public string Status { get => Error ? "无效" : "有效"; set { } }
+        public Brush StatusColor { get => Error ? Color.FromRgb(253, 86, 86).ToBrush() : Color.FromRgb(178, 223, 120).ToBrush(); set { } }
     }
     public class ConfigProcess : ICompletionData
     {
         public ConfigProcess(string text)
         {
-            this.Text = text;
+            Text = text;
         }
 
         public ImageSource Image

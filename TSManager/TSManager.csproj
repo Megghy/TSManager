@@ -146,12 +146,14 @@
     <Compile Include="Modules\BagManager.cs" />
     <Compile Include="Data\ConfigData.cs" />
     <Compile Include="Data\ItemData.cs" />
-    <Compile Include="Data\Maps.cs" />
+    <Compile Include="Data\MapData.cs" />
     <Compile Include="Data\PlayerInfo.cs" />
     <Compile Include="Modules\GroupManager.cs" />
     <Compile Include="Modules\HookManager.cs" />
+    <Compile Include="Modules\MapManager.cs" />
     <Compile Include="Modules\PlayerManager.cs" />
     <Compile Include="Modules\ScriptManager.cs" />
+    <Compile Include="Modules\Updater.cs" />
     <Compile Include="Script\CheckPermission.cs" />
     <Compile Include="Script\Common\ClearExpression.cs" />
     <Compile Include="Script\Common\CountExpression.cs" />

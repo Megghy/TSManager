@@ -4,7 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Xml;
 using HandyControl.Controls;
+using ICSharpCode.AvalonEdit.Folding;
+using ICSharpCode.AvalonEdit.Highlighting.Xshd;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Search;
 using Newtonsoft.Json.Linq;
 using TShockAPI;
 using TShockAPI.Hooks;
@@ -14,6 +19,23 @@ namespace TSManager.Modules
 {
     class ConfigEdit
     {
+        internal static void Init()
+        {
+            //快速搜索功能
+            SearchPanel.Install(TSMMain.GUI.ConfigEditor.TextArea);
+            //设置语法规则
+            using (XmlTextReader reader = new(Properties.Resources.ResourceManager.GetString("json.xshd"), XmlNodeType.Document, null))
+            {
+                var xshd = HighlightingLoader.LoadXshd(reader);
+                TSMMain.GUI.ConfigEditor.SyntaxHighlighting = HighlightingLoader.Load(xshd, HighlightingManager.Instance);
+            }
+            TSMMain.GUI.ConfigEditor.TextArea.TextEntering += OnTextEntering;
+            TSMMain.GUI.ConfigEditor.TextArea.TextEntered += OnTextEntered;
+            var foldingManager = FoldingManager.Install(TSMMain.GUI.ConfigEditor.TextArea);
+            var foldingStrategy = new XmlFoldingStrategy();
+            foldingStrategy.UpdateFoldings(foldingManager, TSMMain.GUI.ConfigEditor.Document);
+            LoadAllConfig();
+        } 
         public static void LoadAllConfig()
         {
             Info.Configs = new(ConfigData.ReadAllConfig());

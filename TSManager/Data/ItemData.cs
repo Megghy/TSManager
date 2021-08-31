@@ -5,7 +5,7 @@ using TShockAPI;
 namespace TSManager.Data
 {
     [AddINotifyPropertyChangedInterface]
-    class ItemData
+    public class ItemData
     {
         public ItemData() { }
         public ItemData(PlayerInfo info, NetItem item, int slot)

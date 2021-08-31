@@ -5,41 +5,49 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media;
 using TerrariaApi.Server;
 using TShockAPI;
 
 namespace TSManager.Modules
 {
-    public sealed partial class ServerManger : IDisposable
+    public sealed partial class ServerManger
     {
         private static ServerManger Instance => Info.Server;
         private readonly Assembly mainasm;
-        private readonly BlockingStream istream;
-        //private readonly HashSet<Thread> ThreadList = new HashSet<Thread>();
-        internal static HarmonyMethod GetMethod(string name)
-        {
-            return new(typeof(ServerManger).GetMethod(name, BindingFlags.Static | BindingFlags.NonPublic));
-        }
-        internal Color foregroundColor = ConsoleColor.White.ToColor();
+        private readonly ConsoleIn inStream;
+        private readonly ConsoleOut outStream;
+        private Color foregroundColor = ConsoleColor.White.ToColor();
         internal static readonly Harmony TSMHarmony = new("TSManager");
+        public static readonly Color PlayerColor = Color.FromRgb(
+            Microsoft.Xna.Framework.Color.Aquamarine.R,
+            Microsoft.Xna.Framework.Color.Aquamarine.G,
+            Microsoft.Xna.Framework.Color.Aquamarine.B);
         public ServerManger(Assembly server)
         {
             mainasm = server;
+            outStream = new();
+            inStream = new();
+        }
+        internal static void Init()
+        {
+            if (Info.Server is null)
+                throw new("未指定TSAPI程序集");
             var console = typeof(Console);
-
-            istream = new BlockingStream();
-            Console.SetIn(new StreamReader(istream, Encoding.UTF8));
-            Console.SetOut(new ConsoltOut());
+            Console.SetIn(new StreamReader(Instance.inStream, Encoding.UTF8));
+            Console.SetOut(Instance.outStream);
             TSMHarmony.Patch(console.GetProperty("Title").SetMethod, GetMethod("OnSetTitle"));
             TSMHarmony.Patch(console.GetMethod("ResetColor"), GetMethod("OnResetColor"));
             TSMHarmony.Patch(console.GetProperty("ForegroundColor").SetMethod, GetMethod("OnSetForegroundColor"));
             TSMHarmony.Patch(console.GetMethod("Clear"), GetMethod("ClearText"));
+        }
+        #region 一些patch的函数
+        internal static HarmonyMethod GetMethod(string name)
+        {
+            return new(typeof(ServerManger).GetMethod(name, BindingFlags.Static | BindingFlags.NonPublic));
         }
         static void OnServerStop(bool save = true, string reason = "Server shutting down!")
         {
@@ -67,7 +75,9 @@ namespace TSManager.Modules
             TSMMain.GUIInvoke(() => TSMMain.GUI.Console_MainGroup.Header = $"{value}");
             return false;
         }
-        class TextInfo
+        #endregion
+        #region  文本显示处理
+        private struct TextInfo
         {
             public TextInfo(string text, bool isPlayer = false)
             {
@@ -81,21 +91,7 @@ namespace TSManager.Modules
                 return Text;
             }
         }
-        Color PlayerColor = Color.FromRgb(Microsoft.Xna.Framework.Color.Aquamarine.R, Microsoft.Xna.Framework.Color.Aquamarine.G, Microsoft.Xna.Framework.Color.Aquamarine.B);
-        bool SplitTextFromName(string text, string name, out List<TextInfo> list)
-        {
-            list = new();
-            if (text.Contains(name))
-            {
-                var splitText = text.Split(name, 2);
-                list.Add(new TextInfo(splitText[0], false));
-                list.Add(new TextInfo(name, true));
-                list.Add(new TextInfo(splitText[1], false));
-                return true;
-            }
-            else return false;
-        }
-        struct QueueInfo
+        private struct QueueInfo
         {
             public QueueInfo(Color color, string text)
             {
@@ -105,12 +101,8 @@ namespace TSManager.Modules
             public string Text { get; set; }
             public Color Color { get; set; }
         }
-
-        readonly ConcurrentQueue<QueueInfo> MessageQueue = new();
-        public void OnGetText(string s, Color color = default)
-        {
-            MessageQueue.Enqueue(new(color == default ? foregroundColor : color, s));
-        }
+        private readonly ConcurrentQueue<QueueInfo> MessageQueue = new();
+        public void DisplayText(string s, Color color = default) => MessageQueue.Enqueue(new(color == default ? foregroundColor : color, s));
         internal void StartProcessText()
         {
             Task.Run(() =>
@@ -166,7 +158,21 @@ namespace TSManager.Modules
                     catch (Exception ex) { ex.ShowError(); }
                 }
             });
+            static bool SplitTextFromName(string text, string name, out List<TextInfo> list)
+            {
+                list = new();
+                if (text.Contains(name))
+                {
+                    var splitText = text.Split(name, 2);
+                    list.Add(new TextInfo(splitText[0], false));
+                    list.Add(new TextInfo(name, true));
+                    list.Add(new TextInfo(splitText[1], false));
+                    return true;
+                }
+                else return false;
+            }
         }
+        #endregion
         public string[] GetStartArgs()
         {
             return new[]
@@ -184,17 +190,18 @@ namespace TSManager.Modules
                 $"{TSMMain.Settings.MaxPlayer}"
             };
         }
+        /// <summary>
+        /// 关闭服务器
+        /// </summary>
         public void Stop()
         {
             Info.IsServerRunning = false;
             Info.GameThread.Abort();
         }
-
-        public void Dispose()
-        {
-            Stop();
-        }
-
+        /// <summary>
+        /// 启动服务器
+        /// </summary>
+        /// <param name="param">服务器启动参数</param>
         public void Start(string[] param)
         {
             Task.Run(() =>
@@ -224,38 +231,41 @@ namespace TSManager.Modules
                 TSMMain.GUIInvoke(() => TSMMain.GUI.GoToStartServer.IsEnabled = false);
             });
         }
-
-        public void ConsoleCommand(string text)
+        /// <summary>
+        /// 以控制台身份执行tshock命令
+        /// </summary>
+        /// <param name="text"></param>
+        public void ExcuteConsoleCommand(string text)
         {
             Utils.AddLine(text, Color.FromRgb(208, 171, 233));
             Commands.HandleCommand(TSPlayer.Server, Commands.Specifier + text);
         }
     }
-    class ConsoltOut : TextWriter
-    {
-        public ConsoltOut()
-        {
-        }
-        public override Encoding Encoding
-        {
-            get { return Encoding.UTF8; }
-        }
-        public override void Write(string value)
-        {
-            Info.Server.OnGetText(value);
-        }
-        public override void WriteLine(string value)
-        {
-            Info.Server.OnGetText(value + "\r\n");
-        }
-        public override void WriteLine()
-        {
-            Info.Server.OnGetText(" \r\n");
-        }
-    }
     public sealed partial class ServerManger
     {
-        private class BlockingStream : Stream
+        private class ConsoleOut : TextWriter
+        {
+            public ConsoleOut()
+            {
+            }
+            public override Encoding Encoding
+            {
+                get { return Encoding.UTF8; }
+            }
+            public override void Write(string value)
+            {
+                Info.Server.DisplayText(value);
+            }
+            public override void WriteLine(string value)
+            {
+                Info.Server.DisplayText(value + "\r\n");
+            }
+            public override void WriteLine()
+            {
+                Info.Server.DisplayText(" \r\n");
+            }
+        }
+        private class ConsoleIn : Stream 
         {
             private byte[] lasting = new byte[0];
             private readonly BlockingCollection<byte[]> queue = new();

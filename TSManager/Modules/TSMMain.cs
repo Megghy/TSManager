@@ -37,19 +37,17 @@ namespace TSManager.Modules
             catch (Exception ex) { ex.ShowError(); }
         }
         internal const int UpdateTime = 500;
-        public void StopServer()
-        {
-            TShock.Utils.StopServer();
-        }
+        public void StopServer() => TShock.Utils.StopServer();
         internal void OnExit()
         {
             Info.Server.Stop();
             Settings.Save();
             GUIInvoke(() => GUI.Visibility = Visibility.Hidden);
-            if (GUI.restart) Process.Start(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            if (GUI.reStart)
+                Process.Start(System.Reflection.Assembly.GetExecutingAssembly().Location);
             Environment.Exit(0);
         }
-        public void Update()
+        internal void Update()
         {
             Task.Run(() =>
             {
@@ -73,146 +71,51 @@ namespace TSManager.Modules
                 }
             });
         }
-        bool firstCheckUpdate = true;
-        private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
-        {
-            if (args.IsUpdateAvailable)
-            {
-                if (args.Mandatory.Value)
-                {
-                    try
-                    {
-                        GUIInvoke(() =>
-                        {
-                            GUI.TSMVersion_Badge.ShowBadge = true;
-                            GUI.TSMVersion_Badge.Text = args.CurrentVersion;
-                            GUI.TSMVersion.Text = "当前版本: 发现新版本";
-                        });
-                        if (firstCheckUpdate)
-                        {
-                            if (Info.IsEnterWorld) Growl.Ask("发现新版本, 是否现在更新?", result =>
-                            {
-                                if (result) AutoUpdater.ShowUpdateForm(args);
-                                return true;
-                            });
-                            else AutoUpdater.ShowUpdateForm(args);
-                        }
-                        firstCheckUpdate = false;
-                        /*if (AutoUpdater.DownloadUpdate(args))
-                        {
-                            Environment.Exit(0);
-                        }*/
-                    }
-                    catch (Exception exception)
-                    {
-                        Utils.Notice("无法下载更新\r\n" + exception.Message, HandyControl.Data.InfoType.Error);
-                    }
-                }
-            }
-        }
+        
         internal void OnInitialize()
         {
             try
             {
-                Info.Server.StartProcessText(); //循环处理消息队列
                 Utils.DisplayInfo("正在初始化...");
-                
+
+                Info.Server.StartProcessText(); //循环处理消息队列
+                GUI.ServerStatus.Visibility = Visibility.Hidden; //暂时隐藏服务器状态
+                GUI.Versions.Visibility = Visibility.Hidden; //暂时隐藏服务器版本               
                 GUI.ChangeNightMode(Settings.EnableDarkMode); //调整暗色模式
+
+                #region 加载tsapi程序集
+                Utils.DisplayInfo("正在加载TerrariaServerAPI程序集...");
+                Info.Server = new(typeof(ServerApi).Assembly);
+                ServerManger.Init();
+                #endregion
+
                 #region 自动更新处理
                 Utils.DisplayInfo("正在检查更新...");
-                AutoUpdater.Start("https://oss.suki.club/TSManager/Update.xml");
-                Timer t = new()
-                {
-                    Interval = 60000,
-                    AutoReset = true
-                };
-                t.Elapsed += (object o, ElapsedEventArgs args) => AutoUpdater.Start("https://oss.suki.club/TSManager/Update.xml");
-                t.Start();
-                AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
-                AutoUpdater.ApplicationExitEvent += delegate
-                {
-                    if (Info.IsEnterWorld) Info.Server.ConsoleCommand("save");
-                    else Environment.Exit(0);
-                };
+                Updater.Init();
                 #endregion
-                #region 玩家管理器加载代码
-                GUI.ServerStatus.Visibility = Visibility.Hidden; //暂时隐藏服务器状态
-                GUI.Versions.Visibility = Visibility.Hidden; //暂时隐藏服务器版本
-                Info.TextureZip = ZipFile.Read(new MemoryStream(Properties.Resources.Texture)); //加载贴图
-                //加载物品前缀
-                Utils.DisplayInfo("加载玩家管理器...");
-                Dictionary<string, int> prefix = new();
-                var tempjobj = JObject.Parse(Properties.Resources.Prefix);
-                foreach (var jobj in tempjobj)
-                {
-                    int prefixid = jobj.Key.Split("prefix_")[1].ToInt();
-                    prefix.Add(prefixid + " - " + (string)jobj.Value, prefixid);
-                }
-                GUI.Bag_Prefix.ItemsSource = prefix;
 
-                //加载背包界面
-                BagManager.CreateBox();
-                //添加背包界面选项
-                Dictionary<string, int> bags = new()
-                {
-                    { "主背包", 0 },
-                    { "护甲及饰品", 1 },
-                    { "染料", 2 },
-                    { "猪猪罐", 3 },
-                    { "保险箱", 4 },
-                    { "守卫者熔炉", 5 },
-                    { "虚空", 6 },
-                    { "Buff栏", 8 },
-                    { "金币.弹药.被选中", 7 }
-                };
-
-                GUI.Bag_Choose.ItemsSource = bags;
+                #region 背包管理器加载代码
+                Utils.DisplayInfo("加载背包管理器...");
+                BagManager.Init();
                 #endregion
+
                 #region 设置编辑器加载部分
                 Utils.DisplayInfo("初始化设置编辑器...");
-                //快速搜索功能
-                SearchPanel.Install(GUI.ConfigEditor.TextArea);
-                //设置语法规则
-                using (XmlTextReader reader = new(Properties.Resources.ResourceManager.GetString("json.xshd"), XmlNodeType.Document, null))
-                {
-                    var xshd = HighlightingLoader.LoadXshd(reader);
-                    GUI.ConfigEditor.SyntaxHighlighting = HighlightingLoader.Load(xshd, HighlightingManager.Instance);
-                }
-                GUI.ConfigEditor.TextArea.TextEntering += ConfigEdit.OnTextEntering;
-                GUI.ConfigEditor.TextArea.TextEntered += ConfigEdit.OnTextEntered;
-                var foldingManager = FoldingManager.Install(GUI.ConfigEditor.TextArea);
-                var foldingStrategy = new XmlFoldingStrategy();
-                foldingStrategy.UpdateFoldings(foldingManager, GUI.ConfigEditor.Document);
-                ConfigEdit.LoadAllConfig();
-
+                ConfigEdit.Init();
                 #endregion
+
                 #region 读取地图列表
                 Utils.DisplayInfo("读取地图列表...");
-                var maps = Maps.GetAllMaps();
-                GUI.Console_MapBox.ItemsSource = maps;
-                if (Settings.World != string.Empty)
-                {
-                    var lastMap = maps.SingleOrDefault(m => m.Path == Settings.World);
-                    if (lastMap == null)
-                    {
-                        Utils.Notice("未找到上次启动时所选地图, 请重新选择", HandyControl.Data.InfoType.Info);
-                    }
-                    else
-                    {
-                        GUI.Console_MapBox.SelectedItem = lastMap;
-                    }
-                }
+                MapManager.Init();
                 #endregion
+
                 #region 加载脚本相关
                 Utils.DisplayInfo("初始化脚本编辑器...");
-                ScriptManager.LoadAllBlock(); //加载脚本编辑器
-                ScriptManager.Log("正在加载所有脚本");
-                Info.Scripts = new(ScriptData.GetAllScripts());
-                ScriptManager.Log($"共载入 {Info.Scripts.Count} 条脚本");
-                GUI.Script_List.ItemsSource = Info.Scripts;
-                GUI.Script_TriggerCondition.ItemsSource = Enum.GetValues(typeof(ScriptData.Triggers)).Cast<ScriptData.Triggers>(); ;
+                ScriptManager.Init();
                 #endregion
+
                 Utils.DisplayInfo("初始化完成. 欢迎使用 TSManager.");
+
                 if (Settings.AutoStart)
                 {
                     Info.Server.Start(Info.Server.GetStartArgs());
@@ -226,6 +129,7 @@ namespace TSManager.Modules
             {
                 GUI.Console_StopServer.IsEnabled = true; //也可以关闭
                 GUI.Console_StartServer.IsEnabled = false; //现在不能开启了
+                GUI.Console_RestartServer.IsEnabled = false; //暂时不能重启
             });
             if ((Info.Configs.SingleOrDefault(c => c.Name == "config.json") is { } c && c.JsonData.Value<int>("RestApiPort") is { } restPort && Utils.IsPortInUse(restPort)) || Utils.IsPortInUse(Settings.Port))
             {
@@ -253,6 +157,7 @@ namespace TSManager.Modules
             //加载服务器状态信息
             GUIInvoke(() =>
             {
+                GUI.Console_RestartServer.IsEnabled = true; //可以重启了
                 GUI.Tab_Manage.IsEnabled = true; //可以打开管理界面了
                 GUI.Tab_Index.DataContext = new ServerStatus();
                 GUI.Versions.Visibility = Visibility.Visible;
@@ -263,8 +168,7 @@ namespace TSManager.Modules
 
                 PlayerManager.Refresh();
 
-                GUI.GroupManage_AllPermission.ItemsSource = GroupData.GetAllPermissions(); //尝试读取所有权限
-                GroupManager.Refresh();//读取所有组权限
+                GroupManager.Init();
                 Utils.DisplayInfo("已读取用户组信息");
             });
 

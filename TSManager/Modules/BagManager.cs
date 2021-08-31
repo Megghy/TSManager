@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Ionic.Zip;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,6 +17,36 @@ namespace TSManager.Modules
 {
     class BagManager
     {
+        internal static void Init()
+        {
+            Info.TextureZip = ZipFile.Read(new MemoryStream(Properties.Resources.Texture)); //加载贴图
+            Dictionary<string, int> prefix = new();
+            var tempjobj = JObject.Parse(Properties.Resources.Prefix);
+            foreach (var jobj in tempjobj)
+            {
+                int prefixid = jobj.Key.Split("prefix_")[1].ToInt();
+                prefix.Add(prefixid + " - " + (string)jobj.Value, prefixid);
+            }
+            TSMMain.GUI.Bag_Prefix.ItemsSource = prefix;
+
+            //加载背包界面
+            BagManager.CreateBox();
+            //添加背包界面选项
+            Dictionary<string, int> bags = new()
+            {
+                { "主背包", 0 },
+                { "护甲及饰品", 1 },
+                { "染料", 2 },
+                { "猪猪罐", 3 },
+                { "保险箱", 4 },
+                { "守卫者熔炉", 5 },
+                { "虚空", 6 },
+                { "Buff栏", 8 },
+                { "金币.弹药.被选中", 7 }
+            };
+
+            TSMMain.GUI.Bag_Choose.ItemsSource = bags;
+        }
         public static void Refresh(bool showNotice = true)
         {
             if (TSMMain.GUI.PlayerManage_List.SelectedItem is PlayerInfo info)

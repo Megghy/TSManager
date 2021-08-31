@@ -8,8 +8,16 @@ using TSManager.Data;
 
 namespace TSManager.Modules
 {
-    class GroupManager
+    public class GroupManager
     {
+        /// <summary>
+        /// 初始化用户组信息. 此函数应调用于ts加载后
+        /// </summary>
+        internal static async void Init()
+        {
+            await Task.Run(() => TSMMain.GUIInvoke(() => TSMMain.GUI.GroupManage_AllPermission.ItemsSource = GroupData.GetAllPermissions())); //尝试读取所有权限
+            Refresh();//读取所有组权限
+        }
         public static void Refresh()
         {
             Task.Run(() =>

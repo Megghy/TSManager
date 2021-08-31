@@ -101,7 +101,7 @@ namespace TSManager.Data
         public string Description { get; set; }
         public Version Version { get; set; }
         public Guid ID { get; set; }
-        public int FunctionCount { get => Expressions.Count + BlockStatements.Count; }
+        public int FunctionCount => Expressions.Count + BlockStatements.Count;
         public Dictionary<object, System.Windows.Point> Positions
         {
             get;

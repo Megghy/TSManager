@@ -417,6 +417,16 @@
                                 </Border>
                             </Grid>
                         </TabItem>
+                        <TabItem Header="地图管理" Name="Tab_Map">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="16*"/>
+                                    <RowDefinition Height="227*"/>
+                                </Grid.RowDefinitions>
+                                <ToolBar Margin="0,0,4,0" Name="MapManage_Tool"/>
+                                <ListBox Grid.Row="1" Name="MapManage_List"/>
+                            </Grid>
+                        </TabItem>
                         <TabItem></TabItem>
                     </TabControl>
                 </Grid>

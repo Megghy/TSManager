@@ -1,15 +1,12 @@
-﻿using System;
+﻿using HandyControl.Controls;
+using HandyControl.Tools;
+using ScratchNet;
+using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Media;
-using HandyControl.Controls;
-using HandyControl.Themes;
-using HandyControl.Tools;
-using ScratchNet;
 using TShockAPI;
 using TSManager.Data;
 using TSManager.Modules;
@@ -39,14 +36,15 @@ namespace TSManager
             Instance = this;
             TSMMain.Instance.OnInitialize();
         }
-        public bool forceClose = false;
-        public bool restart = false;
+        internal bool forceClose = false;
+        internal bool reStart = false;
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (Info.IsEnterWorld)
             {
                 e.Cancel = true;
-                if (forceClose) Environment.Exit(0);
+                if (forceClose)
+                    Environment.Exit(0);
                 Growl.Ask("服务器正在运行, 确定要关闭并退出吗?", result =>
                 {
                     if (result)
@@ -89,8 +87,8 @@ namespace TSManager
                                 {
                                     if (result)
                                     {
+                                        reStart = true;
                                         TSMMain.Instance.StopServer();
-                                        restart = true;
                                     }
                                     return true;
                                 });
@@ -104,7 +102,7 @@ namespace TSManager
                             break;
                         case "Console_DoCmd":
                             if (!Info.IsServerRunning) return;
-                            Info.Server.ConsoleCommand(Console_CommandBox.Text);
+                            Info.Server.ExcuteConsoleCommand(Console_CommandBox.Text);
                             Console_CommandBox.Clear();
                             break;
                         case "Console_Clear":
@@ -173,6 +171,7 @@ namespace TSManager
                 }
                 else if (b.Name.StartsWith("BagManage"))
                 {
+                    #region 背包管理器
                     if (b.Name == "BagManage_Refresh") { BagManager.Refresh(); return; }
                     if (b.DataContext is not ItemData item || plrInfo == null)
                     {
@@ -193,9 +192,11 @@ namespace TSManager
                             BagManager.DelItem(item);
                             break;
                     }
+                    #endregion
                 }
                 else if (b.Name.StartsWith("GroupManage"))
                 {
+                    #region 用户组管理器
                     var group = GroupManage_List.SelectedItem as GroupData;
                     switch (b.Name)
                     {
@@ -216,9 +217,11 @@ namespace TSManager
                             GroupManager.Del(group);
                             break;
                     }
+                    #endregion
                 }
                 else if (b.Name.StartsWith("Script"))
                 {
+                    #region 脚本管理器
                     switch (b.Name)
                     {
                         case "Script_Confirm":
@@ -237,10 +240,12 @@ namespace TSManager
                         case "Script_Del":
                             if (Script_List.SelectedItem is { } script_Del) Growl.Ask($"确定要删除脚本 {((ScriptData)script_Del).Name} 吗?", result =>
                             {
-                                if (result) ScriptManager.Del(Script_List.SelectedItem as ScriptData);
+                                if (result)
+                                    ScriptManager.Del(Script_List.SelectedItem as ScriptData);
                                 return true;
                             });
-                            else Utils.Notice("未选择脚本");
+                            else
+                                Utils.Notice("未选择脚本");
                             break;
                         case "Script_Paste":
                             Script_Editor.Paste(new(10, 10));
@@ -249,6 +254,7 @@ namespace TSManager
                             Script_Editor.Copy();
                             break;
                     }
+                    #endregion
                 }
             }
             catch (Exception ex) { ex.ShowError(); }
@@ -363,7 +369,7 @@ namespace TSManager
                     }
                     #endregion
                 }
-                else if(b.Name.StartsWith("Console"))
+                else if (b.Name.StartsWith("Console"))
                 {
                     switch (b.Name)
                     {
@@ -422,7 +428,7 @@ namespace TSManager
                             if (t.Name == "Console_CommandBox")
                             {
                                 if (!Info.IsServerRunning) return;
-                                Info.Server.ConsoleCommand(t.Text);
+                                Info.Server.ExcuteConsoleCommand(t.Text);
                                 t.Clear();
                             }
                         }
@@ -447,7 +453,7 @@ namespace TSManager
                         ConfigEdit.ChangeConfig((ConfigData)c.SelectedItem);
                         break;
                     case "Console_MapBox":
-                        TSMMain.Settings.World = ((Maps)Console_MapBox.SelectedItem).Path;
+                        TSMMain.Settings.World = ((MapData)Console_MapBox.SelectedItem).Path;
                         break;
                     case "PlayerManage_Group":
                         (PlayerManage_List.SelectedItem as PlayerInfo).ChangeGroup(PlayerManage_Group.SelectedItem);

@@ -7,7 +7,7 @@ using TShockAPI;
 
 namespace TSManager.Data
 {
-    class GroupData
+    public class GroupData
     {
         public override string ToString()
         {
