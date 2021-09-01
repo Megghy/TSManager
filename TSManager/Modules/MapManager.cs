@@ -7,7 +7,7 @@ using TSManager.Data;
 
 namespace TSManager.Modules
 {
-    class MapManager
+    internal static class MapManager
     {
         internal static void Init()
         {

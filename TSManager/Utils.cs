@@ -12,6 +12,7 @@ using HandyControl.Data;
 using Ionic.Zip;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using TerrariaApi.Server;
 using TShockAPI;
 using TShockAPI.DB;
 using TSManager.Data;
@@ -133,12 +134,14 @@ namespace TSManager
         }
         public static void ShowError(this Exception ex, InfoType type = InfoType.Error)
         {
-            Notice($"{new StackTrace(1)}\r\n{ex.Message}", type);
+            Notice($"位于: {new StackFrame(1).GetMethod().DeclaringType.FullName}\r\n错误消息: {ex.Data} {ex.Message}", type);
+            ServerApi.LogWriter?.PluginWriteLine(TSMMain.Instance, $"{ex.Data} - {ex.Message}\r\n{ex.StackTrace}", TraceLevel.Error);
         }
+        static void TSLog(string message) => TShock.Log.Error(message);
         public static void AddText(object text, Color color = default)
         {
             color = color == default ? Color.FromRgb(255, 255, 255) : color;
-            Info.Server.DisplayText(text?.ToString(), color);
+            Info.Server?.DisplayText(text?.ToString(), color);
         }
         public static void AddLine(object text = null, Color color = default) => AddText(text + "\r\n", color);
         public static bool TryParseJson(string json, out JObject jobj)

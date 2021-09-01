@@ -27,6 +27,10 @@ namespace TSManager.Modules
     public class TSMMain : TerrariaPlugin
     {
         public TSMMain(Main game) : base(game) { }
+        public override string Author => "Megghy";
+        public override string Description => "其实压根不需要继承plugin类";
+        public override string Name => "TSManager";
+        public override Version Version => Environment.Version;
         public override void Initialize() { }
         public static TSMMain Instance = new(null);
         public static TSMWindow GUI { get; internal set; }
@@ -62,7 +66,7 @@ namespace TSManager.Modules
                             {
                                 ((ServerStatus)GUI.Tab_Index.DataContext).RunTime += UpdateTime;
                                 Info.Players?.ForEach(p => p.Update());
-                                GUI.PlayerManage_Count.Content = Info.Players.Count;
+                                GUI.PlayerManage_Count.Content = "总人数: " + Info.Players.Count;
                             }
                         });
                         Task.Delay(UpdateTime).Wait();
@@ -72,19 +76,20 @@ namespace TSManager.Modules
             });
         }
         
-        internal void OnInitialize()
+        internal async void OnInitialize()
         {
             try
             {
-                Utils.DisplayInfo("正在初始化...");
-
-                Info.Server.StartProcessText(); //循环处理消息队列
+                 //循环处理消息队列
                 GUI.ServerStatus.Visibility = Visibility.Hidden; //暂时隐藏服务器状态
                 GUI.Versions.Visibility = Visibility.Hidden; //暂时隐藏服务器版本               
-                GUI.ChangeNightMode(Settings.EnableDarkMode); //调整暗色模式
+                GUI.ChangeNightMode(Settings.EnableDarkMode ? HandyControl.Data.SkinType.Dark : HandyControl.Data.SkinType.Default); //调整暗色模式
+
+
+                GUI.Download_TShock_List.ItemsSource = await Downloader.GetTShockReleaseInfoAsync();
+
 
                 #region 加载tsapi程序集
-                Utils.DisplayInfo("正在加载TerrariaServerAPI程序集...");
                 Info.Server = new(typeof(ServerApi).Assembly);
                 ServerManger.Init();
                 #endregion

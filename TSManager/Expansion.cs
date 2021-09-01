@@ -102,7 +102,8 @@ namespace TSManager
         public static int ToInt(this string text) => int.TryParse(text, out int i) ? i : -1;
         public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {
-            if (source == null) return;
+            if (source == null)
+                return;
             if (action == null)
             {
                 throw new ArgumentNullException("action");

@@ -17,7 +17,9 @@
            FontFamily="Microsoft YaHei UI Light"
            FontSize="14"
            Loaded="Window_Loaded"
-           Closing="Window_Closing">
+           Closing="Window_Closing"
+           MinWidth="800"
+           MinHeight="450">
     <Grid>
         <TabControl x:Name="MainTab"
                     TabStripPlacement="Left">
@@ -38,7 +40,9 @@
                             Margin="0,0,5,0"
                             Grid.Row="2">
                         <hc:Col Span="6">
-                            <hc:Badge x:Name="TSMVersion_Badge" Margin="10,5" ShowBadge="False">
+                            <hc:Badge x:Name="TSMVersion_Badge"
+                                      Margin="10,5"
+                                      ShowBadge="False">
                                 <TextBlock x:Name="TSMVersion"
                                            FontSize="16">
                         <Run Text="当前版本: " />
@@ -155,7 +159,7 @@
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="637*" />
-                                            <ColumnDefinition Width="120*"/>
+                                            <ColumnDefinition Width="120*" />
                                             <ColumnDefinition Width="152*" />
                                         </Grid.ColumnDefinitions>
                                         <Grid.RowDefinitions>
@@ -173,7 +177,8 @@
                                                      Background="#FF686868"
                                                      IsReadOnly="True"
                                                      FontSize="14"
-                                                     VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2" />
+                                                     VerticalScrollBarVisibility="Auto"
+                                                     Grid.ColumnSpan="2" />
                                         <hc:TextBox Name="Console_CommandBox"
                                                     hc:BorderElement.CornerRadius="1"
                                                     Grid.Row="1"
@@ -195,7 +200,8 @@
                                                 Margin="5,5,0,0"
                                                 Grid.Row="1"
                                                 VerticalAlignment="Stretch"
-                                                Height="Auto" Grid.Column="1" />
+                                                Height="Auto"
+                                                Grid.Column="1" />
                                     </Grid>
                                 </GroupBox>
                                 <GroupBox Header="启动设置"
@@ -417,14 +423,17 @@
                                 </Border>
                             </Grid>
                         </TabItem>
-                        <TabItem Header="地图管理" Name="Tab_Map">
+                        <TabItem Header="地图管理"
+                                 Name="Tab_Map">
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="16*"/>
-                                    <RowDefinition Height="227*"/>
+                                    <RowDefinition Height="16*" />
+                                    <RowDefinition Height="227*" />
                                 </Grid.RowDefinitions>
-                                <ToolBar Margin="0,0,4,0" Name="MapManage_Tool"/>
-                                <ListBox Grid.Row="1" Name="MapManage_List"/>
+                                <ToolBar Margin="0,0,4,0"
+                                         Name="MapManage_Tool" />
+                                <ListBox Grid.Row="1"
+                                         Name="MapManage_List" />
                             </Grid>
                         </TabItem>
                         <TabItem></TabItem>
@@ -493,7 +502,11 @@
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
                                 </ListBox>
-                                <Label Name="PlayerManage_Count" Margin="5,10,5,0" Grid.Row="1" Height="35" HorizontalAlignment="Stretch"/>
+                                <Label Name="PlayerManage_Count"
+                                       Margin="5,10,5,0"
+                                       Grid.Row="1"
+                                       Height="35"
+                                       HorizontalAlignment="Stretch" />
                                 <hc:TabControl x:Name="PlayerManage_MainTab"
                                                Grid.Column="1"
                                                Grid.RowSpan="3">
@@ -523,22 +536,17 @@
                                                                          hc:TitleElement.TitlePlacement="Left"
                                                                          ItemsSource="{Binding Groups}"
                                                                          SelectionChanged="OnComboSelect"
-                                                                         DisplayMemberPath="Name" />
+                                                                         DisplayMemberPath="Name"
+                                                                         Margin="0,0,5,0" />
                                                         </hc:Col>
                                                     </hc:Row>
                                                     <TextBlock TextWrapping="Wrap"
-                                                               Width="300"
-                                                               Grid.ColumnSpan="4"
-                                                               Grid.Row="1"
                                                                HorizontalAlignment="Left">
                                                 <Run Text="注册时间: " />
                                                 <Run Text="{Binding RegisterTime}" /></TextBlock>
                                                     <TextBlock TextWrapping="Wrap"
-                                                               Width="300"
-                                                               Grid.ColumnSpan="4"
-                                                               Grid.Row="2"
                                                                HorizontalAlignment="Left"
-                                                               Margin="0,5,0,1">
+                                                               Margin="0,5,0,0">
                                                 <Run Text="最后登陆: " />
                                                 <Run Text="{Binding LastLoginTime}" /></TextBlock>
                                                     <hc:TextBox IsReadOnly="True"
@@ -547,12 +555,8 @@
                                                                 hc:TitleElement.TitlePlacement="Left"
                                                                 Text="{Binding KnownIP}"
                                                                 Margin="0,5,5,5"
-                                                                ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                                                Grid.ColumnSpan="4"
-                                                                Grid.Row="3" />
-                                                    <hc:Divider Grid.ColumnSpan="4"
-                                                                Grid.Row="5"
-                                                                Margin="0,20,0,16" />
+                                                                ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                                                    <hc:Divider Margin="0,10,0,10" />
                                                     <hc:Row>
                                                         <hc:Col Span="12">
                                                             <hc:TextBox hc:TitleElement.Title="当前血量"
@@ -587,13 +591,13 @@
                                                     </hc:Row>
                                                     <TextBlock TextWrapping="Wrap"
                                                                Grid.ColumnSpan="4"
-                                                               Grid.Row="2"
-                                                               Margin="2,2,2,1">
-                                                <Run Text="在线时长: " />
-                                                <Run Text="{Binding PlayTime_Text}" /></TextBlock>
+                                                               Margin="0,0,5,5">
+                                                               <Run Text="在线时长: " />
+                                                               <Run Text="{Binding PlayTime_Text}" /></TextBlock>
                                                     <tsm:ButtonTextBox x:Name="PlayerManage_Password"
+                                                                       Margin="0,0,5,5"
                                                                        ButtonClick="OnButtonTextBoxClick"
-                                                                       Title="密码    "
+                                                                       Title="密码"
                                                                        hc:InfoElement.Placeholder="键入新密码"
                                                                        ButtonText="确认" />
                                                 </StackPanel>
@@ -621,19 +625,19 @@
                                                                   HorizontalAlignment="Stretch"
                                                                   VerticalAlignment="Stretch"
                                                                   Margin="0,10,5,0"
-                                                                  Style="{StaticResource ToggleButtonSwitch}"
                                                                   IsChecked="{Binding GodMode, Mode=OneWay}"
-                                                                  Height="Auto" Width="Auto" />
+                                                                  Height="Auto"
+                                                                  Width="Auto" />
                                                     <ToggleButton x:Name="PlayerManage_Mute"
                                                                   Click="OnSwichClick"
                                                                   Content="禁言"
                                                                   HorizontalAlignment="Stretch"
                                                                   VerticalAlignment="Stretch"
                                                                   Margin="5,10,5,0"
-                                                                  Style="{StaticResource ToggleButtonSwitch}"
                                                                   IsChecked="{Binding Mute, Mode=OneWay}"
                                                                   Grid.Column="1"
-                                                                  Height="Auto" Width="Auto" />
+                                                                  Height="Auto"
+                                                                  Width="Auto" />
                                                     <tsm:ButtonTextBox x:Name="PlayerManage_Kick"
                                                                        hc:InfoElement.Placeholder="踢出理由"
                                                                        hc:InfoElement.MaxContentHeight="20"
@@ -858,14 +862,14 @@
                                            Margin="155,10,0,5"
                                            Grid.ColumnSpan="2"
                                            Grid.RowSpan="5">
-                                    <Border>
+                                    <Border Background="{Binding ElementName=MainWindow, Path=Background}">
                                         <hc:ColorPicker x:Name="GroupManage_ChatColor"
                                                         Canceled="GroupManage_ChatColor_Canceled"
                                                         hc:TitleElement.Title="聊天颜色"
                                                         hc:TitleElement.TitlePlacement="Left"
-                                                        DataContext="{Binding ElementName=GroupManage_List, Path=SelectedItem}" 
+                                                        DataContext="{Binding ElementName=GroupManage_List, Path=SelectedItem}"
                                                         SelectedBrush="{Binding DisplayColor}"
-                                                        SelectedColorChanged="GroupManage_ChatColor_SelectedColorChanged"/>
+                                                        SelectedColorChanged="GroupManage_ChatColor_SelectedColorChanged" />
                                     </Border>
                                 </hc:Drawer>
                                 <Button x:Name="GroupManage_Refresh"
@@ -1063,7 +1067,8 @@
                                                    Grid.Column="2"
                                                    ButtonText="添加"
                                                    KeyDown="OnKeyDown"
-                                                   Grid.Row="2" Grid.ColumnSpan="2" />
+                                                   Grid.Row="2"
+                                                   Grid.ColumnSpan="2" />
                                 <tsm:ButtonTextBox x:Name="GroupManage_Create"
                                                    Title="新建"
                                                    ButtonText="创建"
@@ -1097,11 +1102,11 @@
                                       SelectionChanged="OnListSelect">
                                 <DataGrid.Columns>
                                     <DataGridCheckBoxColumn Header="启用"
-                                                            Binding="{Binding Enable}"/>
+                                                            Binding="{Binding Enable}" />
                                     <DataGridTextColumn Header="文件名"
                                                         Binding="{Binding FileName}"
                                                         Width="*"
-                                                        IsReadOnly="True"/>
+                                                        IsReadOnly="True" />
                                     <DataGridTextColumn Header="脚本名"
                                                         Binding="{Binding Name}"
                                                         Width="2*"
@@ -1150,9 +1155,9 @@
                                     Height="Auto" />
                             <hc:Drawer Name="Script_Create_Drawer"
                                        Dock="Right"
-                                       ShowMode="Cover"
+                                       ShowMode="Push"
                                        Grid.RowSpan="2">
-                                <Border Background="{DynamicResource BackgroundBrush}"
+                                <Border Background="{Binding ElementName=MainWindow, Path=Background}"
                                         Width="250">
                                     <StackPanel>
                                         <hc:TextBox Name="Script_Create_Name"
@@ -1253,10 +1258,71 @@
                     </TabItem>
                 </TabControl>
             </hc:TabItem>
+            <hc:TabItem Header="下载"
+                        Name="Tab_Download">
+                <TabControl>
+                    <TabItem Header="TShock"
+                             Name="Tab_Download_TShock">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="17*" />
+                                <RowDefinition Height="227*" />
+                            </Grid.RowDefinitions>
+                            <hc:Drawer Name="Download_TShock_Drawer" Grid.RowSpan="2"
+                                       Dock="Right"
+                                       ShowMode="Push"
+                                       MinWidth="300"
+                                       DataContext="{Binding ElementName=Download_TShock_List, Path=SelectedItem}">
+                                <Border Background="{Binding ElementName=MainWindow, Path=Background}"
+                                        Width="300">
+                                    <StackPanel>
+                                        <Image />
+                                        <TextBlock>
+                                            <Run Text="发布者: "/>
+                                            <Run Text="{Binding Author}"/></TextBlock>
+                                    </StackPanel>
+                                </Border>
+                            </hc:Drawer>
+                            <ToolBar Margin="0">
+                                <Button Content="刷新" Name="Download_TShock_Refresh"/>
+                            </ToolBar>
+                            <ListView x:Name="Download_TShock_List"
+                                      SelectionChanged="OnListSelect"
+                                      Grid.Row="1">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn>
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Image Source="Resources/TShock.png"
+                                                               MaxHeight="25"/>
+                                                        <StackPanel MinWidth="200"
+                                                                    Margin="10,0,0,0">
+                                                            <TextBlock Text="{Binding Version}"
+                                                                       FontSize="17"
+                                                                       FontWeight="Bold" />
+                                                            <TextBlock Foreground="#FF6E6E6E"
+                                                                       FontSize="12">
+                                                                <Run Text="发布于 " />
+                                                                <Run Text="{Binding CreateDate}" /></TextBlock>
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </hc:TabItem>
             <hc:TabItem Name="Tab_Setting"
                         Header="设置">
                 <StackPanel Margin="5,0,0,0">
-                    <CheckBox Name="Setting_EnableDarkMode" Content="开启暗色模式"
+                    <CheckBox Name="Setting_EnableDarkMode"
+                              Content="开启暗色模式"
                               IsChecked="{Binding Path=EnableDarkMode, Source={x:Static setting:Settings.Default}, Mode=OneWay}"
                               Click="OnSwichClick"
                               HorizontalAlignment="Stretch"

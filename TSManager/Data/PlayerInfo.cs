@@ -1,9 +1,9 @@
-﻿using System;
+﻿using PropertyChanged;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using PropertyChanged;
 using TShockAPI;
 using TShockAPI.DB;
 using TSManager.Modules;
@@ -17,13 +17,7 @@ namespace TSManager.Data
         {
             return Name ?? "Unknown";
         }
-        public PlayerInfo(string name, int id, TSPlayer player)
-        {
-            Name = name;
-            ID = id;
-            Data = player.PlayerData;
-            Account = player.Account;
-        }
+        public PlayerInfo(TSPlayer player) : this(player.Name, (int)(player.Account?.ID), player.PlayerData, player.Account) { }
         public PlayerInfo(string name, int id, PlayerData data, UserAccount account)
         {
             Name = name;
@@ -31,18 +25,7 @@ namespace TSManager.Data
             Data = data;
             Account = account;
         }
-        public PlayerInfo(UserAccount account)
-        {
-            Name = account.Name;
-            ID = account.ID;
-            Data = new PlayerData(new TSPlayer(-1));
-            Account = account;
-        }
-        public PlayerInfo()
-        {
-            ID = -1;
-            Data = new PlayerData(new TSPlayer(-1));
-        }
+        public PlayerInfo(UserAccount account) : this(account.Name, account.ID, new(new(-1)), account) { }
         public static List<PlayerInfo> GetAllPlayerInfo()
         {
             var list = new List<PlayerInfo>();
@@ -51,27 +34,17 @@ namespace TSManager.Data
         }
         public void Update()
         {
-            Task.Run(() => {
-                try
+            try
+            {
+                Ban = TShock.Bans.Bans.Any(b => b.Value.Identifier == "uuid:" + Account?.UUID) || TShock.Bans.Bans.Any(b => b.Value.Identifier == "acc:" + Name) || (Online && TShock.Bans.Bans.Any(b => b.Value.Identifier == "ip:" + Player.IP));
+                if (Online)
                 {
-                    var tempPlayer = TShock.Players.FirstOrDefault(p => p != null && p.Name == Name);
-                    Ban = TShock.Bans.Bans.Any(b => b.Value.Identifier == "uuid:" + Account?.UUID) || TShock.Bans.Bans.Any(b => b.Value.Identifier == "acc:" + Name) || (Online && TShock.Bans.Bans.Any(b => b.Value.Identifier == "ip:" + Player.IP));
-                    if (tempPlayer == null)
-                    {
-                        if (Online)
-                            Online = false;
-                    }
-                    else
-                    {
-                        Player = tempPlayer;
-                        Data = tempPlayer.PlayerData;
-                        Account = tempPlayer.Account;
-                        PlayTime += TSMMain.UpdateTime;
-                        Online = true;
-                    }
+                    Data = Player.PlayerData;
+                    Account = Player.Account;
+                    PlayTime += TSMMain.UpdateTime;
                 }
-                catch  { }
-            });
+            }
+            catch (Exception ex) { ex.ShowError(); }
         }
         public void Save()
         {
@@ -83,7 +56,17 @@ namespace TSManager.Data
                 }
             });
         }
-        public bool Online { get; set; }
+        private bool _Online = false;
+        public bool Online
+        {
+            get => _Online;
+            set
+            {
+                if (_Online != value)
+                    PlayTime = 0;
+                _Online = value;
+            }
+        }
         [AlsoNotifyFor("Online", new string[] { "HP", "MaxHP", "MP", "MaxMP", "Ban", "_Ban", "Mute", "GodMode", "KnownIP", "LastLoginTime", "RegisterTime", "Status", "StatusColor" })]
         public long PlayTime { get; set; }
         public string PlayTime_Text { get { TimeSpan ts = new(0, 0, (int)(PlayTime / 1000)); return $"{ts.Days}日 {ts.Hours}时 {ts.Minutes}分 {ts.Seconds}秒"; } set { } }

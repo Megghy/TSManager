@@ -1,4 +1,6 @@
-﻿using System;
+﻿using HandyControl.Controls;
+using ScratchNet;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,8 +9,6 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Xml;
-using HandyControl.Controls;
-using ScratchNet;
 using TShockAPI;
 using TSManager.Data;
 using TSManager.Modules;
@@ -17,7 +17,7 @@ using static TSManager.Data.ScriptData;
 
 namespace TSManager
 {
-    public static class ScriptManager
+    public static partial class ScriptManager
     {
         internal static void Init()
         {
@@ -26,7 +26,7 @@ namespace TSManager
             Info.Scripts = new(ScriptData.GetAllScripts());
             Log($"共载入 {Info.Scripts.Count} 条脚本");
             TSMMain.GUI.Script_List.ItemsSource = Info.Scripts;
-            TSMMain.GUI.Script_TriggerCondition.ItemsSource = Enum.GetValues(typeof(ScriptData.Triggers)).Cast<ScriptData.Triggers>(); ;
+            TSMMain.GUI.Script_TriggerCondition.ItemsSource = Enum.GetValues(typeof(ScriptData.Triggers)).Cast<ScriptData.Triggers>();
         }
         internal static void LoadAllBlock()
         {
@@ -269,22 +269,24 @@ namespace TSManager
             }
             return g;
         }
-        public static void ChangeScript(ScriptData script)
+        public static void ChangeSelectScript(ScriptData script)
         {
-            if (TSMMain.GUI.Script_Editor.IsModified) Growl.Ask($"脚本 {script.FileName} 已改动, 确定要离开吗?", result =>
-             {
-                 if (result) TSMMain.GUIInvoke(() =>
-                 {
-                     TSMMain.GUI.Script_Editor.Script = script;
-                     TSMMain.GUI.Script_Tab.SelectedIndex = 1;
-                 });  //这东西属实不咋好用
-                 return true;
-             });
-            else TSMMain.GUIInvoke(() =>
-            {
-                TSMMain.GUI.Script_Editor.Script = script;
-                TSMMain.GUI.Script_Tab.SelectedIndex = 1;
-            });
+            if (TSMMain.GUI.Script_Editor.IsModified)
+                Growl.Ask($"脚本 {script.FileName} 已改动, 确定要离开吗?", result =>
+                {
+                    if (result) TSMMain.GUIInvoke(() =>
+                    {
+                        TSMMain.GUI.Script_Editor.Script = script;
+                        TSMMain.GUI.Script_Tab.SelectedIndex = 1;
+                    });  //这东西属实不咋好用
+                    return true;
+                });
+            else
+                TSMMain.GUIInvoke(() =>
+                {
+                    TSMMain.GUI.Script_Editor.Script = script;
+                    TSMMain.GUI.Script_Tab.SelectedIndex = 1;
+                });
         }
         public static void ChangeTriggerCondition(ScriptData script, Triggers type)
         {
@@ -380,22 +382,12 @@ namespace TSManager
             if (File.Exists(path)) File.Delete(path);
             Utils.Notice($"已删除脚本 {script.Name}", HandyControl.Data.InfoType.Success);
         }
-        /// <summary>
-        /// 由hooks调用的脚本运行
-        /// </summary>
-        /// <param name="type"></param>
-        internal static void ExcuteScript(ScriptExcuteArgs args)
-        {
-            var scripts = Info.Scripts.Where(s => s.Enable && s.TriggerCondition == args.Type);
-            if (scripts.Any()) Log($"<{args.Target?.Name}> 事件: {args.Type}, 执行脚本 {string.Join(", ", scripts.Select(s => s.Name))}");
-            else Log($"事件: {args.Type}, 无可执行脚本");
-            scripts?.ForEach(s =>
-            {
-                s.Variables.Where(v => v.Name == "TargetPlayer").ForEach(v => v.Value = args);
-                s.Excute(args);
-            });
-        }
-        #region 脚本运行
+    }
+    /// <summary>
+    /// 运行相关
+    /// </summary>
+    public static partial class ScriptManager
+    {
         public class ScriptExcuteArgs
         {
             public ScriptExcuteArgs(Triggers type, TSPlayer target, string message)
@@ -408,7 +400,24 @@ namespace TSManager
             public TSPlayer Target { get; set; }
             public string Message { get; set; }
         }
-        public static void Excute(this ScriptData script, ScriptExcuteArgs args)
+        /// <summary>
+        /// 由hooks调用的脚本运行
+        /// </summary>
+        /// <param name="type"></param>
+        public static void ExcuteScript(ScriptExcuteArgs args)
+        {
+            var scripts = Info.Scripts.Where(s => s.Enable && s.TriggerCondition == args.Type);
+            if (scripts.Any())
+                Log($"<{args.Target?.Name}> 事件: {args.Type}, 执行脚本 {string.Join(", ", scripts.Select(s => s.Name))}");
+            else
+                Log($"事件: {args.Type}, 无可执行脚本");
+            scripts?.ForEach(s =>
+            {
+                s.Variables.Where(v => v.Name == "TargetPlayer").ForEach(v => v.Value = args);
+                s.ExcuteDirect(args);
+            });
+        }
+        internal static void ExcuteDirect(this ScriptData script, ScriptExcuteArgs args)
         {
             Task.Run(() =>
             {
@@ -419,24 +428,28 @@ namespace TSManager
                         Stack<Node> stackTrace = new();
                         stackTrace.Clear();
                         ExecutionEnvironment engine = new();
-                        if (!engine.HasValue("ScriptExcuteArgs")) engine.RegisterValue("ScriptExcuteArgs", args);
+                        if (!engine.HasValue("ScriptExcuteArgs"))
+                            engine.RegisterValue("ScriptExcuteArgs", args);
                         engine.SetValue("ScriptExcuteArgs", args);
                         //Editor.IsEnabled = false;
                         engine.ExecutionCompleted += Engine_ExecutionCompleted;
                         engine.ExecutionAborted += Engine_ExecutionAborted;
                         engine.ExecuteAsync(script);
                     }
-                    else Utils.Notice($"未找到脚本 {script.Name} 的入口点<main>函数");
+                    else
+                        Utils.Notice($"未找到脚本 {script.Name} 的入口点<main>函数");
                 }
                 catch (Exception ex)
                 {
-                    Log($"脚本 {script.Name} 运行时发生错误.\r\n{ex}");
+                    Log($"脚本 {script.Name} 初始化时发生错误.\r\n{ex}");
                 }
             });
         }
         static void Engine_ExecutionCompleted(object e, object arg)
         {
-
+            var script = e as ScriptData;
+            //Utils.Notice($"脚本 {script.Name} 运行时发生错误");
+            Log($"脚本 {script.Name} 执行完成.");
         }
         static void Engine_ExecutionAborted(object sender, Completion arg)
         {
@@ -470,6 +483,5 @@ namespace TSManager
                 Log($"脚本 {script.Name} 异常终止. 发生于 {arg.Location}, 错误信息: {arg.ReturnValue}");
             }
         }
-        #endregion
     }
 }

@@ -17,7 +17,7 @@ using TSManager.Data;
 
 namespace TSManager.Modules
 {
-    class ConfigEdit
+    internal static class ConfigEdit
     {
         internal static void Init()
         {

@@ -44,14 +44,14 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lib.Harmony.2.0.4\lib\net45\0Harmony.dll</HintPath>
+    <Reference Include="0Harmony, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lib.Harmony.2.1.1\lib\net472\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Array">
       <HintPath>Resources\Script\Array.dll</HintPath>
     </Reference>
-    <Reference Include="AutoUpdater.NET, Version=1.6.4.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Autoupdater.NET.Official.1.6.4\lib\net45\AutoUpdater.NET.dll</HintPath>
+    <Reference Include="AutoUpdater.NET, Version=1.7.0.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autoupdater.NET.Official.1.7.0\lib\net45\AutoUpdater.NET.dll</HintPath>
     </Reference>
     <Reference Include="BCrypt.Net, Version=0.1.4141.31969, Culture=neutral, PublicKeyToken=f3bc8f8c31beeb49, processorArchitecture=MSIL">
       <HintPath>..\packages\BCrypt.Net.0.1.0\lib\net35\BCrypt.Net.dll</HintPath>
@@ -68,11 +68,11 @@
     <Reference Include="FontAwesome.WPF, Version=4.7.0.37774, Culture=neutral, PublicKeyToken=0758b07a11a4f466, processorArchitecture=MSIL">
       <HintPath>..\packages\FontAwesome.WPF.4.7.0.9\lib\net40\FontAwesome.WPF.dll</HintPath>
     </Reference>
-    <Reference Include="HandyControl, Version=3.1.0.0, Culture=neutral, PublicKeyToken=45be8712787a1e5b, processorArchitecture=MSIL">
-      <HintPath>..\packages\HandyControl.3.1.0\lib\net472\HandyControl.dll</HintPath>
+    <Reference Include="HandyControl, Version=3.2.0.0, Culture=neutral, PublicKeyToken=45be8712787a1e5b, processorArchitecture=MSIL">
+      <HintPath>..\packages\HandyControl.3.2.0\lib\net472\HandyControl.dll</HintPath>
     </Reference>
     <Reference Include="HttpServer, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5684c2c737cd4271, processorArchitecture=MSIL">
-      <HintPath>..\packages\TerrariaServer.TShock.4.5.2\lib\net452\HttpServer.dll</HintPath>
+      <HintPath>..\packages\TerrariaServer.TShock.4.5.5\lib\net452\HttpServer.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.AvalonEdit, Version=6.1.2.30, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
       <HintPath>..\packages\AvalonEdit.6.1.2.30\lib\net45\ICSharpCode.AvalonEdit.dll</HintPath>
@@ -81,7 +81,7 @@
       <HintPath>Resources\Script\Math.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Data.Sqlite, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <HintPath>..\packages\TerrariaServer.TShock.4.5.2\lib\net452\Mono.Data.Sqlite.dll</HintPath>
+      <HintPath>..\packages\TerrariaServer.TShock.4.5.5\lib\net452\Mono.Data.Sqlite.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=6.9.12.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.6.9.12\lib\net45\MySql.Data.dll</HintPath>
@@ -89,8 +89,8 @@
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="OTAPI, Version=1.4.2.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TerrariaServer.TShock.4.5.2\lib\net452\OTAPI.dll</HintPath>
+    <Reference Include="OTAPI, Version=1.4.2.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TerrariaServer.TShock.4.5.5\lib\net452\OTAPI.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -125,14 +125,14 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="TerrariaServer, Version=1.4.2.2, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\TerrariaServer.TShock.4.5.2\lib\net452\TerrariaServer.exe</HintPath>
+    <Reference Include="TerrariaServer, Version=1.4.2.3, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\TerrariaServer.TShock.4.5.5\lib\net452\TerrariaServer.exe</HintPath>
     </Reference>
     <Reference Include="Thread">
       <HintPath>Resources\Script\Thread.dll</HintPath>
     </Reference>
-    <Reference Include="TShockAPI, Version=4.5.2.0, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\TerrariaServer.TShock.4.5.2\lib\net452\TShockAPI.dll</HintPath>
+    <Reference Include="TShockAPI, Version=4.5.5.0, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\TerrariaServer.TShock.4.5.5\lib\net452\TShockAPI.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -141,6 +141,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Data\DownloadInfo.cs" />
     <Compile Include="Data\GroupData.cs" />
     <Compile Include="Data\ScriptData.cs" />
     <Compile Include="Modules\BagManager.cs" />
@@ -148,6 +149,7 @@
     <Compile Include="Data\ItemData.cs" />
     <Compile Include="Data\MapData.cs" />
     <Compile Include="Data\PlayerInfo.cs" />
+    <Compile Include="Modules\Downloader.cs" />
     <Compile Include="Modules\GroupManager.cs" />
     <Compile Include="Modules\HookManager.cs" />
     <Compile Include="Modules\MapManager.cs" />
@@ -251,6 +253,7 @@
     <Folder Include="UI\View\" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\TShock.png" />
     <Resource Include="ayjbz-m4wnb-002.ico" />
     <Content Include="Resources\Script\Array.dll" />
     <Content Include="Resources\Script\Canvas.dll" />

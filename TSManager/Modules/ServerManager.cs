@@ -34,8 +34,9 @@ namespace TSManager.Modules
         }
         internal static void Init()
         {
-            if (Info.Server is null)
+            if (Instance is null)
                 throw new("未指定TSAPI程序集");
+            Instance.StartProcessText();
             var console = typeof(Console);
             Console.SetIn(new StreamReader(Instance.inStream, Encoding.UTF8));
             Console.SetOut(Instance.outStream);
@@ -44,38 +45,6 @@ namespace TSManager.Modules
             TSMHarmony.Patch(console.GetProperty("ForegroundColor").SetMethod, GetMethod("OnSetForegroundColor"));
             TSMHarmony.Patch(console.GetMethod("Clear"), GetMethod("ClearText"));
         }
-        #region 一些patch的函数
-        internal static HarmonyMethod GetMethod(string name)
-        {
-            return new(typeof(ServerManger).GetMethod(name, BindingFlags.Static | BindingFlags.NonPublic));
-        }
-        static void OnServerStop(bool save = true, string reason = "Server shutting down!")
-        {
-            TSMMain.Instance.OnExit();
-        }
-        private static void ClearText()
-        {
-            TSMMain.GUIInvoke(() => TSMMain.GUI.Console_ConsoleBox.Document.Blocks.Clear());
-        }
-        private static bool OnSetForegroundColor(ConsoleColor value)
-        {
-            Console.Out.Flush();
-            Instance.foregroundColor = value.ToColor();
-            return false;
-        }
-
-        private static bool OnResetColor()
-        {
-            Console.Out.Flush();
-            Instance.foregroundColor = ConsoleColor.White.ToColor();
-            return false;
-        }
-        private static bool OnSetTitle(string value)
-        {
-            TSMMain.GUIInvoke(() => TSMMain.GUI.Console_MainGroup.Header = $"{value}");
-            return false;
-        }
-        #endregion
         #region  文本显示处理
         private struct TextInfo
         {
@@ -239,6 +208,41 @@ namespace TSManager.Modules
         {
             Utils.AddLine(text, Color.FromRgb(208, 171, 233));
             Commands.HandleCommand(TSPlayer.Server, Commands.Specifier + text);
+        }
+    }
+    /// <summary>
+    /// 一些patch的函数
+    /// </summary>
+    public sealed partial class ServerManger
+    {
+        internal static HarmonyMethod GetMethod(string name)
+        {
+            return new(typeof(ServerManger).GetMethod(name, BindingFlags.Static | BindingFlags.NonPublic));
+        }
+        static void OnServerStop(bool save = true, string reason = "Server shutting down!")
+        {
+            TSMMain.Instance.OnExit();
+        }
+        private static void ClearText()
+        {
+            TSMMain.GUIInvoke(() => TSMMain.GUI.Console_ConsoleBox.Document.Blocks.Clear());
+        }
+        private static bool OnSetForegroundColor(ConsoleColor value)
+        {
+            Console.Out.Flush();
+            Instance.foregroundColor = value.ToColor();
+            return false;
+        }
+        private static bool OnResetColor()
+        {
+            Console.Out.Flush();
+            Instance.foregroundColor = ConsoleColor.White.ToColor();
+            return false;
+        }
+        private static bool OnSetTitle(string value)
+        {
+            TSMMain.GUIInvoke(() => TSMMain.GUI.Console_MainGroup.Header = $"{value}");
+            return false;
         }
     }
     public sealed partial class ServerManger

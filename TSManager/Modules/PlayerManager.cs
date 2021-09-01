@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using Terraria.GameContent.Creative;
 using TShockAPI;
 using TShockAPI.DB;
@@ -9,15 +9,17 @@ using TSManager.Data;
 
 namespace TSManager.Modules
 {
-    static class PlayerManager
+    public static class PlayerManager
     {
         public static void ChangeDisplayInfo(PlayerInfo info)
         {
             TSMMain.GUI.PlayerManage_Info.DataContext = info;
             TSMMain.GUI.PlayerManage_Group.SelectedItem = info?.Group;
             //修改背包显示
-            if (TSMMain.GUI.Bag_Choose.SelectedIndex == 0) BagManager.ChangeBag(info, BagManager.BagType.inventory);
-            else TSMMain.GUI.Bag_Choose.SelectedIndex = 0;
+            if (TSMMain.GUI.Bag_Choose.SelectedIndex == 0)
+                BagManager.ChangeBag(info, BagManager.BagType.inventory);
+            else
+                TSMMain.GUI.Bag_Choose.SelectedIndex = 0;
         }
         public static void Refresh()
         {
@@ -25,9 +27,15 @@ namespace TSManager.Modules
             {
                 Info.Players = new(PlayerInfo.GetAllPlayerInfo());
                 TSMMain.GUI.PlayerManage_List.ItemsSource = Info.Players;
-                if (Info.Players.Any()) TSMMain.GUI.PlayerManage_List.SelectedItem = Info.Players[0];
+                if (Info.Players.Any())
+                    TSMMain.GUI.PlayerManage_List.SelectedItem = Info.Players[0];
             });
         }
+        /// <summary>
+        /// 修改玩家所处的用户组.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="group">由于部分代码写于未加载ts之前, 为避免出错使用object</param>
         public static void ChangeGroup(this PlayerInfo info, object group)
         {
             var g = group as Group;
@@ -37,37 +45,21 @@ namespace TSManager.Modules
                 Utils.Notice($"成功将玩家 {info} 的用户组更改为 {g.Name}", HandyControl.Data.InfoType.Success);
             }
         }
-        public static void ChangeGroup(this PlayerInfo info, TShockAPI.Group group)
-        {
-            if (group != null && info.Group != group)
-            {
-                TShock.UserAccounts.SetUserGroup(info.Account, group.Name);
-                Utils.Notice($"成功将玩家 {info} 的用户组更改为 {group.Name}", HandyControl.Data.InfoType.Success);
-            }
-        }
         public static bool ChangePassword(this PlayerInfo info, string password)
         {
             if (password.Length < TShock.Config.Settings.MinimumPasswordLength)
-            {
                 Utils.Notice($"密码长度应大于等于 {TShock.Config.Settings.MinimumPasswordLength}.", HandyControl.Data.InfoType.Warning);
-                return false;
-            }
-            if (info.Account is null)
-            {
+            else if (info.Account is null)
                 Utils.Notice("无效的账号", HandyControl.Data.InfoType.Warning);
-                return false;
-            }
-            if (!info.Account.VerifyPassword(password))
+            else if (info.Account.VerifyPassword(password))
+                Utils.Notice("此密码与原密码相同", HandyControl.Data.InfoType.Warning);
+            else
             {
                 TShock.UserAccounts.SetUserAccountPassword(info.Account, password);
                 Utils.Notice($"成功将玩家 {info} 的密码修改为 {password}.", HandyControl.Data.InfoType.Success);
                 return true;
             }
-            else
-            {
-                Utils.Notice("此密码与原密码相同", HandyControl.Data.InfoType.Warning);
-                return false;
-            }
+            return false;
         }
         public static void Kick(this PlayerInfo info, string reason)
         {
@@ -77,9 +69,7 @@ namespace TSManager.Modules
                 TSMMain.GUI.PlayerManage_Kick.Text = "";
             }
             else
-            {
                 Utils.Notice("踢出玩家 " + info + " 失败.", HandyControl.Data.InfoType.Warning);
-            }
         }
         public static void AddBan(this PlayerInfo info, string reason)
         {
@@ -100,20 +90,37 @@ namespace TSManager.Modules
             }
             else
             {
-                if (TShock.Bans.InsertBan($"{Identifier.UUID}{(info.Account ?? new UserAccount()).UUID}", reason, "TSManager", DateTime.UtcNow, DateTime.MaxValue) != null) success = true;
-                if (TShock.Bans.InsertBan($"{Identifier.Account}{info.Name}", reason, "TSManager", DateTime.UtcNow, DateTime.MaxValue) != null) success = true;
-                if (info.Online && TShock.Bans.InsertBan($"{Identifier.IP}{info.Player.IP}", reason, "TSManager", DateTime.UtcNow, DateTime.MaxValue) != null) success = true;
+                if (TShock.Bans.InsertBan($"{Identifier.UUID}{(info.Account ?? new UserAccount()).UUID}", reason, "TSManager", DateTime.UtcNow, DateTime.MaxValue) != null)
+                    success = true;
+                if (TShock.Bans.InsertBan($"{Identifier.Account}{info.Name}", reason, "TSManager", DateTime.UtcNow, DateTime.MaxValue) != null)
+                    success = true;
+                if (info.Online && TShock.Bans.InsertBan($"{Identifier.IP}{info.Player.IP}", reason, "TSManager", DateTime.UtcNow, DateTime.MaxValue) != null)
+                    success = true;
             }
-            if (success) { Utils.Notice("成功封禁玩家 " + info.Name, HandyControl.Data.InfoType.Success); TSMMain.GUI.PlayerManage_Ban.Text = ""; }
-            else Utils.Notice("封禁 " + info + " 失败", HandyControl.Data.InfoType.Warning);
+            if (success)
+            {
+                Utils.Notice("成功封禁玩家 " + info.Name, HandyControl.Data.InfoType.Success); 
+                TSMMain.GUI.PlayerManage_Ban.Text = "";
+            }
+            else 
+                Utils.Notice("封禁 " + info + " 失败", HandyControl.Data.InfoType.Warning);
         }
         public static void UnBan(this PlayerInfo info)
         {
             var list = new List<Ban>();
-            //tolist相当于clone以下免得foreach的时候报错
-            TShock.Bans.Bans.Where(b => b.Value.Identifier == "uuid:" + info.Account?.UUID).ToList().ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
-            TShock.Bans.Bans.Where(b => b.Value.Identifier == "acc:" + info).ToList().ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
-            if (JsonConvert.DeserializeObject<List<string>>(info.Account?.KnownIps) is { Count: > 0 } ips) TShock.Bans.Bans.Where(b => b.Value.Identifier.StartsWith("ip") && ips.Contains(b.Value.Identifier.Replace("ip:", ""))).ToList().ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
+            TShock.Bans.Bans
+                .Where(b => b.Value.Identifier == "uuid:" + info.Account?.UUID)
+                .ToList()
+                .ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
+            TShock.Bans.Bans
+                .Where(b => b.Value.Identifier == "acc:" + info)
+                .ToList()
+                .ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
+            if (JsonConvert.DeserializeObject<List<string>>(info.Account?.KnownIps) is { Count: > 0 } ips)
+                TShock.Bans.Bans
+                    .Where(b => b.Value.Identifier.StartsWith("ip") && ips.Contains(b.Value.Identifier.Replace("ip:", "")))
+                    .ToList()
+                    .ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
             Utils.Notice("成功执行解禁操作", HandyControl.Data.InfoType.Success);
         }
         public static void Whisper(this PlayerInfo info, string text)
@@ -124,8 +131,10 @@ namespace TSManager.Modules
         }
         public static void Command(this PlayerInfo info, string text)
         {
-            if (Commands.HandleCommand(info.Player, text.StartsWith(Commands.Specifier) ? text : "/" + text)) Utils.Notice("成功执行命令 " + text, HandyControl.Data.InfoType.Success);
-            else Utils.Notice("执行失败", HandyControl.Data.InfoType.Warning);
+            if (Commands.HandleCommand(info.Player, text.StartsWith(Commands.Specifier) ? text : "/" + text))
+                Utils.Notice("成功执行命令 " + text, HandyControl.Data.InfoType.Success);
+            else
+                Utils.Notice("执行失败", HandyControl.Data.InfoType.Warning);
         }
         public static void Damage(this PlayerInfo info, int damage)
         {
@@ -159,11 +168,12 @@ namespace TSManager.Modules
         {
             if (info.Account is not null)
             {
-                if (info.Online) info.Player.SendInfoMessage("该账号已被移除");
-                TShock.UserAccounts.RemoveUserAccount(info.Account);
+                if (info.Online)
+                    info.Player.SendInfoMessage("你的账号已被移除");
+                HookManager.OnAccountDelete(new(info.Account));
             }
-            else Utils.Notice("当前无法删除此账号, 此玩家注册后尚未登录", HandyControl.Data.InfoType.Warning);
-            //HookManager.OnAccountDelete(new(info.Account));
+            else 
+                Utils.Notice("当前无法删除此账号, 未能找到对应账号 (如注册后尚未登录", HandyControl.Data.InfoType.Warning);
         }
     }
 }

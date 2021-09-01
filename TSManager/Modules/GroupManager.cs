@@ -8,7 +8,7 @@ using TSManager.Data;
 
 namespace TSManager.Modules
 {
-    public class GroupManager
+    public static class GroupManager
     {
         /// <summary>
         /// 初始化用户组信息. 此函数应调用于ts加载后

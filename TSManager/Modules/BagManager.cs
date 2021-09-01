@@ -15,7 +15,7 @@ using TSManager.Data;
 
 namespace TSManager.Modules
 {
-    class BagManager
+    public static class BagManager
     {
         internal static void Init()
         {

@@ -1,4 +1,5 @@
 ﻿using HandyControl.Controls;
+using HandyControl.Themes;
 using HandyControl.Tools;
 using ScratchNet;
 using System;
@@ -231,7 +232,7 @@ namespace TSManager
                             Script_Create_Drawer.IsOpen = false;
                             break;
                         case "Script_GoToEdit":
-                            if (Script_List.SelectedItem is { } script) ScriptManager.ChangeScript(Script_List.SelectedItem as ScriptData);
+                            if (Script_List.SelectedItem is { } script) ScriptManager.ChangeSelectScript(Script_List.SelectedItem as ScriptData);
                             else Utils.Notice("未选择脚本");
                             break;
                         case "Script_Save":
@@ -253,6 +254,14 @@ namespace TSManager
                         case "Script_Copy":
                             Script_Editor.Copy();
                             break;
+                    }
+                    #endregion
+                }
+                else if (b.Name.StartsWith("Download"))
+                {
+                    #region 下载管理器
+                    switch (b.Name)
+                    {
                     }
                     #endregion
                 }
@@ -389,7 +398,7 @@ namespace TSManager
                         case "Setting_EnableDarkMode":
                             TSMMain.Settings.EnableDarkMode = (bool)b.IsChecked;
                             TSMMain.Settings.Save();
-                            ChangeNightMode((bool)b.IsChecked);
+                            ChangeNightMode((bool)b.IsChecked ? HandyControl.Data.SkinType.Dark : HandyControl.Data.SkinType.Default);
                             break;
                     }
                 }
@@ -481,6 +490,12 @@ namespace TSManager
                 if (sender is ListView)
                 {
                     var l = sender as ListView;
+                    switch (l.Name)
+                    {
+                        case "Download_TShock_List":
+                            Downloader.SelectTSFile((DownloadInfo.TShockInfo)l.SelectedItem);
+                            break;
+                    }
                 }
                 else if (sender is ListBox)
                 {
@@ -492,20 +507,21 @@ namespace TSManager
                             break;
                         case "Console_PlayerList":
                             if (l.SelectedItem is null) return;
-                            if (Utils.TryGetPlayerInfo(((TSPlayer)l.SelectedItem).Name, out var info))
+                            if (Utils.TryGetPlayerInfo((l.SelectedItem as PlayerInfo).Name, out var info))
                             {
                                 PlayerManager.ChangeDisplayInfo(info);
                                 MainTab.SelectedIndex = 2;
                                 Tab_PlayerManage.SelectedIndex = 0;
                             }
-                            else Utils.Notice("此玩家尚未注册", HandyControl.Data.InfoType.Info);
+                            else
+                                Utils.Notice("此玩家尚未注册", HandyControl.Data.InfoType.Info);
                             l.SelectedItem = null;
                             break;
                         case "GroupManage_List":
                             GroupManager.ChangeSource((GroupData)l.SelectedItem);
                             break;
                         case "Script_List":
-                            ScriptManager.ChangeScript((ScriptData)l.SelectedItem);
+                            ScriptManager.ChangeSelectScript((ScriptData)l.SelectedItem);
                             break;
                     }
                 }
@@ -515,7 +531,7 @@ namespace TSManager
                     switch (d.Name)
                     {
                         case "Script_List":
-                            ScriptManager.ChangeScript(d.SelectedItem as ScriptData);
+                            ScriptManager.ChangeSelectScript(d.SelectedItem as ScriptData);
                             break;
                     }
                 }
@@ -565,11 +581,18 @@ namespace TSManager
                 VisualBox.Focus();
             }
         }
-        internal void ChangeNightMode(bool enable)
+        internal void ChangeNightMode(HandyControl.Data.SkinType type)
         {
-            if (enable) LOGO.Effect = new HandyControl.Media.Effects.ColorComplementEffect();
-            else LOGO.Effect = null;
-            ResourceHelper.GetTheme("HandyTheme", Application.Current.Resources).Skin = enable ? HandyControl.Data.SkinType.Dark : HandyControl.Data.SkinType.Default;
+            if (type == HandyControl.Data.SkinType.Dark)
+                LOGO.Effect = new HandyControl.Media.Effects.ColorComplementEffect();
+            else
+                LOGO.Effect = null;
+            SharedResourceDictionary.SharedDictionaries.Clear();
+            Resources.MergedDictionaries.Add(ResourceHelper.GetSkin(type));
+            Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri("pack://application:,,,/HandyControl;component/Themes/Theme.xaml")
+            });
             OnApplyTemplate();
         }
         private void GroupManage_ChatColor_Canceled(object sender, EventArgs e) => GroupManager_Drawer.IsOpen = false;

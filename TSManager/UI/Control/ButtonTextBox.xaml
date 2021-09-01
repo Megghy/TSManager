@@ -14,8 +14,7 @@
             <hc:Col Span="4">
                 <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type local:ButtonTextBox}},Path=Title}"
                            VerticalAlignment="Center"
-                           HorizontalAlignment="Center"
-                           FontSize="12" />
+                           HorizontalAlignment="Left"/>
             </hc:Col>
             <hc:Col Span="20">
                 <Border CornerRadius="4"
