@@ -134,10 +134,11 @@ namespace TSManager
         }
         public static void ShowError(this Exception ex, InfoType type = InfoType.Error)
         {
-            Notice($"位于: {new StackFrame(1).GetMethod().DeclaringType.FullName}\r\n错误消息: {ex.Data} {ex.Message}", type);
-            ServerApi.LogWriter?.PluginWriteLine(TSMMain.Instance, $"{ex.Data} - {ex.Message}\r\n{ex.StackTrace}", TraceLevel.Error);
+            var method = new StackTrace(1).GetFrame(0).GetMethod();
+            Notice($"位于: {method.DeclaringType.FullName}.{method.Name}\r\n错误信息: {ex.Source}\r\n{ex.Message}", type);
+            ServerApi.LogWriter?.PluginWriteLine(TSMMain.Instance, $"{ex.Source} - {ex.Message}\r\n{ex.StackTrace}", TraceLevel.Error);
         }
-        static void TSLog(string message) => TShock.Log.Error(message);
+        private static void TSLog(string message) => TShock.Log.Error(message);
         public static void AddText(object text, Color color = default)
         {
             color = color == default ? Color.FromRgb(255, 255, 255) : color;
@@ -185,7 +186,7 @@ namespace TSManager
             }
             return false;
         }
-        public async static Task<BitmapImage> GetTexture(string filename)
+        public static async Task<BitmapImage> GetTextureAsync(string filename)
         {
             return await Task.Run(() =>
             {

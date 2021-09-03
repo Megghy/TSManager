@@ -149,7 +149,7 @@
     <Compile Include="Data\ItemData.cs" />
     <Compile Include="Data\MapData.cs" />
     <Compile Include="Data\PlayerInfo.cs" />
-    <Compile Include="Modules\Downloader.cs" />
+    <Compile Include="Modules\DownloadManager.cs" />
     <Compile Include="Modules\GroupManager.cs" />
     <Compile Include="Modules\HookManager.cs" />
     <Compile Include="Modules\MapManager.cs" />
@@ -189,13 +189,15 @@
     <Compile Include="Data\ServerStatus.cs" />
     <Compile Include="Modules\ConfigEdit.cs" />
     <Compile Include="Modules\ServerManager.cs" />
-    <Compile Include="Modules\TSMMain.cs" />
+    <Compile Include="TSMMain.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="TSMWindow.xaml.cs">
       <DependentUpon>TSMWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Expansion.cs" />
     <Compile Include="Info.cs" />
+    <Compile Include="UI\Events\ConsoleEvents.cs" />
+    <Compile Include="UI\GUIEvent.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>

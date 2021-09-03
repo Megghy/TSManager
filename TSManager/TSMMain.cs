@@ -1,28 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Timers;
 using System.Windows;
-using System.Windows.Media;
-using System.Xml;
-using AutoUpdaterDotNET;
-using HandyControl.Controls;
-using HarmonyLib;
-using ICSharpCode.AvalonEdit.Folding;
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.AvalonEdit.Highlighting.Xshd;
-using ICSharpCode.AvalonEdit.Search;
-using Ionic.Zip;
-using Newtonsoft.Json.Linq;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
 using TSManager.Data;
+using TSManager.Modules;
+using HookManager = TSManager.Modules.HookManager;
 
-namespace TSManager.Modules
+namespace TSManager
 {
     public class TSMMain : TerrariaPlugin
     {
@@ -75,19 +63,17 @@ namespace TSManager.Modules
                 }
             });
         }
-        
+
         internal async void OnInitialize()
         {
             try
             {
-                 //循环处理消息队列
+                //循环处理消息队列
                 GUI.ServerStatus.Visibility = Visibility.Hidden; //暂时隐藏服务器状态
                 GUI.Versions.Visibility = Visibility.Hidden; //暂时隐藏服务器版本               
                 GUI.ChangeNightMode(Settings.EnableDarkMode ? HandyControl.Data.SkinType.Dark : HandyControl.Data.SkinType.Default); //调整暗色模式
 
-
-                GUI.Download_TShock_List.ItemsSource = await Downloader.GetTShockReleaseInfoAsync();
-
+                UI.GUIEvent.RegisterAll(); //加载所有用户界面处理代码
 
                 #region 加载tsapi程序集
                 Info.Server = new(typeof(ServerApi).Assembly);
@@ -135,6 +121,7 @@ namespace TSManager.Modules
                 GUI.Console_StopServer.IsEnabled = true; //也可以关闭
                 GUI.Console_StartServer.IsEnabled = false; //现在不能开启了
                 GUI.Console_RestartServer.IsEnabled = false; //暂时不能重启
+                GUI.GoToStartServer.IsEnabled = false;
             });
             if ((Info.Configs.SingleOrDefault(c => c.Name == "config.json") is { } c && c.JsonData.Value<int>("RestApiPort") is { } restPort && Utils.IsPortInUse(restPort)) || Utils.IsPortInUse(Settings.Port))
             {

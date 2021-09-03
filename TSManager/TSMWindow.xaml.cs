@@ -35,6 +35,7 @@ namespace TSManager
         private void Window_Loaded(object sender, EventArgs e)
         {
             Instance = this;
+            ResizeMode = ResizeMode.CanMinimize;
             TSMMain.Instance.OnInitialize();
         }
         internal bool forceClose = false;
@@ -67,6 +68,8 @@ namespace TSManager
         {
             try
             {
+                UI.GUIEvent.OnGUIEvent(sender, UI.GUIEvent.EventType.ButtonClick);
+                return;
                 var b = sender as Button;
                 var plrInfo = PlayerManage_List.SelectedItem as PlayerInfo;
                 if (b.Name == "GoToStartServer") MainTab.SelectedIndex = 1;
@@ -262,6 +265,9 @@ namespace TSManager
                     #region 下载管理器
                     switch (b.Name)
                     {
+                        case "Download_TShock_Refresh":
+                            DownloadManager.RefreshAsync();
+                            break;
                     }
                     #endregion
                 }
@@ -493,7 +499,9 @@ namespace TSManager
                     switch (l.Name)
                     {
                         case "Download_TShock_List":
-                            Downloader.SelectTSFile((DownloadInfo.TShockInfo)l.SelectedItem);
+                            if (l.SelectedItem is not null)
+                                throw new("aaaaa");
+                                DownloadManager.SelectTSFile((DownloadInfo.TShockInfo)l.SelectedItem);
                             break;
                     }
                 }
@@ -601,6 +609,11 @@ namespace TSManager
             var group = (sender as ColorPicker).DataContext as GroupData;
             GroupManager_Drawer.IsOpen = false;
             group.ChatColor = e.Info;
+        }
+
+        private void OnDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+
         }
     }
 }

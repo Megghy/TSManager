@@ -197,7 +197,6 @@ namespace TSManager.Modules
 
                 ServerApi.Hooks.GamePostInitialize.Register(TSMMain.Instance, TSMMain.Instance.OnServerPostInitialize, -1);  //注册服务器加载完成的钩子
                 TSMMain.Instance.OnServerPreInitializing();
-                TSMMain.GUIInvoke(() => TSMMain.GUI.GoToStartServer.IsEnabled = false);
             });
         }
         /// <summary>

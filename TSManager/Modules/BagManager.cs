@@ -185,11 +185,11 @@ namespace TSManager.Modules
                        ImageDrawing background = new()
                        {
                            Rect = new Rect(0, 0, 60, 60),
-                           ImageSource = Utils.GetTexture("Bag.png").Result
+                           ImageSource = Utils.GetTextureAsync("Bag.png").Result
                        };
                        imageDrawings.Children.Add(background);
 
-                       var item = Utils.GetTexture($"{list[i].ID}.png").Result;
+                       var item = Utils.GetTextureAsync($"{list[i].ID}.png").Result;
                        if (item == null) continue;
 
                        //十分憨批的图片缩放
