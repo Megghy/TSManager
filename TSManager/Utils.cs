@@ -16,11 +16,10 @@ using TerrariaApi.Server;
 using TShockAPI;
 using TShockAPI.DB;
 using TSManager.Data;
-using TSManager.Modules;
 
 namespace TSManager
 {
-    internal static class Utils
+    public static class Utils
     {
         public static bool SaveOffLinePlayerData(PlayerData data, int id)
         {
@@ -145,6 +144,11 @@ namespace TSManager
             Info.Server?.DisplayText(text?.ToString(), color);
         }
         public static void AddLine(object text = null, Color color = default) => AddText(text + "\r\n", color);
+        public static T ToType<T>(this object o)
+        {
+            try { return (T)o; }
+            catch (Exception ex) { ex.ShowError(); return default; }
+        }
         public static bool TryParseJson(string json, out JObject jobj)
         {
             try { jobj = JObject.Parse(json); return true; } catch { jobj = null; ; return false; }

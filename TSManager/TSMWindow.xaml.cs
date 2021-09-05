@@ -68,109 +68,30 @@ namespace TSManager
         {
             try
             {
-                UI.GUIEvent.OnGUIEvent(sender, UI.GUIEvent.EventType.ButtonClick);
+                if ((sender as Button).Name == "GoToStartServer")
+                    MainTab.SelectedIndex = 1;
+                UI.GUIEvents.OnGUIEvent(sender, UI.GUIEvents.EventType.ButtonClick);
                 return;
                 var b = sender as Button;
                 var plrInfo = PlayerManage_List.SelectedItem as PlayerInfo;
-                if (b.Name == "GoToStartServer") MainTab.SelectedIndex = 1;
+                if (false)
+                    return;
                 else if (b.Name.StartsWith("Console"))
                 {
                     #region 控制台
-                    switch (b.Name)
-                    {
-                        case "Console_StartServer":
-                            Info.Server.Start(Info.Server.GetStartArgs());
-                            break;
-                        case "Console_StopServer":
-                            Close();
-                            break;
-                        case "Console_RestartServer":
-                            if (Info.IsServerRunning)
-                            {
-                                Growl.Ask("服务器正在运行, 确定要关闭并重启吗?", result =>
-                                {
-                                    if (result)
-                                    {
-                                        reStart = true;
-                                        TSMMain.Instance.StopServer();
-                                    }
-                                    return true;
-                                });
-                            }
-                            else
-                            {
-                                Visibility = Visibility.Hidden;
-                                Process.Start(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                                Environment.Exit(0);
-                            }
-                            break;
-                        case "Console_DoCmd":
-                            if (!Info.IsServerRunning) return;
-                            Info.Server.ExcuteConsoleCommand(Console_CommandBox.Text);
-                            Console_CommandBox.Clear();
-                            break;
-                        case "Console_Clear":
-                            Console_ConsoleBox.Document.Blocks.Clear();
-                            Utils.Notice("已清空控制台文本", HandyControl.Data.InfoType.Success);
-                            break;
-                    }
+                    
                     #endregion
                 }
                 if (b.Name.StartsWith("ConfigEditor"))
                 {
                     #region 设置编辑器
-                    switch (b.Name)
-                    {
-
-                        case "ConfigEditor_Format":
-                            ConfigEdit.Format((Data.ConfigData)b.DataContext);
-                            break;
-                        case "ConfigEditor_Refresh":
-                            ConfigEdit.LoadAllConfig();
-                            break;
-                        case "ConfigEditor_Save":
-                            ConfigEdit.Save((Data.ConfigData)b.DataContext);
-                            break;
-                        case "ConfigEditor_OpenFile":
-                            ConfigEdit.OpenFile((Data.ConfigData)b.DataContext);
-                            break;
-
-                    }
+                    
                     #endregion
                 }
                 else if (b.Name.StartsWith("PlayerManage"))
                 {
                     #region 玩家管理器
-                    if (plrInfo == null)
-                    {
-                        Utils.Notice("未选择玩家", HandyControl.Data.InfoType.Warning);
-                        return;
-                    }
-                    if (!plrInfo.Online && b.Name != "PlayerManage_Del" && b.Name != "PlayerManage_UnBan")
-                    {
-                        Utils.Notice("玩家 " + plrInfo.Name + " 未在线.", HandyControl.Data.InfoType.Warning);
-                        return;
-                    }
-                    switch (b.Name)
-                    {
-
-                        case "PlayerManage_Heal":
-                            plrInfo.Heal();
-                            break;
-                        case "PlayerManage_Kill":
-                            plrInfo.Kill();
-                            break;
-                        case "PlayerManage_Del":
-                            Growl.Ask($"确定要删除玩家 {plrInfo} 的账号吗?", result =>
-                            {
-                                if (result) plrInfo.Del();
-                                return true;
-                            });
-                            break;
-                        case "PlayerManage_UnBan":
-                            plrInfo.UnBan();
-                            break;
-                    }
+                    
                     #endregion
                 }
                 else if (b.Name.StartsWith("BagManage"))
@@ -283,50 +204,7 @@ namespace TSManager
                 if (b.Name.StartsWith("PlayerManage"))
                 {
                     #region 玩家管理器
-                    if (b.DataContext is not Data.PlayerInfo plrInfo)
-                    {
-                        Utils.Notice("未选择玩家", HandyControl.Data.InfoType.Warning);
-                        return;
-                    }
-                    if (!plrInfo.Online && b.Name != "PlayerManage_Ban" && b.Name != "PlayerManage_Password")
-                    {
-                        Utils.Notice("玩家 " + plrInfo.Name + " 未在线.", HandyControl.Data.InfoType.Warning);
-                        return;
-                    }
-                    switch (b.Name)
-                    {
-                        case "PlayerManage_Password":
-                            if (plrInfo.ChangePassword(b.Text)) b.Text = "";
-                            break;
-                        case "PlayerManage_Kick":
-                            plrInfo.Kick(b.Text);
-                            break;
-                        case "PlayerManage_Ban":
-                            plrInfo.AddBan(b.Text);
-                            break;
-                        case "PlayerManage_UnBan":
-                            plrInfo.UnBan();
-                            break;
-                        case "PlayerManage_Whisper":
-                            plrInfo.Whisper(b.Text);
-                            break;
-                        case "PlayerManage_Damage":
-                            if (int.TryParse(b.Text, out int damage))
-                            {
-                                plrInfo.Damage(damage);
-                            }
-                            else Utils.Notice("无效的伤害数值", HandyControl.Data.InfoType.Warning);
-                            break;
-                        case "PlayerManage_Command":
-                            plrInfo.Command(b.Text);
-                            break;
-                        case "PlayerManage_GodMode":
-                            plrInfo.GodMode();
-                            break;
-                        case "PlayerManage_Mute":
-                            plrInfo.Mute();
-                            break;
-                    }
+                    
                     #endregion
                 }
                 else if (b.Name.StartsWith("GroupManage"))
@@ -362,40 +240,12 @@ namespace TSManager
                 else if (b.Name.StartsWith("PlayerManage"))
                 {
                     #region 玩家管理器
-                    if (b.DataContext is not PlayerInfo plrInfo)
-                    {
-                        Utils.Notice("未选择玩家", HandyControl.Data.InfoType.Warning);
-                        return;
-                    }
-                    if (!plrInfo.Online && b.Name is not "PlayerManage_Del" or "PlayerManage_Ban" or "PlayerManage_UnBan")
-                    {
-                        b.IsChecked = false;
-                        Utils.Notice("玩家 " + plrInfo.Name + " 未在线.", HandyControl.Data.InfoType.Warning);
-                        return;
-                    }
-                    switch (b.Name)
-                    {
-                        case "PlayerManage_GodMode":
-                            plrInfo.GodMode();
-                            break;
-                        case "PlayerManage_Mute":
-                            plrInfo.Mute();
-                            break;
-                    }
+                    
                     #endregion
                 }
                 else if (b.Name.StartsWith("Console"))
                 {
-                    switch (b.Name)
-                    {
-                        case "Console_AutoStart":
-                            TSMMain.Settings.AutoStart = (bool)b.IsChecked;
-                            break;
-                        case "Console_EnableChinese":
-                            TSMMain.Settings.EnableChinese = (bool)b.IsChecked;
-                            break;
-                    }
-                    TSMMain.Settings.Save();
+                    
                 }
                 else if (b.Name.StartsWith("Setting"))
                 {

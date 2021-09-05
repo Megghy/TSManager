@@ -11,6 +11,7 @@ namespace TSManager.Modules
 {
     public static class PlayerManager
     {
+        public static PlayerInfo SelectedPlayerInfo => TSMMain.GUI.PlayerManage_List.SelectedItem as PlayerInfo;
         public static void ChangeDisplayInfo(PlayerInfo info)
         {
             TSMMain.GUI.PlayerManage_Info.DataContext = info;
@@ -61,6 +62,7 @@ namespace TSManager.Modules
             }
             return false;
         }
+        #region 一些对playerinfo的拓展函数
         public static void Kick(this PlayerInfo info, string reason)
         {
             if (info.Player.Kick(string.IsNullOrWhiteSpace(reason) ? "未指定原因" : reason, true, false, "TSManager", true))
@@ -175,5 +177,6 @@ namespace TSManager.Modules
             else 
                 Utils.Notice("当前无法删除此账号, 未能找到对应账号 (如注册后尚未登录", HandyControl.Data.InfoType.Warning);
         }
+        #endregion
     }
 }

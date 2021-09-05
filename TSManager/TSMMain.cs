@@ -73,7 +73,7 @@ namespace TSManager
                 GUI.Versions.Visibility = Visibility.Hidden; //暂时隐藏服务器版本               
                 GUI.ChangeNightMode(Settings.EnableDarkMode ? HandyControl.Data.SkinType.Dark : HandyControl.Data.SkinType.Default); //调整暗色模式
 
-                UI.GUIEvent.RegisterAll(); //加载所有用户界面处理代码
+                UI.GUIEvents.RegisterAll(); //加载所有用户界面处理代码
 
                 #region 加载tsapi程序集
                 Info.Server = new(typeof(ServerApi).Assembly);

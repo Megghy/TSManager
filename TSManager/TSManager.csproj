@@ -196,8 +196,10 @@
     </Compile>
     <Compile Include="Expansion.cs" />
     <Compile Include="Info.cs" />
-    <Compile Include="UI\Events\ConsoleEvents.cs" />
-    <Compile Include="UI\GUIEvent.cs" />
+    <Compile Include="UI\Events\EConfigEditor.cs" />
+    <Compile Include="UI\Events\EConsole.cs" />
+    <Compile Include="UI\Events\EPlayerManager.cs" />
+    <Compile Include="UI\GUIEvents.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
