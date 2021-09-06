@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using Terraria.GameContent.Creative;
 using TShockAPI;
 using TShockAPI.DB;
@@ -80,32 +80,25 @@ namespace TSManager.Modules
                 Utils.Notice("当前未选择玩家", HandyControl.Data.InfoType.Warning);
                 return;
             }
-            bool success = false;
             if (info.Online)
             {
                 if (info.Player.Ban(string.IsNullOrWhiteSpace(reason) ? "未指定原因" : reason, true, "TSManager"))
-                {
-                    TSMMain.GUI.PlayerManage_Ban.IsEnabled = false;
-                    TSMMain.GUI.PlayerManage_UnBan.IsEnabled = true;
-                    success = true;
-                }
+                    Success(info);
             }
             else
             {
-                if (TShock.Bans.InsertBan($"{Identifier.UUID}{(info.Account ?? new UserAccount()).UUID}", reason, "TSManager", DateTime.UtcNow, DateTime.MaxValue) != null)
-                    success = true;
-                if (TShock.Bans.InsertBan($"{Identifier.Account}{info.Name}", reason, "TSManager", DateTime.UtcNow, DateTime.MaxValue) != null)
-                    success = true;
-                if (info.Online && TShock.Bans.InsertBan($"{Identifier.IP}{info.Player.IP}", reason, "TSManager", DateTime.UtcNow, DateTime.MaxValue) != null)
-                    success = true;
+                if (TShock.Bans.InsertBan($"{Identifier.UUID}{(info.Account ?? new UserAccount()).UUID}", reason, "TSManager", DateTime.UtcNow, DateTime.MaxValue) != null && TShock.Bans.InsertBan($"{Identifier.Account}{info.Name}", reason, "TSManager", DateTime.UtcNow, DateTime.MaxValue) != null)
+                    Success(info);
+                else
+                    Utils.Notice("封禁 " + info + " 失败", HandyControl.Data.InfoType.Warning);
             }
-            if (success)
+            static void Success(PlayerInfo info)
             {
-                Utils.Notice("成功封禁玩家 " + info.Name, HandyControl.Data.InfoType.Success); 
+                Utils.Notice("成功封禁玩家 " + info.Name, HandyControl.Data.InfoType.Success);
                 TSMMain.GUI.PlayerManage_Ban.Text = "";
+                TSMMain.GUI.PlayerManage_Ban.IsEnabled = false;
+                TSMMain.GUI.PlayerManage_UnBan.IsEnabled = true;
             }
-            else 
-                Utils.Notice("封禁 " + info + " 失败", HandyControl.Data.InfoType.Warning);
         }
         public static void UnBan(this PlayerInfo info)
         {
@@ -118,7 +111,7 @@ namespace TSManager.Modules
                 .Where(b => b.Value.Identifier == "acc:" + info)
                 .ToList()
                 .ForEach(b => TShock.Bans.RemoveBan(b.Key, true));
-            if (JsonConvert.DeserializeObject<List<string>>(info.Account?.KnownIps) is { Count: > 0 } ips)
+            if (JsonConvert.DeserializeObject<List<string>>(info.Account?.KnownIps??"[]") is { Count: > 0 } ips)
                 TShock.Bans.Bans
                     .Where(b => b.Value.Identifier.StartsWith("ip") && ips.Contains(b.Value.Identifier.Replace("ip:", "")))
                     .ToList()
@@ -133,6 +126,7 @@ namespace TSManager.Modules
         }
         public static void Command(this PlayerInfo info, string text)
         {
+            text ??= "help";
             if (Commands.HandleCommand(info.Player, text.StartsWith(Commands.Specifier) ? text : "/" + text))
                 Utils.Notice("成功执行命令 " + text, HandyControl.Data.InfoType.Success);
             else
@@ -174,7 +168,7 @@ namespace TSManager.Modules
                     info.Player.SendInfoMessage("你的账号已被移除");
                 HookManager.OnAccountDelete(new(info.Account));
             }
-            else 
+            else
                 Utils.Notice("当前无法删除此账号, 未能找到对应账号 (如注册后尚未登录", HandyControl.Data.InfoType.Warning);
         }
         #endregion

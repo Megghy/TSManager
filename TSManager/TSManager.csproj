@@ -196,9 +196,14 @@
     </Compile>
     <Compile Include="Expansion.cs" />
     <Compile Include="Info.cs" />
-    <Compile Include="UI\Events\EConfigEditor.cs" />
+    <Compile Include="UI\Events\EBag.cs" />
+    <Compile Include="UI\Events\EConfig.cs" />
     <Compile Include="UI\Events\EConsole.cs" />
-    <Compile Include="UI\Events\EPlayerManager.cs" />
+    <Compile Include="UI\Events\EDownload.cs" />
+    <Compile Include="UI\Events\EGroup.cs" />
+    <Compile Include="UI\Events\EPlayer.cs" />
+    <Compile Include="UI\Events\EScript.cs" />
+    <Compile Include="UI\Events\ESetting.cs" />
     <Compile Include="UI\GUIEvents.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="App.xaml.cs">

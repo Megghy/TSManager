@@ -19,6 +19,7 @@ namespace TSManager.Modules
 {
     internal static class ConfigEdit
     {
+        public static ConfigData SelectedConfigData => TSMMain.GUI.ConfigEditor_List.SelectedItem as ConfigData;
         internal static void Init()
         {
             //快速搜索功能

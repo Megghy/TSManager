@@ -1,15 +1,19 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using HandyControl.Controls;
+using TSManager.Data;
 using TSManager.Modules;
 using TSManager.UI.Control;
+using ComboBox = HandyControl.Controls.ComboBox;
 
 namespace TSManager.UI.Events
 {
-    internal class EPlayerManager : GUIEvents.GUIEventBase
+    internal class EPlayer : GUIEvents.GUIEventBase
     {
         public override string ControlPrefix => "PlayerManage";
-        private bool CheckPlrIsSelected(string senderName, out Data.PlayerInfo plrInfo)
+        private bool CheckPlrIsSelected(string senderName, out PlayerInfo plrInfo)
         {
             plrInfo = PlayerManager.SelectedPlayerInfo;
             if (plrInfo is null)
@@ -17,14 +21,14 @@ namespace TSManager.UI.Events
                 Utils.Notice("未选择玩家", HandyControl.Data.InfoType.Warning);
                 return false;
             }
-            if (!plrInfo.Online && senderName != "PlayerManage_Del" && senderName != "PlayerManage_UnBan" && senderName != "PlayerManage_Password")
+            if (!plrInfo.Online && senderName is not ("PlayerManage_Del" or "PlayerManage_UnBan" or "PlayerManage_Password" or "PlayerManage_Ban"))
             {
                 Utils.Notice("玩家 " + plrInfo.Name + " 未在线.", HandyControl.Data.InfoType.Warning);
                 return false;
             }
             return true;
         }
-        public override void OnButtonClick(Button sender)
+        public override void OnButtonClick(Button sender, RoutedEventArgs e)
         {
             if (CheckPlrIsSelected(sender.Name, out var plrInfo))
                 switch (sender.Name)
@@ -50,7 +54,7 @@ namespace TSManager.UI.Events
                         break;
                 }
         }
-        public override void OnButtonTextBoxClick(ButtonTextBox sender)
+        public override void OnButtonTextBoxClick(ButtonTextBox sender, RoutedEventArgs e)
         {
             if (CheckPlrIsSelected(sender.Name, out var plrInfo))
                 switch (sender.Name)
@@ -89,7 +93,7 @@ namespace TSManager.UI.Events
                         break;
                 }
         }
-        public override void OnSwichClick(ToggleButton sender)
+        public override void OnSwichClick(ToggleButton sender, RoutedEventArgs e)
         {
             if (CheckPlrIsSelected(sender.Name, out var plrInfo))
                 switch (sender.Name)
@@ -103,6 +107,28 @@ namespace TSManager.UI.Events
                     default:
                         break;
                 }
+        }
+        public override void OnComboSelectChange(ComboBox sender, SelectionChangedEventArgs e)
+        {
+            switch (sender.Name)
+            {
+                case "PlayerManage_Group":
+                    PlayerManager.SelectedPlayerInfo.ChangeGroup(TSMMain.GUI.PlayerManage_Group.SelectedItem);
+                    break;
+                default:
+                    break;
+            }
+        }
+        public override void OnListBoxSelectChange(ListBox sender, SelectionChangedEventArgs e)
+        {
+            switch (sender.Name)
+            {
+                case "PlayerManage_List":
+                    PlayerManager.ChangeDisplayInfo((PlayerInfo)sender.SelectedItem);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

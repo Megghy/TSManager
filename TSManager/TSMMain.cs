@@ -53,7 +53,8 @@ namespace TSManager
                             if (Info.IsEnterWorld)
                             {
                                 ((ServerStatus)GUI.Tab_Index.DataContext).RunTime += UpdateTime;
-                                Info.Players?.ForEach(p => p.Update());
+                                Info.OnlinePlayers?.ForEach(p => p.PlayTime += UpdateTime);
+                                PlayerManager.SelectedPlayerInfo?.Update();
                                 GUI.PlayerManage_Count.Content = "总人数: " + Info.Players.Count;
                             }
                         });
@@ -64,7 +65,7 @@ namespace TSManager
             });
         }
 
-        internal async void OnInitialize()
+        internal void OnInitialize()
         {
             try
             {

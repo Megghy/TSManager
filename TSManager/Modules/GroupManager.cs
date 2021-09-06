@@ -10,6 +10,7 @@ namespace TSManager.Modules
 {
     public static class GroupManager
     {
+        public static GroupData SelectedGroupData => TSMMain.GUI.GroupManage_List.SelectedItem as GroupData;
         /// <summary>
         /// 初始化用户组信息. 此函数应调用于ts加载后
         /// </summary>

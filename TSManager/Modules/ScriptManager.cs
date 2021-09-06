@@ -19,6 +19,7 @@ namespace TSManager
 {
     public static partial class ScriptManager
     {
+        public static ScriptData SelectedScriptData => TSMMain.GUI.Script_List.SelectedItem as ScriptData;
         internal static void Init()
         {
             LoadAllBlock(); //加载脚本编辑器

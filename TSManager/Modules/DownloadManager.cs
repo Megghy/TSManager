@@ -1,14 +1,12 @@
-﻿using HandyControl.Controls;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using HandyControl.Controls;
+using Newtonsoft.Json;
 
 namespace TSManager.Modules
 {
@@ -41,8 +39,7 @@ namespace TSManager.Modules
     /// </summary>
     internal sealed partial class DownloadManager
     {
-        public static readonly string TSReleaseAddress = "https://api.github.com/repos/Pryaxis/TShock/releases";
-        private static readonly string GitHubToken = "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"; //这token没给任何权限
+        public static readonly string TSReleaseAddress = "http://api.suki.club/v1/tsmanager/info/tshock-release";
         public static async Task<List<Data.DownloadInfo.TShockInfo>> GetTShockReleaseInfoAsync()
         {
             return await Task.Run(async () =>
@@ -53,16 +50,18 @@ namespace TSManager.Modules
                     try
                     {
                         client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                        client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("text/json"));
                         client.DefaultRequestHeaders.UserAgent.TryParseAdd("request");//Set the User Agent to "request"
                         using (HttpResponseMessage response = client.GetAsync(TSReleaseAddress).Result)
                         {
                             response.EnsureSuccessStatusCode();
-                            response.Headers.Add("token", GitHubToken);
                             var result = await response.Content.ReadAsStringAsync();
-                            var json = JsonConvert.DeserializeObject<JArray>(result);
+                            if (Utils.TryParseJson(result, out var jobj))
+                                list = jobj["Data"].ToObject<List<Data.DownloadInfo.TShockInfo>>();
+                            /*var json = JsonConvert.DeserializeObject<JArray>(result);
                             json.Where(j => j["assets"]
                             .Any(a => a["content_type"]?.Value<string>() == "application/zip"))
-                            .ForEach(j => list.Add(new(j)));
+                            .ForEach(j => list.Add(new(j)));*/
                         }
                     }
                     catch (Exception ex)
@@ -165,7 +164,6 @@ namespace TSManager.Modules
                     _tempFiles.Add(tmpFileBlock);
                     HttpWebRequest httprequest = (HttpWebRequest)WebRequest.Create(_fileUrl);
                     httprequest.AddRange(ran[0], ran[1]);
-                    httprequest.Headers.Add("token", GitHubToken);
                     HttpWebResponse httpresponse = (HttpWebResponse)httprequest.GetResponse();
                     httpFileStream = httpresponse.GetResponseStream();
                     localFileStram = new FileStream(tmpFileBlock, FileMode.Create);

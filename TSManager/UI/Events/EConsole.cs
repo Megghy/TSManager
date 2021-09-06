@@ -1,19 +1,21 @@
-﻿using HandyControl.Controls;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using static TSManager.UI.GUIEvents;
-using TSManager.Modules;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using HandyControl.Controls;
+using TSManager.Data;
+using TSManager.Modules;
+using static TSManager.UI.GUIEvents;
+using ComboBox = HandyControl.Controls.ComboBox;
 
 namespace TSManager.UI.Events
 {
-    //[GUIEvent(EventType.Class, null)]
     internal class EConsole : GUIEventBase
     {
         public override string ControlPrefix => "Console";
-        public override void OnButtonClick(Button sender)
+        public override void OnButtonClick(Button sender, RoutedEventArgs e)
         {
             switch (sender.Name)
             {
@@ -56,7 +58,7 @@ namespace TSManager.UI.Events
                     break;
             }
         }
-        public override void OnSwichClick(ToggleButton sender)
+        public override void OnSwichClick(ToggleButton sender, RoutedEventArgs e)
         {
             switch (sender.Name)
             {
@@ -70,6 +72,55 @@ namespace TSManager.UI.Events
                     break;
             }
             TSMMain.Settings.Save();
+        }
+        public override void OnComboSelectChange(ComboBox sender, SelectionChangedEventArgs e)
+        {
+            switch (sender.Name)
+            {
+                case "Script_TriggerCondition":
+                    if (ScriptManager.SelectedScriptData is { } && ScriptManager.SelectedScriptData.TriggerCondition != (ScriptData.Triggers)TSMMain.GUI.Script_TriggerCondition.SelectedItem)
+                    {
+                        ScriptManager.ChangeTriggerCondition(ScriptManager.SelectedScriptData, (ScriptData.Triggers)TSMMain.GUI.Script_TriggerCondition.SelectedItem);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        public override void OnListBoxSelectChange(ListBox sender, SelectionChangedEventArgs e)
+        {
+            switch (sender.Name)
+            {
+                case "Console_PlayerList":
+                    if (sender.SelectedItem is null)
+                        return;
+                    if (sender.SelectedItem is PlayerInfo info && Info.Players.Contains(info))
+                    {
+                        PlayerManager.ChangeDisplayInfo(info);
+                        TSMMain.GUI.MainTab.SelectedIndex = 2;
+                        TSMMain.GUI.Tab_PlayerManage.SelectedIndex = 0;
+                    }
+                    else
+                        Utils.Notice("此玩家尚未注册", HandyControl.Data.InfoType.Info);
+                    sender.SelectedItem = null;
+                    break;
+                default:
+                    break;
+            }
+        }
+        public override void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                var t = sender as System.Windows.Controls.TextBox;
+                if (t.Name == "Console_CommandBox")
+                {
+                    if (!Info.IsServerRunning)
+                        return;
+                    Info.Server.ExcuteConsoleCommand(t.Text);
+                    t.Clear();
+                }
+            }
         }
     }
 }

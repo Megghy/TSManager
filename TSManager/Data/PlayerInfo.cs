@@ -1,12 +1,11 @@
-﻿using PropertyChanged;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using PropertyChanged;
 using TShockAPI;
 using TShockAPI.DB;
-using TSManager.Modules;
 
 namespace TSManager.Data
 {
@@ -16,6 +15,24 @@ namespace TSManager.Data
         public override string ToString()
         {
             return Name ?? "Unknown";
+        }
+        public override bool Equals(object obj)
+        {
+            if (obj is PlayerInfo info)
+                return info?.Name == Name;
+            return false;
+        }
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+        public static bool operator ==(PlayerInfo preInfo, PlayerInfo postInfo)
+        {
+            return preInfo?.Name == postInfo?.Name;
+        }
+        public static bool operator !=(PlayerInfo preInfo, PlayerInfo postInfo)
+        {
+            return preInfo?.Name != postInfo?.Name;
         }
         public PlayerInfo(TSPlayer player) : this(player.Name, (int)(player.Account?.ID), player.PlayerData, player.Account) { }
         public PlayerInfo(string name, int id, PlayerData data, UserAccount account)
@@ -41,7 +58,6 @@ namespace TSManager.Data
                 {
                     Data = Player.PlayerData;
                     Account = Player.Account;
-                    PlayTime += TSMMain.UpdateTime;
                 }
             }
             catch (Exception ex) { ex.ShowError(); }

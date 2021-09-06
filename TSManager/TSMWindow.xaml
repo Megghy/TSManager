@@ -51,7 +51,7 @@
                     TabStripPlacement="Left">
             <hc:TabItem Header="主页"
                         FontSize="20">
-                <hc:TransitioningContentControl TransitionMode="Left2RightWithFade">
+                <hc:TransitioningContentControl TransitionMode="Right2LeftWithFade">
                     <Grid Name="Tab_Index">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="175*" />
@@ -710,7 +710,7 @@
                                                                                Grid.Row="1"
                                                                                Grid.Column="1" />
                                                             <tsm:ButtonTextBox x:Name="PlayerManage_Ban"
-                                                                               IsEnabled="{Binding _Ban}"
+                                                                               IsEnabled="{Binding _Ban, Mode=TwoWay}"
                                                                                FontSize="12"
                                                                                hc:InfoElement.Placeholder="封禁理由"
                                                                                Margin="0,5,5,0"
@@ -726,7 +726,7 @@
                                                                     VerticalAlignment="Stretch"
                                                                     Margin="0,7,5,3"
                                                                     Grid.Row="3"
-                                                                    IsEnabled="{Binding Ban}"
+                                                                    IsEnabled="{Binding Ban, Mode=TwoWay}"
                                                                     Click="OnButtonClick"
                                                                     Grid.Column="1" />
                                                             <tsm:ButtonTextBox x:Name="PlayerManage_Command"
@@ -1141,54 +1141,60 @@
                                 <ColumnDefinition Width="777*" />
                                 <ColumnDefinition Width="152*" />
                             </Grid.ColumnDefinitions>
-                            <DataGrid x:Name="Script_List"
-                                      AutoGenerateColumns="False"
-                                      Grid.RowSpan="2"
-                                      SelectionMode="Single"
-                                      SelectionChanged="OnListSelect">
-                                <DataGrid.Columns>
-                                    <DataGridCheckBoxColumn Header="启用"
-                                                            Binding="{Binding Enable}" />
-                                    <DataGridTextColumn Header="文件名"
-                                                        Binding="{Binding FileName}"
-                                                        Width="*"
-                                                        IsReadOnly="True" />
-                                    <DataGridTextColumn Header="脚本名"
-                                                        Binding="{Binding Name}"
-                                                        Width="2*"
-                                                        IsReadOnly="True" />
-                                    <DataGridTextColumn Header="作者"
-                                                        Binding="{Binding Author}"
-                                                        Width="*"
-                                                        IsReadOnly="True" />
-                                    <DataGridTextColumn Header="描述"
-                                                        Binding="{Binding Description}"
-                                                        Width="4*"
-                                                        IsReadOnly="True" />
-                                    <DataGridTextColumn Header="版本"
-                                                        Binding="{Binding Version}"
-                                                        Width="*"
-                                                        IsReadOnly="True" />
-                                    <DataGridTextColumn Header="函数量"
-                                                        Binding="{Binding FunctionCount}"
-                                                        Width="*"
-                                                        IsReadOnly="True" />
-                                </DataGrid.Columns>
-                            </DataGrid>
-                            <hc:TransitioningContentControl TransitionMode="Right2LeftWithFade"
-                                                            Grid.Column="1">
-                                <StackPanel Orientation="Vertical"
-                                            Margin="5,5,5,10">
+                            <hc:TransitioningContentControl TransitionMode="Right2LeftWithFade">
+                                <DataGrid x:Name="Script_List"
+                                          AutoGenerateColumns="False"
+                                          Grid.RowSpan="2"
+                                          SelectionMode="Single"
+                                          SelectionChanged="OnListSelect">
+                                    <DataGrid.Columns>
+                                        <DataGridCheckBoxColumn Header="启用"
+                                                                Binding="{Binding Enable}" />
+                                        <DataGridTextColumn Header="文件名"
+                                                            Binding="{Binding FileName}"
+                                                            Width="*"
+                                                            IsReadOnly="True" />
+                                        <DataGridTextColumn Header="脚本名"
+                                                            Binding="{Binding Name}"
+                                                            Width="2*"
+                                                            IsReadOnly="True" />
+                                        <DataGridTextColumn Header="作者"
+                                                            Binding="{Binding Author}"
+                                                            Width="*"
+                                                            IsReadOnly="True" />
+                                        <DataGridTextColumn Header="描述"
+                                                            Binding="{Binding Description}"
+                                                            Width="4*"
+                                                            IsReadOnly="True" />
+                                        <DataGridTextColumn Header="版本"
+                                                            Binding="{Binding Version}"
+                                                            Width="*"
+                                                            IsReadOnly="True" />
+                                        <DataGridTextColumn Header="函数量"
+                                                            Binding="{Binding FunctionCount}"
+                                                            Width="*"
+                                                            IsReadOnly="True" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </hc:TransitioningContentControl>
+                            <StackPanel Orientation="Vertical"
+                                        Margin="5,5,5,10"
+                                        Grid.Column="1">
+                                <hc:TransitioningContentControl TransitionMode="Right2LeftWithFade">
                                     <ToggleButton IsChecked="{Binding ElementName=Script_Create_Drawer, Path=IsOpen}"
                                                   Content="新建"
                                                   Height="40"
                                                   HorizontalAlignment="Stretch" />
+                                </hc:TransitioningContentControl>
+                                <hc:TransitioningContentControl TransitionMode="Left2RightWithFade">
                                     <Button x:Name="Script_GoToEdit"
                                             Margin="0,5,0,0"
                                             Height="40"
                                             Content="编辑"
                                             Click="OnButtonClick"
                                             HorizontalAlignment="Stretch" />
+                                </hc:TransitioningContentControl>
+                                <hc:TransitioningContentControl TransitionMode="Right2LeftWithFade">
                                     <Button Content="删除"
                                             Name="Script_Del"
                                             Click="OnButtonClick"
@@ -1197,9 +1203,8 @@
                                             VerticalAlignment="Stretch"
                                             HorizontalAlignment="Stretch"
                                             Height="40" />
-                                </StackPanel>
-                            </hc:TransitioningContentControl>
-                            
+                                </hc:TransitioningContentControl>
+                            </StackPanel>
                             <hc:Drawer Name="Script_Create_Drawer"
                                        Dock="Right"
                                        ShowMode="Push"
@@ -1307,87 +1312,127 @@
             </hc:TabItem>
             <hc:TabItem Header="下载"
                         Name="Tab_Download">
-                <TabControl>
-                    <TabItem Header="TShock"
-                             Name="Tab_Download_TShock">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="17*" />
-                                <RowDefinition Height="227*" />
-                            </Grid.RowDefinitions>
-                            <hc:Drawer Name="Download_TShock_Drawer" Grid.RowSpan="2"
-                                       Dock="Right"
-                                       ShowMode="Push"
-                                       MinWidth="300"
-                                       DataContext="{Binding ElementName=Download_TShock_List, Path=SelectedItem}">
-                                <Border Background="{Binding ElementName=MainWindow, Path=Background}"
-                                        Width="300">
-                                    <StackPanel>
-                                        <Image />
-                                        <TextBlock>
-                                            <Run Text="发布者: "/>
-                                            <Run Text="{Binding Author}"/></TextBlock>
-                                    </StackPanel>
-                                </Border>
-                            </hc:Drawer>
-                            <ToolBar Margin="0">
-                                <hc:TransitioningContentControl TransitionStoryboard="{StaticResource Right2LeftWithFadeTransition}">
-                                    <Button Content="刷新"
-                                            Name="Download_TShock_Refresh"
-                                            Click="OnButtonClick" />
-                                </hc:TransitioningContentControl>
-                            </ToolBar>
-                            <ListView x:Name="Download_TShock_List"
-                                      SelectionChanged="OnListSelect"
-                                      MouseDoubleClick="OnDoubleClick"
-                                      Grid.Row="1">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn>
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <hc:TransitioningContentControl TransitionStoryboard="{StaticResource Custom1Transition}">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <hc:TransitioningContentControl TransitionStoryboard="{StaticResource Custom2Transition}">
-                                                                <Image Source="Resources/TShock.png"
-                                                                       MaxHeight="25" />
-                                                            </hc:TransitioningContentControl>
-                                                            <hc:Divider Orientation="Vertical"
-                                                                        Height="25"
-                                                                        LineStrokeThickness="2"
-                                                                        Margin="10,0,5,0"/>
-                                                            <StackPanel MinWidth="200"
-                                                                        Margin="10,0,0,0">
-                                                                <TextBlock Text="{Binding Version}"
-                                                                           FontSize="17"
-                                                                           FontWeight="Bold" />
-                                                                <TextBlock Foreground="#FF6E6E6E"
-                                                                           FontSize="12">
+                <hc:TransitioningContentControl TransitionMode="Left2RightWithFade">
+                    <TabControl>
+                        <TabItem Header="TShock"
+                                 Name="Tab_Download_TShock">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="17*" />
+                                    <RowDefinition Height="227*" />
+                                </Grid.RowDefinitions>
+                                <hc:Drawer Name="Download_TShock_Drawer"
+                                           Grid.RowSpan="2"
+                                           Dock="Right"
+                                           ShowMode="Push"
+                                           MinWidth="300"
+                                           DataContext="{Binding ElementName=Download_TShock_List, Path=SelectedItem}">
+                                    <Border Background="{Binding ElementName=MainWindow, Path=Background}"
+                                            Width="300">
+                                        <GroupBox Header="{Binding Name}">
+                                            <hc:UniformSpacingPanel Margin="5,5,5,5"
+                                                                    Orientation="Vertical"
+                                                                    Spacing="5">
+                                                <hc:Divider />
+                                                <Image Source="{Binding AvatarImageData}"
+                                                       HorizontalAlignment="Center"
+                                                       MaxHeight="100"/>
+                                                <TextBlock HorizontalAlignment="Center">
+                                                    <Run Text="发布者: " />
+                                                    <Run Text="{Binding Author}" /></TextBlock>
+                                                <hc:Divider />
+                                                <hc:ElementGroup Orientation="Horizontal">
+                                                    <TextBlock Text="发布分支: " />
+                                                    <hc:Shield Subject="Commitish"
+                                                               Status="{Binding TargetCommitish}"
+                                                               Margin="5,0,0,0" />
+                                                </hc:ElementGroup>
+                                                
+                                                <TextBlock>
+                                                    <Run Text="发布时间: " />
+                                                    <Run Text="{Binding CreateDate}" /></TextBlock>
+                                                <TextBlock>
+                                                    <Run Text="地址: " />
+                                                    <Hyperlink NavigateUri="{Binding ReleaseURL}"
+                                                               Click="HyperlinkClick">
+                                                        <TextBlock Text="{Binding ReleaseURL}"
+                                                                   TextWrapping="Wrap"
+                                                                   hc:Poptip.IsOpen="True"
+                                                                   hc:Poptip.HitMode="Hover"
+                                                                   hc:Poptip.Content="{Binding ReleaseURL}" />
+                                                    </Hyperlink>
+                                                </TextBlock>
+                                                <hc:Divider />
+                                                <Button Content="下载"
+                                                        Width="200"
+                                                        Height="50"
+                                                        Background="{StaticResource SuccessBrush}"/>
+                                                <hc:Divider />
+                                            </hc:UniformSpacingPanel>
+                                        </GroupBox>
+                                    </Border>
+                                </hc:Drawer>
+                                <ToolBar Margin="0">
+                                    <hc:TransitioningContentControl TransitionStoryboard="{StaticResource Right2LeftWithFadeTransition}">
+                                        <Button Content="刷新"
+                                                Name="Download_TShock_Refresh"
+                                                Click="OnButtonClick" />
+                                    </hc:TransitioningContentControl>
+                                </ToolBar>
+                                <ListView x:Name="Download_TShock_List"
+                                          SelectionChanged="OnListSelect"
+                                          MouseDoubleClick="OnDoubleClick"
+                                          Grid.Row="1">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn>
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <hc:TransitioningContentControl TransitionStoryboard="{StaticResource Custom1Transition}">
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <hc:TransitioningContentControl TransitionStoryboard="{StaticResource Custom2Transition}">
+                                                                    <Image Source="Resources/TShock.png"
+                                                                           MaxHeight="25" />
+                                                                </hc:TransitioningContentControl>
+                                                                <hc:Divider Orientation="Vertical"
+                                                                            Height="25"
+                                                                            LineStrokeThickness="2"
+                                                                            Margin="10,0,5,0" />
+                                                                <StackPanel MinWidth="200"
+                                                                            Margin="10,0,0,0">
+                                                                    <TextBlock Text="{Binding Version}"
+                                                                               FontSize="17"
+                                                                               FontWeight="Bold" />
+                                                                    <TextBlock Foreground="#FF6E6E6E"
+                                                                               FontSize="12">
                                                                 <Run Text="发布于 " />
                                                                 <Run Text="{Binding CreateDate}" /></TextBlock>
+                                                                </StackPanel>
                                                             </StackPanel>
-                                                        </StackPanel>
-                                                    </hc:TransitioningContentControl>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                        </Grid>
-                    </TabItem>
-                </TabControl>
+                                                        </hc:TransitioningContentControl>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+                </hc:TransitioningContentControl>
             </hc:TabItem>
             <hc:TabItem Name="Tab_Setting"
                         Header="设置">
                 <StackPanel Margin="5,0,0,0">
-                    <CheckBox Name="Setting_EnableDarkMode"
-                              Content="开启暗色模式"
-                              IsChecked="{Binding Path=EnableDarkMode, Source={x:Static setting:Settings.Default}, Mode=OneWay}"
-                              Click="OnSwichClick"
-                              HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch"
-                              Margin="0,18,0,0" />
+                    <hc:TransitioningContentControl TransitionStoryboard="{StaticResource Custom1Transition}">
+                        <CheckBox Name="Setting_EnableDarkMode"
+                                  Content="开启暗色模式"
+                                  IsChecked="{Binding Path=EnableDarkMode, Source={x:Static setting:Settings.Default}, Mode=OneWay}"
+                                  Click="OnSwichClick"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"
+                                  Margin="0,18,0,0" />
+                    </hc:TransitioningContentControl>
                 </StackPanel>
             </hc:TabItem>
         </TabControl>

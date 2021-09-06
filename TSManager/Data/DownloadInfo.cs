@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace TSManager.Data
 {
@@ -26,6 +26,9 @@ namespace TSManager.Data
                 DownloadURL = assets["browser_download_url"].Value<string>().Replace("https://github.com/", "https://download.fastgit.org/");
                 DownloadCount = assets["download_count"].Value<int>();
                 Size = assets["size"].Value<long>();
+
+                ImageCache = null;
+                AvatarImageData = null;
             }
             public string Version { get; set; }
             public DateTime CreateDate { get; set; }
@@ -34,6 +37,18 @@ namespace TSManager.Data
             public string TargetCommitish { get; set; }
             public string Author { get; set; }
             public string AuthorAvatar { get; set; }
+            [JsonIgnore]
+            private BitmapFrame ImageCache;
+            [JsonIgnore]
+            public BitmapFrame AvatarImageData
+            {
+                get
+                {
+                    ImageCache ??= BitmapFrame.Create(new Uri(AuthorAvatar), BitmapCreateOptions.None, BitmapCacheOption.Default);
+                    return ImageCache;
+                }
+                set => ImageCache ??= BitmapFrame.Create(new Uri(AuthorAvatar), BitmapCreateOptions.None, BitmapCacheOption.Default);
+            }
             public string Description { get; set; }
             public string ReleaseURL { get; set; }
             public string DownloadURL { get; set; }

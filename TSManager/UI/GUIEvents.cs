@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using HandyControl.Controls;
 using TSManager.UI.Control;
+using ComboBox = HandyControl.Controls.ComboBox;
 
 namespace TSManager.UI
 {
@@ -20,21 +23,25 @@ namespace TSManager.UI
             ComboSelectChange,
             ListViewSelect,
             ListBoxSelect,
+            DataGridSelectChange,
+            TextInput,
+            SelectedColorChange
         }
         internal static readonly List<GUIEventBase> EventProcesserList = new();
         internal static void RegisterAll()
         {
+            Assembly.GetExecutingAssembly().GetTypes().Where(t => t.Namespace == "TSManager.UI.Events" && t.BaseType.Name != "Object").ForEach(t =>
+            EventProcesserList.Add(Activator.CreateInstance(t) as GUIEventBase));
 #if DEBUG   
             if (!EventProcesserList.Any())
                 EventProcesserList.Add(new Events.EConsole());
 #endif
-
             EventProcesserList.ForEach(p => p.RegisteToBase(p.GetType()));
         }
-        public static void OnGUIEvent(object sender, EventType type)
+        public static void OnGUIEvent(object sender, object e, EventType type)
         {
             var name = sender?.GetType().GetProperty("Name")?.GetValue(sender) as string;
-            EventProcesserList.FirstOrDefault(e => name.StartsWith(e.ControlPrefix))?.OnEvent(type, sender, name);
+            EventProcesserList.FirstOrDefault(e => name.StartsWith(e.ControlPrefix))?.OnEvent(type, sender, e);
         }
         public class GUIEventAttribute : Attribute
         {
@@ -60,26 +67,36 @@ namespace TSManager.UI
                     .Where(m => tempDict.ContainsKey(m.Name))
                     .ForEach(m => EventList.Add(tempDict[m.Name], m));
             }
-            public virtual void OnEvent(EventType type, object sender, string name)
+            public virtual void OnEvent(EventType type, object sender, object e)
             {
-                if (EventList.TryGetValue(type, out var method))
-                    method.Invoke(this, new object[] { sender});
+                try
+                {
+                    if (EventList.TryGetValue(type, out var method))
+                        method.Invoke(this, new object[] { sender, e });
+                }
+                catch (Exception ex) { ex.ShowError(); }
             }
             #region 各种事件
             [GUIEvent(EventType.ButtonClick)]
-            public virtual void OnButtonClick(Button sender) { }
+            public virtual void OnButtonClick(Button sender, RoutedEventArgs e) { }
             [GUIEvent(EventType.ButtonTextBoxClick)]
-            public virtual void OnButtonTextBoxClick(ButtonTextBox sender) { }
+            public virtual void OnButtonTextBoxClick(ButtonTextBox sender, RoutedEventArgs e) { }
             [GUIEvent(EventType.SwitchClick)]
-            public virtual void OnSwichClick(ToggleButton sender) { }
+            public virtual void OnSwichClick(ToggleButton sender, RoutedEventArgs e) { }
             [GUIEvent(EventType.KeyDown)]
-            public virtual void OnKeyDown(object sender) { }
+            public virtual void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e) { }
             [GUIEvent(EventType.ComboSelectChange)]
-            public virtual void OnComboSelectChange(ComboBox sender) { }
+            public virtual void OnComboSelectChange(ComboBox sender, SelectionChangedEventArgs e) { }
             [GUIEvent(EventType.ListViewSelect)]
-            public virtual void OnListViewSelect(ButtonTextBox sender) { }
+            public virtual void OnListViewSelectChange(ListView sender, SelectionChangedEventArgs e) { }
             [GUIEvent(EventType.ListBoxSelect)]
-            public virtual void OnListBoxSelect(ButtonTextBox sender) { }
+            public virtual void OnListBoxSelectChange(ListBox sender, SelectionChangedEventArgs e) { }
+            [GUIEvent(EventType.DataGridSelectChange)]
+            public virtual void OnDataGridSelectChange(DataGrid sender, SelectionChangedEventArgs e) { }
+            [GUIEvent(EventType.TextInput)]
+            public virtual void OnTextInput(object sender, EventArgs e) { }
+            [GUIEvent(EventType.SelectedColorChange)]
+            public virtual void OnSelectedColorChanged(ColorPicker sender, HandyControl.Data.FunctionEventArgs<System.Windows.Media.Color> e) { }
 
             #endregion
         }

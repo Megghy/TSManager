@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
 using TerrariaApi.Server;
 using TShockAPI;
 
@@ -24,13 +23,19 @@ namespace TSManager.Modules
             {
                 if (TShock.Players[args.Who] is { } plr)
                 {
-                    if (!Info.OnlinePlayers.Any(p => p.Name == plr.Name)) TSMMain.GUIInvoke(() => Info.OnlinePlayers.Add(new(plr)));
-                    if (plr.TryGetPlayerInfo(out var info))
+                    plr.TryGetPlayerInfo(out var info);
+                    if (!Info.OnlinePlayers.Any(p => p.Name == plr.Name))
+                        TSMMain.GUIInvoke(() => Info.OnlinePlayers.Add(info ?? new(plr)));
+                    if (info != null)
                     {
                         info.Player = plr;
                         info.Online = true;
                         info.PlayTime = 0;
-                        TSMMain.GUIInvoke(() => { if (TSMMain.GUI.Bag_Tab.DataContext == info) BagManager.Refresh(false); });
+                        TSMMain.GUIInvoke(() =>
+                        {
+                            if (PlayerManager.SelectedPlayerInfo == info)
+                                BagManager.Refresh(false);
+                        });
                     }
                     ScriptManager.ExcuteScript(new(Data.ScriptData.Triggers.PlayerJoin, plr, ""));
                 }
@@ -77,7 +82,7 @@ namespace TSManager.Modules
                 {
                     Info.Players.Remove(info);
                     Info.OnlinePlayers.Remove(info);
-                    if(TSMMain.GUI.PlayerManage_MainTab.DataContext is Data.PlayerInfo i && i.Name == info.Name)
+                    if (TSMMain.GUI.PlayerManage_MainTab.DataContext is Data.PlayerInfo i && i.Name == info.Name)
                     {
                         TSMMain.GUI.PlayerManage_MainTab.DataContext = null;
                         TSMMain.GUI.Bag_Tab.DataContext = null;
