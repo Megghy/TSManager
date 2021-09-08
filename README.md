@@ -17,6 +17,7 @@ Sorry I only support Chinese in the program, maybe you can compile it yourself.
 * [x] User Group Management
 * [x] Permission Management
 * [x] Script Editor
+* [x] Download Center
 * [ ] Script Store
 
 ## Environment requests
