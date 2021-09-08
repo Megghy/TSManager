@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using HandyControl.Controls;
+using TerrariaApi.Server;
 using TSManager.UI.Control;
 using ComboBox = HandyControl.Controls.ComboBox;
 
@@ -74,7 +76,10 @@ namespace TSManager.UI
                     if (EventList.TryGetValue(type, out var method))
                         method.Invoke(this, new object[] { sender, e });
                 }
-                catch (Exception ex) { ex.ShowError(); }
+                catch (Exception ex) {
+                    Utils.Notice($"调用控件 {sender?.GetType().GetProperty("Name")?.GetValue(sender)} 时发生异常\r\n错误信息: {ex.InnerException}", HandyControl.Data.InfoType.Error);
+                    ServerApi.LogWriter?.PluginWriteLine(TSMMain.Instance, $"GUIError [{sender?.GetType().GetProperty("Name")?.GetValue(sender)}] {ex.Source} - {ex.InnerException.Message}\r\n{ex.StackTrace}", TraceLevel.Error);
+                }
             }
             #region 各种事件
             [GUIEvent(EventType.ButtonClick)]

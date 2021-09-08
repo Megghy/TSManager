@@ -144,6 +144,30 @@ namespace TSManager
             Info.Server?.DisplayText(text?.ToString(), color);
         }
         public static void AddLine(object text = null, Color color = default) => AddText(text + "\r\n", color);
+        #region 加载遮罩
+        public static void OpenLoading(string text = "请稍候...", int maxTime = 1000 * 30)
+        {
+            TSMMain.GUIInvoke(() =>
+            {
+                TSMMain.GUI.General_Loading.Visibility = System.Windows.Visibility.Visible;
+                TSMMain.GUI.General_Loading_Text.Text = text;
+            });
+        }
+        public static void CloseLoading()
+        {
+            TSMMain.GUIInvoke(() =>
+            {
+                TSMMain.GUI.General_Loading.Visibility = System.Windows.Visibility.Hidden;
+                TSMMain.GUI.General_Loading_Text.Text = "请稍候...";
+            });
+        }
+        public static void LoadingTask(Action a)
+        {
+            OpenLoading();
+            a.Invoke();
+            CloseLoading();
+        }
+        #endregion
         public static T ToType<T>(this object o)
         {
             try { return (T)o; }

@@ -5,8 +5,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using HandyControl.Controls;
-using Newtonsoft.Json;
 
 namespace TSManager.Modules
 {
@@ -21,13 +19,27 @@ namespace TSManager.Modules
         {
 
         }
-        public static void RefreshAsync()
+        public static async void RefreshAsync()
         {
-            var d = Dialog.Show<LoadingLine>();
+            Utils.OpenLoading();
             IsRefreshing = true;
-            TSMMain.GUIInvoke(async () => TSMMain.GUI.Download_TShock_List.ItemsSource = await GetTShockReleaseInfoAsync());
+            TSMMain.GUI.Download_TShock_List.ItemsSource = await GetTShockReleaseInfoAsync();
             IsRefreshing = false;
-            d.Close();
+            Utils.Notice("已刷新 TShock 构建列表", HandyControl.Data.InfoType.Success);
+            Utils.CloseLoading();
+        }
+        public static void DownloadAsync(string downloadURL, string filePath)
+        {
+            Utils.OpenLoading("下载中...");
+            var downloader = new MultiDownload(8, downloadURL, filePath, DownloadCallBack);
+            TSMMain.GUI.Download_TShock_List.SelectedItem = null;
+            TSMMain.GUI.Download_TShock_Drawer.IsOpen = false;
+            downloader.Start();
+        }
+        private static void DownloadCallBack()
+        {
+            Utils.Notice($"下载完成. 文件位于 {Info.DownloadPath}");
+            Utils.CloseLoading();
         }
         public static void SelectTSFile(Data.DownloadInfo.TShockInfo info)
         {
@@ -88,6 +100,7 @@ namespace TSManager.Modules
             private Thread[] _thread;   //线程数组
             private List<string> _tempFiles = new();
             private readonly object locker = new();
+            private Action CallBack;
             #endregion
             #region 属性
             /// <summary>
@@ -121,38 +134,41 @@ namespace TSManager.Modules
             /// <param name="threahNum">线程数量</param>
             /// <param name="fileUrl">文件Url路径</param>
             /// <param name="savePath">本地保存路径</param>
-            public MultiDownload(int threahNum, string fileUrl, string savePath)
+            public MultiDownload(int threahNum, string fileUrl, string savePath, Action action = null)
             {
                 this.ThreadNum = threahNum;
                 this._thread = new Thread[threahNum];
                 this._fileUrl = fileUrl;
                 this.SavePath = savePath;
+                CallBack = action;
             }
-            public async Task Start()
+            public void Start()
             {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(_fileUrl);
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                _fileSize = response.ContentLength;
-                int singelNum = (int)(_fileSize / ThreadNum);  //平均分配
-                int remainder = (int)(_fileSize % ThreadNum);  //获取剩余的
-                request.Abort();
-                response.Close();
-                for (int i = 0; i < ThreadNum; i++)
+                Task.Run(() =>
                 {
-                    List<int> range = new List<int>();
-                    range.Add(i * singelNum);
-                    if (remainder != 0 && (ThreadNum - 1) == i) //剩余的交给最后一个线程
-                        range.Add(i * singelNum + singelNum + remainder - 1);
-                    else
-                        range.Add(i * singelNum + singelNum - 1);
-                    //下载指定位置的数据
-                    int[] ran = new int[] { range[0], range[1] };
-                    _thread[i] = new(new ParameterizedThreadStart(Download));
-                    _thread[i].Name = Path.GetFileNameWithoutExtension(_fileUrl) + "_{0}".Replace("{0}", Convert.ToString(i + 1));
-                    _thread[i].Start(ran);
-                }
-                while (!IsComplete)
-                    await Task.Delay(1);
+
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(_fileUrl);
+                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                    _fileSize = response.ContentLength;
+                    int singelNum = (int)(_fileSize / ThreadNum);  //平均分配
+                    int remainder = (int)(_fileSize % ThreadNum);  //获取剩余的
+                    request.Abort();
+                    response.Close();
+                    for (int i = 0; i < ThreadNum; i++)
+                    {
+                        List<int> range = new List<int>();
+                        range.Add(i * singelNum);
+                        if (remainder != 0 && (ThreadNum - 1) == i) //剩余的交给最后一个线程
+                            range.Add(i * singelNum + singelNum + remainder - 1);
+                        else
+                            range.Add(i * singelNum + singelNum - 1);
+                        //下载指定位置的数据
+                        int[] ran = new int[] { range[0], range[1] };
+                        _thread[i] = new(new ParameterizedThreadStart(Download));
+                        _thread[i].Name = Path.GetFileNameWithoutExtension(_fileUrl) + "_{0}".Replace("{0}", Convert.ToString(i + 1));
+                        _thread[i].Start(ran);
+                    }
+                });
             }
             private void Download(object obj)
             {
@@ -193,6 +209,10 @@ namespace TSManager.Modules
                 {
                     Complete();
                     IsComplete = true;
+                    if (CallBack != null)
+                    {
+                        CallBack.Invoke();
+                    }
                 }
             }
             /// <summary>

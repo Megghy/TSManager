@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.IO;
 using System.Threading;
 using TShockAPI;
 
@@ -8,9 +9,10 @@ namespace TSManager
     class Info
     {
         public static Modules.ServerManger Server;
-        public static string Path = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
-        public static string ConfigPath => Path + "tshock\\";
-        public static string PluginPath => Path + "ServerPlugins\\";
+        public static string CurrentPath = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+        public static string ConfigPath => Path.Combine(CurrentPath, "tshock");
+        public static string PluginPath => Path.Combine(CurrentPath, "ServerPlugins");
+        public static string DownloadPath => Path.Combine(CurrentPath, "Download");
         /// <summary>
         /// 服务器线程状态
         /// </summary>

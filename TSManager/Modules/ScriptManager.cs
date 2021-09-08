@@ -331,7 +331,7 @@ namespace TSManager
         }
         public static void Create(string name, string author, string description, string version)
         {
-            var path = $"{Info.Path}Scripts\\{name}.tsms";
+            var path = $"{Info.CurrentPath}Scripts\\{name}.tsms";
             if (name == string.Empty || author == string.Empty)
             {
                 Utils.Notice("脚本名称和作者为必填项", HandyControl.Data.InfoType.Error);
@@ -379,7 +379,7 @@ namespace TSManager
             Info.Scripts.Remove(script);
             TSMMain.GUI.Script_List.SelectedItem = null;
             TSMMain.GUI.Script_Editor.Script = null;
-            var path = $"{Info.Path}Scripts\\{script.Name}.tsms";
+            var path = $"{Info.CurrentPath}Scripts\\{script.Name}.tsms";
             if (File.Exists(path)) File.Delete(path);
             Utils.Notice($"已删除脚本 {script.Name}", HandyControl.Data.InfoType.Success);
         }

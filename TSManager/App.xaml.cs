@@ -40,7 +40,7 @@ namespace TSManager
                     TSManager.Properties.Settings.Default.UpgradeRequired = false;
                     TSManager.Properties.Settings.Default.Save();
                 }
-                if (!File.Exists(Info.Path + "TerrariaServer.exe"))
+                if (!File.Exists(Info.CurrentPath + "TerrariaServer.exe"))
                 {
                     MessageBox.Show("未在目录下找到服务器启动文件.");
                     return;

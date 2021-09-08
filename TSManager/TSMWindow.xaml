@@ -192,7 +192,8 @@
                                                   Grid.ColumnSpan="2">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="637*" />
+                                                    <ColumnDefinition Width="117*" />
+                                                    <ColumnDefinition Width="520*" />
                                                     <ColumnDefinition Width="120*" />
                                                     <ColumnDefinition Width="152*" />
                                                 </Grid.ColumnDefinitions>
@@ -203,7 +204,7 @@
                                                 <ListBox x:Name="Console_PlayerList"
                                                          SelectionChanged="OnListSelect"
                                                          DisplayMemberPath="Name"
-                                                         Grid.Column="2"
+                                                         Grid.Column="3"
                                                          Margin="5,0,0,0"
                                                          Background="{x:Null}"
                                                          BorderBrush="{x:Null}" />
@@ -212,12 +213,14 @@
                                                              IsReadOnly="True"
                                                              FontSize="14"
                                                              VerticalScrollBarVisibility="Auto"
-                                                             Grid.ColumnSpan="2" />
+                                                             Grid.ColumnSpan="3" />
                                                 <hc:TextBox Name="Console_CommandBox"
                                                             hc:BorderElement.CornerRadius="1"
                                                             Grid.Row="1"
-                                                            Margin="0,5,0,0"
-                                                            KeyDown="OnKeyDown" />
+                                                            Margin="3,5,0,0"
+                                                            KeyDown="OnKeyDown"
+                                                            Grid.ColumnSpan="2"
+                                                            Grid.Column="1" />
                                                 <Button Content="执行"
                                                         Name="Console_DoCmd"
                                                         Click="OnButtonClick"
@@ -226,16 +229,15 @@
                                                         Grid.Row="1"
                                                         VerticalAlignment="Stretch"
                                                         Height="Auto"
-                                                        Grid.Column="2" />
+                                                        Grid.Column="3" />
                                                 <Button Content="清空控制台"
                                                         Name="Console_Clear"
                                                         Click="OnButtonClick"
                                                         HorizontalAlignment="Stretch"
-                                                        Margin="5,5,0,0"
+                                                        Margin="0,5,2,0"
                                                         Grid.Row="1"
                                                         VerticalAlignment="Stretch"
-                                                        Height="Auto"
-                                                        Grid.Column="1" />
+                                                        Height="Auto" />
                                             </Grid>
                                         </GroupBox>
                                         <GroupBox Header="启动设置"
@@ -1336,23 +1338,27 @@
                                                 <hc:Divider />
                                                 <Image Source="{Binding AvatarImageData}"
                                                        HorizontalAlignment="Center"
-                                                       MaxHeight="100"/>
+                                                       MaxHeight="100" />
                                                 <TextBlock HorizontalAlignment="Center">
                                                     <Run Text="发布者: " />
                                                     <Run Text="{Binding Author}" /></TextBlock>
                                                 <hc:Divider />
                                                 <hc:ElementGroup Orientation="Horizontal">
-                                                    <TextBlock Text="发布分支: " />
+                                                    <hc:Shield Subject="Download"
+                                                               Status="{Binding DownloadCount}"
+                                                               Margin="0,0,0,0" />
                                                     <hc:Shield Subject="Commitish"
                                                                Status="{Binding TargetCommitish}"
-                                                               Margin="5,0,0,0" />
+                                                               Margin="5,0,0,0"
+                                                               Color="#FF72BF55" />
                                                 </hc:ElementGroup>
-                                                
                                                 <TextBlock>
-                                                    <Run Text="发布时间: " />
+                                                    <Run Text="发布时间: "
+                                                         FontWeight="Bold" />
                                                     <Run Text="{Binding CreateDate}" /></TextBlock>
                                                 <TextBlock>
-                                                    <Run Text="地址: " />
+                                                    <Run Text="地址: "
+                                                         FontWeight="Bold" />
                                                     <Hyperlink NavigateUri="{Binding ReleaseURL}"
                                                                Click="HyperlinkClick">
                                                         <TextBlock Text="{Binding ReleaseURL}"
@@ -1363,10 +1369,14 @@
                                                     </Hyperlink>
                                                 </TextBlock>
                                                 <hc:Divider />
-                                                <Button Content="下载"
+                                                <Button Name="Download_TShock_StartDownload"
+                                                        FontSize="15"
+                                                        Content="下载"
+                                                        Click="OnButtonClick"
                                                         Width="200"
                                                         Height="50"
-                                                        Background="{StaticResource SuccessBrush}"/>
+                                                        Background="{StaticResource SuccessBrush}"
+                                                        FontWeight="Bold" />
                                                 <hc:Divider />
                                             </hc:UniformSpacingPanel>
                                         </GroupBox>
@@ -1444,5 +1454,25 @@
         <TextBox x:Name="VisualBox"
                  IsEnabled="False"
                  Visibility="Hidden" />
+        <Border x:Name="General_Loading"
+                Background="#7F838383"
+                Visibility="Hidden">
+            <hc:TransitioningContentControl TransitionMode="Top2BottomWithFade">
+                <GroupBox Header="TSManager"
+                          FontSize="16"
+                          Width="400"
+                          Height="300"
+                          Style="{StaticResource GroupBoxTab}">
+                    <hc:SimplePanel>
+                        <TextBlock Name="General_Loading_Text"
+                                   Style="{StaticResource TextBlockLargeBold}"
+                                   Text="请稍候..."
+                                   HorizontalAlignment="Center"
+                                   Margin="156,180,150,50" />
+                        <hc:LoadingCircle HorizontalAlignment="Center"/>
+                    </hc:SimplePanel>
+                </GroupBox>
+            </hc:TransitioningContentControl>
+        </Border>
     </Grid>
 </hc:Window>

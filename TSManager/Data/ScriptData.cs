@@ -12,10 +12,10 @@ namespace TSManager.Data
     {
         public static List<ScriptData> GetAllScripts()
         {
-            if (!Directory.Exists(Info.Path + "Scripts"))
-                Directory.CreateDirectory(Info.Path + "Scripts");
+            if (!Directory.Exists(Info.CurrentPath + "Scripts"))
+                Directory.CreateDirectory(Info.CurrentPath + "Scripts");
             var list = new List<ScriptData>();
-            var files = Directory.GetFiles(Info.Path + "Scripts", "*.tsms");
+            var files = Directory.GetFiles(Info.CurrentPath + "Scripts", "*.tsms");
             if (files.Any())
             {
                 foreach (var filename in files)

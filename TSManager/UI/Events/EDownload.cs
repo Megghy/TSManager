@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Windows;
 using System.Windows.Controls;
 using TSManager.Data;
 using TSManager.Modules;
@@ -15,6 +16,10 @@ namespace TSManager.UI.Events
                 case "Download_TShock_Refresh":
                     DownloadManager.RefreshAsync();
                     break;
+                case "Download_TShock_StartDownload":
+                    var tsInfo = (DownloadInfo.TShockInfo)sender.DataContext;
+                    DownloadManager.DownloadAsync(tsInfo.DownloadURL, Path.Combine(Info.DownloadPath, tsInfo.Name + ".zip"));
+                    break;
                 default:
                     break;
             }
@@ -24,7 +29,8 @@ namespace TSManager.UI.Events
             switch (sender.Name)
             {
                 case "Download_TShock_List":
-                    DownloadManager.SelectTSFile((DownloadInfo.TShockInfo)sender.SelectedItem);
+                    if(sender.SelectedItem != null)
+                        DownloadManager.SelectTSFile((DownloadInfo.TShockInfo)sender.SelectedItem);
                     break;
                 default:
                     break;
