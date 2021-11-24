@@ -1,4 +1,4 @@
-# 过时, 将在TShock迁移于基于OTAPI3和.Net5的TSAPI后重构
+# 过时, 将在TShock迁移于基于OTAPI3和.Net5(或者6?)的TSAPI后重构
 # Obsolete, will be refactored after TShock migrates to TSAPI based on OTAPI3 and .Net5
 # TSManager
 
