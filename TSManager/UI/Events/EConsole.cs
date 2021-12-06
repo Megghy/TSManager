@@ -47,7 +47,7 @@ namespace TSManager.UI.Events
                     break;
                 case "Console_DoCmd":
                     if (!Info.IsServerRunning) return;
-                    Info.Server.ExcuteConsoleCommand(TSMMain.GUI.Console_CommandBox.Text);
+                    Info.Server.AppendText(TSMMain.GUI.Console_CommandBox.Text);
                     TSMMain.GUI.Console_CommandBox.Clear();
                     break;
                 case "Console_Clear":
@@ -77,11 +77,8 @@ namespace TSManager.UI.Events
         {
             switch (sender.Name)
             {
-                case "Script_TriggerCondition":
-                    if (ScriptManager.SelectedScriptData is { } && ScriptManager.SelectedScriptData.TriggerCondition != (ScriptData.Triggers)TSMMain.GUI.Script_TriggerCondition.SelectedItem)
-                    {
-                        ScriptManager.ChangeTriggerCondition(ScriptManager.SelectedScriptData, (ScriptData.Triggers)TSMMain.GUI.Script_TriggerCondition.SelectedItem);
-                    }
+                case "Console_MapBox":
+                    TSMMain.Settings.World = ((MapData)sender.SelectedItem).Path;
                     break;
                 default:
                     break;
@@ -117,7 +114,7 @@ namespace TSManager.UI.Events
                 {
                     if (!Info.IsServerRunning)
                         return;
-                    Info.Server.ExcuteConsoleCommand(t.Text);
+                    Info.Server.AppendText(t.Text);
                     t.Clear();
                 }
             }

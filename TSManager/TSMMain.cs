@@ -53,7 +53,7 @@ namespace TSManager
                             if (Info.IsEnterWorld)
                             {
                                 ((ServerStatus)GUI.Tab_Index.DataContext).RunTime += UpdateTime;
-                                Info.OnlinePlayers?.ForEach(p => p.PlayTime += UpdateTime);
+                                Info.OnlinePlayers.ForEach(p => p.PlayTime += UpdateTime);
                                 PlayerManager.SelectedPlayerInfo?.Update();
                                 GUI.PlayerManage_Count.Content = "总人数: " + Info.Players.Count;
                             }
@@ -74,7 +74,7 @@ namespace TSManager
                 GUI.Versions.Visibility = Visibility.Hidden; //暂时隐藏服务器版本               
                 GUI.ChangeNightMode(Settings.EnableDarkMode ? HandyControl.Data.SkinType.Dark : HandyControl.Data.SkinType.Default); //调整暗色模式
 
-                UI.GUIEvents.RegisterAll(); //加载所有用户界面处理代码
+                UI.GUIEvents.RegisteAll(); //加载所有用户界面处理代码
 
                 #region 加载tsapi程序集
                 Info.Server = new(typeof(ServerApi).Assembly);

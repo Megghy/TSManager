@@ -18,8 +18,8 @@ namespace TSManager.Modules
     {
         private static ServerManger Instance => Info.Server;
         private readonly Assembly mainasm;
-        private readonly ConsoleIn inStream;
-        private readonly ConsoleOut outStream;
+        private readonly ConsoleIn inStream = new();
+        private readonly ConsoleOut outStream = new();
         private Color foregroundColor = ConsoleColor.White.ToColor();
         internal static readonly Harmony TSMHarmony = new("TSManager");
         public static readonly Color PlayerColor = Color.FromRgb(
@@ -29,8 +29,6 @@ namespace TSManager.Modules
         public ServerManger(Assembly server)
         {
             mainasm = server;
-            outStream = new();
-            inStream = new();
         }
         internal static void Init()
         {
@@ -40,6 +38,7 @@ namespace TSManager.Modules
             var console = typeof(Console);
             Console.SetIn(new StreamReader(Instance.inStream, Encoding.UTF8));
             Console.SetOut(Instance.outStream);
+            _ = Console.IsInputRedirected;
             TSMHarmony.Patch(console.GetProperty("Title").SetMethod, GetMethod("OnSetTitle"));
             TSMHarmony.Patch(console.GetMethod("ResetColor"), GetMethod("OnResetColor"));
             TSMHarmony.Patch(console.GetProperty("ForegroundColor").SetMethod, GetMethod("OnSetForegroundColor"));
@@ -89,6 +88,8 @@ namespace TSManager.Modules
                         {
                             var s = info.Text;
                             var color = info.Color;
+                            if (s == ": ")
+                                continue;
                             if (Info.IsEnterWorld && s != "\r\n")
                             {
                                 var nameList = Info.Players.Select(p => p.Name).ToList();
@@ -142,6 +143,10 @@ namespace TSManager.Modules
             }
         }
         #endregion
+        /// <summary>
+        /// 获取启动参数
+        /// </summary>
+        /// <returns></returns>
         public string[] GetStartArgs()
         {
             return new[]
@@ -207,6 +212,21 @@ namespace TSManager.Modules
         {
             Utils.AddLine(text, Color.FromRgb(208, 171, 233));
             Commands.HandleCommand(TSPlayer.Server, Commands.Specifier + text);
+        }
+        /// <summary>
+        /// 直接向console输入流写入文本
+        /// </summary>
+        /// <param name="text"></param>
+        public void AppendText(string text)
+        {
+            if(string.IsNullOrEmpty(text))
+                inStream.AppendText(Environment.NewLine);
+            else
+            {
+                Utils.AddLine(text, Color.FromRgb(208, 171, 233));
+                inStream.AppendText(text);
+                inStream.AppendText(Environment.NewLine);
+            }
         }
     }
     /// <summary>

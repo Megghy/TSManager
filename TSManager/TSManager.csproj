@@ -1,44 +1,12 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\PropertyChanged.Fody.3.3.3\build\PropertyChanged.Fody.props" Condition="Exists('..\packages\PropertyChanged.Fody.3.3.3\build\PropertyChanged.Fody.props')" />
-  <Import Project="..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props" Condition="Exists('..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props')" />
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{96A36F6A-DA3B-4BF4-8651-DC945396158A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>TSManager</RootNamespace>
-    <AssemblyName>TSManager</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -52,59 +20,18 @@
   <PropertyGroup>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\ayjbz-m4wnb-002.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lib.Harmony.2.1.1\lib\net472\0Harmony.dll</HintPath>
-    </Reference>
     <Reference Include="Array">
       <HintPath>Resources\Script\Array.dll</HintPath>
-    </Reference>
-    <Reference Include="AutoUpdater.NET, Version=1.7.0.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Autoupdater.NET.Official.1.7.0\lib\net45\AutoUpdater.NET.dll</HintPath>
-    </Reference>
-    <Reference Include="BCrypt.Net, Version=0.1.4141.31969, Culture=neutral, PublicKeyToken=f3bc8f8c31beeb49, processorArchitecture=MSIL">
-      <HintPath>..\packages\BCrypt.Net.0.1.0\lib\net35\BCrypt.Net.dll</HintPath>
-    </Reference>
-    <Reference Include="Costura, Version=4.1.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
-      <HintPath>..\packages\Costura.Fody.4.1.0\lib\net40\Costura.dll</HintPath>
     </Reference>
     <Reference Include="DataStructure">
       <HintPath>Resources\Script\DataStructure.dll</HintPath>
     </Reference>
-    <Reference Include="DotNetZip, Version=1.15.0.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
-      <HintPath>..\packages\DotNetZip.1.15.0\lib\net40\DotNetZip.dll</HintPath>
-    </Reference>
-    <Reference Include="FontAwesome.WPF, Version=4.7.0.37774, Culture=neutral, PublicKeyToken=0758b07a11a4f466, processorArchitecture=MSIL">
-      <HintPath>..\packages\FontAwesome.WPF.4.7.0.9\lib\net40\FontAwesome.WPF.dll</HintPath>
-    </Reference>
-    <Reference Include="HandyControl, Version=3.2.0.0, Culture=neutral, PublicKeyToken=45be8712787a1e5b, processorArchitecture=MSIL">
-      <HintPath>..\packages\HandyControl.3.2.0\lib\net472\HandyControl.dll</HintPath>
-    </Reference>
-    <Reference Include="HttpServer, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5684c2c737cd4271, processorArchitecture=MSIL">
-      <HintPath>..\packages\TerrariaServer.TShock.4.5.5\lib\net452\HttpServer.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.AvalonEdit, Version=6.1.2.30, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
-      <HintPath>..\packages\AvalonEdit.6.1.2.30\lib\net45\ICSharpCode.AvalonEdit.dll</HintPath>
-    </Reference>
     <Reference Include="Math">
       <HintPath>Resources\Script\Math.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Data.Sqlite, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <HintPath>..\packages\TerrariaServer.TShock.4.5.5\lib\net452\Mono.Data.Sqlite.dll</HintPath>
-    </Reference>
-    <Reference Include="MySql.Data, Version=6.9.12.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.6.9.12\lib\net45\MySql.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="OTAPI, Version=1.4.2.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TerrariaServer.TShock.4.5.5\lib\net452\OTAPI.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="PropertyChanged, Version=3.3.3.0, Culture=neutral, PublicKeyToken=ee3ee20bcf148ddd, processorArchitecture=MSIL">
-      <HintPath>..\packages\PropertyChanged.Fody.3.3.3\lib\net40\PropertyChanged.dll</HintPath>
     </Reference>
     <Reference Include="ScriptEditor, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -119,151 +46,9 @@
     <Reference Include="String">
       <HintPath>Resources\Script\String.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Management" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="TerrariaServer, Version=1.4.2.3, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\TerrariaServer.TShock.4.5.5\lib\net452\TerrariaServer.exe</HintPath>
-    </Reference>
     <Reference Include="Thread">
       <HintPath>Resources\Script\Thread.dll</HintPath>
     </Reference>
-    <Reference Include="TShockAPI, Version=4.5.5.0, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\TerrariaServer.TShock.4.5.5\lib\net452\TShockAPI.dll</HintPath>
-    </Reference>
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
-  <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Compile Include="Data\DownloadInfo.cs" />
-    <Compile Include="Data\GroupData.cs" />
-    <Compile Include="Data\ScriptData.cs" />
-    <Compile Include="Modules\BagManager.cs" />
-    <Compile Include="Data\ConfigData.cs" />
-    <Compile Include="Data\ItemData.cs" />
-    <Compile Include="Data\MapData.cs" />
-    <Compile Include="Data\PlayerInfo.cs" />
-    <Compile Include="Modules\DownloadManager.cs" />
-    <Compile Include="Modules\GroupManager.cs" />
-    <Compile Include="Modules\HookManager.cs" />
-    <Compile Include="Modules\MapManager.cs" />
-    <Compile Include="Modules\PlayerManager.cs" />
-    <Compile Include="Modules\ScriptManager.cs" />
-    <Compile Include="Modules\Updater.cs" />
-    <Compile Include="Script\CheckPermission.cs" />
-    <Compile Include="Script\Common\ClearExpression.cs" />
-    <Compile Include="Script\Common\CountExpression.cs" />
-    <Compile Include="Script\Common\PeekExpression.cs" />
-    <Compile Include="Script\Conditional.cs" />
-    <Compile Include="Script\IfEx.cs" />
-    <Compile Include="Script\List\ListAddExpression.cs" />
-    <Compile Include="Script\List\ListClear.cs" />
-    <Compile Include="Script\List\ListInsertExpression.cs" />
-    <Compile Include="Script\List\ListRemoveAtExpression.cs" />
-    <Compile Include="Script\List\ListRemoveExpression.cs" />
-    <Compile Include="Script\List\ListValueExpression.cs" />
-    <Compile Include="Script\List\NewListExpression.cs" />
-    <Compile Include="Script\Queue\DequeueExpression.cs" />
-    <Compile Include="Script\Queue\EnqueueExpression.cs" />
-    <Compile Include="Script\Queue\NewQueueExpression.cs" />
-    <Compile Include="Script\Stack\NewStackExpression.cs" />
-    <Compile Include="Script\Stack\PopStackExpression.cs" />
-    <Compile Include="Script\Stack\PushStackExpression.cs" />
-    <Compile Include="Script\TargetMessage.cs" />
-    <Compile Include="Script\ExcuteCommand.cs" />
-    <Compile Include="Script\ExcuteCommandInConsole.cs" />
-    <Compile Include="Script\GetPlayer.cs" />
-    <Compile Include="Script\GetPlayerBag.cs" />
-    <Compile Include="Script\SendMessage.cs" />
-    <Compile Include="Script\TargetPlayer.cs" />
-    <Compile Include="Script\TargetPlayerName.cs" />
-    <Compile Include="UI\Control\ButtonTextBox.xaml.cs">
-      <DependentUpon>ButtonTextBox.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Data\ServerStatus.cs" />
-    <Compile Include="Modules\ConfigEdit.cs" />
-    <Compile Include="Modules\ServerManager.cs" />
-    <Compile Include="TSMMain.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="TSMWindow.xaml.cs">
-      <DependentUpon>TSMWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Expansion.cs" />
-    <Compile Include="Info.cs" />
-    <Compile Include="UI\Control\LoadingDialog.xaml.cs">
-      <DependentUpon>LoadingDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Events\EBag.cs" />
-    <Compile Include="UI\Events\EConfig.cs" />
-    <Compile Include="UI\Events\EConsole.cs" />
-    <Compile Include="UI\Events\EDownload.cs" />
-    <Compile Include="UI\Events\EGroup.cs" />
-    <Compile Include="UI\Events\EPlayer.cs" />
-    <Compile Include="UI\Events\EScript.cs" />
-    <Compile Include="UI\Events\ESetting.cs" />
-    <Compile Include="UI\GUIEvents.cs" />
-    <Compile Include="Utils.cs" />
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="TSMWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Control\ButtonTextBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Control\LoadingDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include="packages.config" />
-    <None Include="Properties\app.manifest" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Resources\Script\NewScript.tsms" />
-    <None Include="Resources\Texture.zip" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="FodyWeavers.xml" />
@@ -276,28 +61,47 @@
     <Resource Include="Resources\Setting.png" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Script\File\" />
     <Folder Include="UI\View\" />
+    <Folder Include="Pages\" />
+    <Folder Include="Model\" />
+    <Folder Include="ViewModel\" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\TShock.png" />
-    <Resource Include="ayjbz-m4wnb-002.ico" />
-    <Content Include="Resources\Script\Array.dll" />
-    <Content Include="Resources\Script\Canvas.dll" />
-    <Content Include="Resources\Script\Collection.dll" />
-    <Content Include="Resources\Script\Console.dll" />
-    <Content Include="Resources\Script\DataStructure.dll" />
-    <Content Include="Resources\Script\Math.dll" />
-    <Content Include="Resources\Script\ScriptEditor.dll" />
-    <Content Include="Resources\Script\ScriptEngine.dll" />
-    <Content Include="Resources\Script\Speech.dll" />
-    <Content Include="Resources\Script\String.dll" />
-    <Content Include="Resources\Script\Thread.dll" />
+    <Resource Include="Resources\ayjbz-m4wnb-002.ico" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\Fody.6.5.1\build\Fody.targets" Condition="Exists('..\packages\Fody.6.5.1\build\Fody.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-  </Target>
+  <ItemGroup>
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.0" />
+    <PackageReference Include="AvalonEdit" Version="6.1.2.30" />
+    <PackageReference Include="Fody" Version="6.6.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="HandyControl" Version="3.3.0" />
+    <PackageReference Include="Lib.Harmony" Version="2.1.1" />
+    <PackageReference Include="PropertyChanged.Fody" Version="3.4.0" />
+    <PackageReference Include="Costura.Fody" Version="5.7.0" />
+    <PackageReference Include="Stylet" Version="1.3.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Remove="UI\App.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>copy /Y $(TargetPath) D:\TShock4.5.0_Terraria1.4.2.1</PostBuildEvent>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 </Project>

@@ -8,7 +8,7 @@ using System.Windows;
 [assembly: AssemblyTitle("TSManager")]
 [assembly: AssemblyDescription("第三方TShock管理器")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Megghy")]
 [assembly: AssemblyProduct("TSManager")]
 [assembly: AssemblyCopyright("Copyright ©  2021")]
 [assembly: AssemblyTrademark("")]
@@ -49,5 +49,5 @@ using System.Windows;
 //可以指定所有这些值，也可以使用“生成号”和“修订号”的默认值
 //通过使用 "*"，如下所示:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.0.2.4")]
-[assembly: AssemblyFileVersion("2.0.2.4")]
+[assembly: AssemblyVersion("2.0.2.5")]
+[assembly: AssemblyFileVersion("2.0.2.5")]

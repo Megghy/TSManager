@@ -1401,7 +1401,7 @@
                                                         <hc:TransitioningContentControl TransitionStoryboard="{StaticResource Custom1Transition}">
                                                             <StackPanel Orientation="Horizontal">
                                                                 <hc:TransitioningContentControl TransitionStoryboard="{StaticResource Custom2Transition}">
-                                                                    <Image Source="Resources/TShock.png"
+                                                                    <Image Source="/TSManager;component/Resources/TShock.png"
                                                                            MaxHeight="25" />
                                                                 </hc:TransitioningContentControl>
                                                                 <hc:Divider Orientation="Vertical"

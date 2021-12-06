@@ -220,6 +220,9 @@ namespace TSManager.Modules
             /// </summary>
             private void Complete()
             {
+                var dir = Path.GetDirectoryName(SavePath);
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
                 Stream mergeFile = new FileStream(SavePath, FileMode.Create);
                 BinaryWriter AddWriter = new(mergeFile);
                 foreach (string file in _tempFiles)

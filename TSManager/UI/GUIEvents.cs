@@ -30,7 +30,7 @@ namespace TSManager.UI
             SelectedColorChange
         }
         internal static readonly List<GUIEventBase> EventProcesserList = new();
-        internal static void RegisterAll()
+        internal static void RegisteAll()
         {
             Assembly.GetExecutingAssembly().GetTypes().Where(t => t.Namespace == "TSManager.UI.Events" && t.BaseType.Name != "Object").ForEach(t =>
             EventProcesserList.Add(Activator.CreateInstance(t) as GUIEventBase));
@@ -42,7 +42,7 @@ namespace TSManager.UI
         }
         public static void OnGUIEvent(object sender, object e, EventType type)
         {
-            var name = sender?.GetType().GetProperty("Name")?.GetValue(sender) as string;
+            var name = sender.GetType().GetProperty("Name").GetValue(sender) as string;
             EventProcesserList.FirstOrDefault(e => name.StartsWith(e.ControlPrefix))?.OnEvent(type, sender, e);
         }
         public class GUIEventAttribute : Attribute

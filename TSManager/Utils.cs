@@ -141,7 +141,8 @@ namespace TSManager
         public static void AddText(object text, Color color = default)
         {
             color = color == default ? Color.FromRgb(255, 255, 255) : color;
-            Info.Server?.DisplayText(text?.ToString(), color);
+            text ??= string.Empty;
+            Info.Server?.DisplayText(text.ToString(), color);
         }
         public static void AddLine(object text = null, Color color = default) => AddText(text + "\r\n", color);
         #region 加载遮罩

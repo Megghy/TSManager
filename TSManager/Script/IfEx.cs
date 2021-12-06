@@ -11,23 +11,9 @@ namespace TSManager.Script
             get;
             set;
         }
-        BlockStatement _alternate;
-        public BlockStatement Alternate
-        {
-            get
-            {
-                return _alternate;
-            }
-            set
-            {
-                _alternate = value;
-            }
-        }
+        public BlockStatement Alternate { get; set; }
 
-        public override string ReturnType
-        {
-            get { return "void"; }
-        }
+        public override string ReturnType => "void";
         protected override Completion ExecuteImpl(ExecutionEnvironment enviroment)
         {
             if (GiveValue == null)
@@ -78,16 +64,7 @@ namespace TSManager.Script
                 return block;
             }
         }
-        public override string Type
-        {
-            get
-            {
-                return "IfStatement";
-            }
-        }
-        public override bool IsClosing
-        {
-            get { return false; }
-        }
+        public override string Type => "IfStatement";
+        public override bool IsClosing => false;
     }
 }
