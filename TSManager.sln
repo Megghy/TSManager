@@ -1,14 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31205.134
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.31911.260
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSManager", "TSManager\TSManager.csproj", "{96A36F6A-DA3B-4BF4-8651-DC945396158A}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4ECCDAB7-BFE2-4291-8266-4D48DB922B7F}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TSManager", "TSManager\TSManager.csproj", "{228D0E37-A948-4E4A-9908-6975B337BDB7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -16,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{96A36F6A-DA3B-4BF4-8651-DC945396158A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{96A36F6A-DA3B-4BF4-8651-DC945396158A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{96A36F6A-DA3B-4BF4-8651-DC945396158A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{96A36F6A-DA3B-4BF4-8651-DC945396158A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{228D0E37-A948-4E4A-9908-6975B337BDB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{228D0E37-A948-4E4A-9908-6975B337BDB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{228D0E37-A948-4E4A-9908-6975B337BDB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{228D0E37-A948-4E4A-9908-6975B337BDB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {0124DF31-50F0-4A25-9A13-9518E87132F4}
+		SolutionGuid = {400CC2A9-B4E7-4689-BDC2-348A308CBA41}
 	EndGlobalSection
 EndGlobal
