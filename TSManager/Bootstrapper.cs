@@ -1,5 +1,4 @@
-﻿using TSManager.View;
-using Stylet;
+﻿using Stylet;
 using StyletIoC;
 using TSManager.ViewModel;
 

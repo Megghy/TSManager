@@ -20,6 +20,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
+		RESX_AutoCreateNewLanguageFiles = True
+		RESX_SortFileContentOnSave = True
+		RESX_NeutralResourcesLanguage = zh-CN
 		SolutionGuid = {400CC2A9-B4E7-4689-BDC2-348A308CBA41}
 	EndGlobalSection
 EndGlobal

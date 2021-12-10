@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TSManager.Strings.zh-CN {
+namespace TSManager.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace TSManager.Strings.zh-CN {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TSManager.Strings.zh_CN.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TSManager.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,11 +61,29 @@ namespace TSManager.Strings.zh-CN {
         }
         
         /// <summary>
+        ///   查找类似 快捷操作 的本地化字符串。
+        /// </summary>
+        internal static string DashBoard_Shortcut {
+            get {
+                return ResourceManager.GetString("DashBoard.Shortcut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 重新启动 的本地化字符串。
+        /// </summary>
+        internal static string DashBoard_Shortcut_Restart {
+            get {
+                return ResourceManager.GetString("DashBoard.Shortcut.Restart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 仪表盘 的本地化字符串。
         /// </summary>
-        internal static string MainWindow_Tab_DashBroad {
+        internal static string MainWindow_Tab_DashBoard {
             get {
-                return ResourceManager.GetString("MainWindow.Tab.DashBroad", resourceCulture);
+                return ResourceManager.GetString("MainWindow.Tab.DashBoard", resourceCulture);
             }
         }
     }

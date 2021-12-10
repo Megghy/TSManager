@@ -117,7 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MainWindow.Tab.DashBroad" xml:space="preserve">
-    <value>仪表盘</value>
+  <data name="DashBoard.Shortcut" xml:space="preserve">
+    <value>Shortcuts</value>
+  </data>
+  <data name="DashBoard.Shortcut.Restart" xml:space="preserve">
+    <value>Restart</value>
+  </data>
+  <data name="MainWindow.Tab.DashBoard" xml:space="preserve">
+    <value>DashBoard</value>
   </data>
 </root>

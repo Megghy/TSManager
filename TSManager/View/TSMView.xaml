@@ -6,12 +6,17 @@
            xmlns:s="https://github.com/canton7/Stylet"
            xmlns:hc="https://handyorg.github.io/handycontrol"
            xmlns:local="clr-namespace:TSManager.View"
+           xmlns:resource="clr-namespace:TSManager.Properties"
+           xmlns:lang="http://wpflocalizeextension.codeplex.com"
+           lang:LocalizeDictionary.DesignCulture=""
+           lang:ResxLocalizationProvider.DefaultAssembly="TSManager"
+           lang:ResxLocalizationProvider.DefaultDictionary="Resources"
            xmlns:vm="clr-namespace:TSManager.ViewModel"
            mc:Ignorable="d"
            d:DataContext="{d:DesignInstance vm:TSMViewModel}"
            x:Name="MainWindow"
            Height="600"
-           Width="1200"
+           Width="1001"
            NonClientAreaHeight="75"
            ShowTitle="False"
            ShowMaxButton="False"
@@ -20,61 +25,107 @@
            hc:BorderElement.CornerRadius="5"
            AllowDrop="True"
            MinWidth="800"
-           MinHeight="600"
-           FontFamily="Consolas">
+           MinHeight="600">
     <hc:Window.NonClientAreaContent>
-        <Border Background="Gray"
+        <Border Background="#FF579C74"
                 Height="60"
-                hc:WindowAttach.IsDragElement="True">
-            <hc:Row VerticalAlignment="Center">
-                <hc:Col Span="4" MinWidth="200">
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Center"
-                               Margin="20,0,0,0"
-                               FontSize="28"
-                               Foreground="White"
-                               FontWeight="Bold">TSManager</TextBlock>
-                </hc:Col>
-                <hc:Col Span="16">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                        <Menu Background="{x:Null}" VerticalAlignment="Center">
-                            <MenuItem Header="Repository"
-                                      Background="{x:Null}"
-                                      VerticalAlignment="Center"
-                                      hc:BackgroundSwitchElement.MouseHoverBackground="Gray">
-                                <MenuItem Header="GitHub" />
-                            </MenuItem>
-                        </Menu>
-                    </StackPanel>
-                </hc:Col>
-                <hc:Col Span="4">
-                    <StackPanel Orientation="Horizontal"
-                                HorizontalAlignment="Right"
-                                Margin="0,0,10,0">
-                        <Button hc:IconElement.Geometry="{StaticResource WindowMinGeometry}"
-                                BorderThickness="0"
-                                HorizontalAlignment="Right"
-                                Foreground="White"
-                                Background="{x:Null}" 
-                                Width="40"/>
-                        <Button hc:IconElement.Geometry="{StaticResource CloseGeometry}"
-                                hc:IconElement.Height="40"
-                                Height="40"
-                                BorderThickness="0"
-                                HorizontalAlignment="Right"
-                                Margin="0,0,10,0"
-                                Foreground="White"
-                                Background="{x:Null}"
-                                hc:BackgroundSwitchElement.MouseHoverBackground="Red"
-                                Command="{s:Action CloseWindow}" />
-                    </StackPanel>
-                </hc:Col>
-            </hc:Row>
+                hc:WindowAttach.IsDragElement="True"
+                Style="{StaticResource DefaultShadow}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="175" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="100" />
+                </Grid.ColumnDefinitions>
+                <!--标题-->
+                <TextBlock HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           Grid.Column="0"
+                           Margin="20,0,0,0"
+                           FontSize="28"
+                           Foreground="White"
+                           FontFamily="Consolas"
+                           FontWeight="Bold">TSManager</TextBlock>
+                <!--各种菜单-->
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            Grid.Column="1">
+                    <Menu Background="{x:Null}"
+                          VerticalAlignment="Center">
+                        <!--服务器-->
+                        <MenuItem Header="{lang:Loc MainWindow.Tab.DashBoard}"
+                                  Background="{x:Null}"
+                                  VerticalAlignment="Center"
+                                  hc:BackgroundSwitchElement.MouseHoverBackground="Gray"
+                                  Foreground="White">
+                            <MenuItem Header="GitHub" />
+                        </MenuItem>
+                    </Menu>
+                </StackPanel>
+                <!--最小化及关闭-->
+                <hc:SimpleStackPanel Orientation="Horizontal"
+                                     HorizontalAlignment="Right"
+                                     Grid.Column="2">
+                    <Button hc:IconElement.Geometry="{StaticResource WindowMinGeometry}"
+                            BorderThickness="0"
+                            HorizontalAlignment="Right"
+                            Foreground="White"
+                            Background="{x:Null}"
+                            Width="40" />
+                    <Button hc:IconElement.Geometry="{StaticResource CloseGeometry}"
+                            hc:IconElement.Height="40"
+                            Height="40"
+                            BorderThickness="0"
+                            HorizontalAlignment="Right"
+                            Margin="0,0,10,0"
+                            Foreground="White"
+                            Background="{x:Null}"
+                            hc:BackgroundSwitchElement.MouseHoverBackground="Red"
+                            Command="{s:Action CloseWindow}" />
+                </hc:SimpleStackPanel>
+            </Grid>
         </Border>
     </hc:Window.NonClientAreaContent>
-    <hc:SideMenu Width="150" HorizontalAlignment="Left">
-        <hc:SideMenuItem x:Uid="MainWindow.Tab.DashBroad">
-            
-        </hc:SideMenuItem>
-    </hc:SideMenu>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="300" />
+        </Grid.ColumnDefinitions>
+        <!--主要内容-->
+        <Grid Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="25" />
+            </Grid.ColumnDefinitions>
+            <!--左侧tab栏-->
+            <TabControl Grid.Column="0"
+                        ItemsSource="{Binding Items}"
+                        SelectedItem="{Binding ActiveItem}"
+                        DisplayMemberPath="DisplayName"
+                        TabStripPlacement="Left"
+                        FontSize="15">
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <ContentControl s:View.Model="{Binding}"
+                                        VerticalContentAlignment="Stretch"
+                                        HorizontalContentAlignment="Stretch"
+                                        IsTabStop="False" />
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
+            <!--展开服务器列表-->
+            <Button Grid.Column="1"
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    Content="c"
+                    Command="{s:Action OpenServerList}" />
+        </Grid>
+        <!--右侧服务器侧滑栏-->
+        <hc:Drawer Grid.Column="1"
+                   IsOpen="{Binding IsServerListOpen}"
+                   ShowMode="Push">
+            <ContentControl s:View.Model="{Binding DrawerViewModel}"
+                            Width="300"/>
+        </hc:Drawer>
+    </Grid>
 </hc:Window>

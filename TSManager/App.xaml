@@ -10,8 +10,9 @@
                 <local:Bootstrapper/>
             </s:ApplicationLoader.Bootstrapper>
             <s:ApplicationLoader.MergedDictionaries>
-                <hc:ThemeResources/>
-                <hc:Theme/>
+                <hc:ThemeResources AccentColor="#FF579C74" />
+                <hc:Theme />
+                <ResourceDictionary Source="/Style/MainStyle.xaml" />
             </s:ApplicationLoader.MergedDictionaries>
         </s:ApplicationLoader>
     </Application.Resources>
