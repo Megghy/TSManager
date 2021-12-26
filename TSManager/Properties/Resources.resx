@@ -126,4 +126,7 @@
   <data name="MainWindow.Tab.DashBoard" xml:space="preserve">
     <value>仪表盘</value>
   </data>
+  <data name="test" xml:space="preserve">
+    <value>测试</value>
+  </data>
 </root>

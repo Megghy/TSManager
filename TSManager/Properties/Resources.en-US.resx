@@ -126,4 +126,7 @@
   <data name="MainWindow.Tab.DashBoard" xml:space="preserve">
     <value>DashBoard</value>
   </data>
+  <data name="test" xml:space="preserve">
+    <value>Test</value>
+  </data>
 </root>

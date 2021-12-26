@@ -4,12 +4,27 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows8.0</TargetFramework>
     <UseWPF>true</UseWPF>
+
+	<PublishSingleFile>true</PublishSingleFile>
+	<SelfContained>false</SelfContained>
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
     
     <RootNamespace>TSManager</RootNamespace>
     
     <NeutralLanguage>zh-CN</NeutralLanguage>
   </PropertyGroup>
 
+	<ItemGroup>
+		<Content Include="OTAPI.dll">
+			<CopyToPublishDirectory>false</CopyToPublishDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		</Content>
+		<Content Include="OTAPI.Runtime.dll">
+			<CopyToPublishDirectory>false</CopyToPublishDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		</Content>
+	</ItemGroup>
+	
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
   </PropertyGroup>
@@ -27,7 +42,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Language\" />
     <Folder Include="Resource\" />
   </ItemGroup>
 	<PropertyGroup>
@@ -64,5 +78,16 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 </Project>

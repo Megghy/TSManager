@@ -86,5 +86,14 @@ namespace TSManager.Properties {
                 return ResourceManager.GetString("MainWindow.Tab.DashBoard", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   查找类似 测试 的本地化字符串。
+        /// </summary>
+        internal static string test {
+            get {
+                return ResourceManager.GetString("test", resourceCulture);
+            }
+        }
     }
 }
