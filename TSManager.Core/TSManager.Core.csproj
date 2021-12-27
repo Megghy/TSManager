@@ -1,0 +1,71 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+	<PublishSingleFile>true</PublishSingleFile>
+	<SelfContained>false</SelfContained>
+	<EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+  </PropertyGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="xcopy /I /Y /R $(OutDir) $(SolutionDir)Output\$(Configuration)\Lib" />
+	</Target>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
+	
+	<ItemGroup>
+	  <Compile Remove="bin\**" />
+	  <None Remove="bin\**" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <Compile Remove="Plugin\PluginCore.cs" />
+	  <Compile Remove="Plugin\TSMPluginBase.cs" />
+	</ItemGroup>
+	
+  <ItemGroup>
+	  <EmbeddedResource Include="Properties\Resources.resx">
+		  <SubType>Designer</SubType>
+		  <DependentUpon>Resources.resx</DependentUpon>
+		  <Generator>ResXFileCodeGenerator</Generator>
+		  <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="Properties\Resources.en-US.resx">
+		  <SubType>Designer</SubType>
+		  <DependentUpon>Resources.en-US.resx</DependentUpon>
+		  <Generator>ResXFileCodeGenerator</Generator>
+		  <LastGenOutput>Resources.en-US.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="OTAPI">
+      <HintPath>..\..\TSAPI-dotnet5\TSAPI-dotnet5\Launcher\bin\Debug\net5.0\OTAPI.dll</HintPath>
+      <CopyLocal>False</CopyLocal>
+    </Reference>
+    <Reference Include="OTAPI.Runtime">
+      <HintPath>..\..\TSAPI-dotnet5\TSAPI-dotnet5\Launcher\bin\Debug\net5.0\OTAPI.Runtime.dll</HintPath>
+      <CopyLocal>False</CopyLocal>
+    </Reference>
+    <Reference Include="TerrariaServerApi">
+      <HintPath>..\..\TSAPI-dotnet5\TSAPI-dotnet5\TerrariaServerAPI\bin\Debug\net5.0\TerrariaServerApi.dll</HintPath>
+      <CopyLocal>False</CopyLocal>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Plugin\" />
+  </ItemGroup>
+</Project>
