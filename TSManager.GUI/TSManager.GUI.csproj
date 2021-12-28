@@ -1,21 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0-windows7.0</TargetFramework>
+    <TargetFramework>net6.0-windows8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
-    <OutputType>WinExe</OutputType>
+    <SupportedOSPlatformVersion>8.0</SupportedOSPlatformVersion>
+    <OutputType>Exe</OutputType>
     <StartupObject>TSManager.GUI.Program</StartupObject>
+	<PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
 	
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="ren $(TargetPath) $(TargetDir)$(TargetName).dll&#xD;&#xA;xcopy /Y /R $(OutDir) $(SolutionDir)Output\$(Configuration)\Lib" />
+		<Exec Command="xcopy /Y /R $(OutDir) $(SolutionDir)Output\$(Configuration)\" />
 	</Target>
-
-  <ItemGroup>
-    <Compile Remove="TSMGUIPlugin.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="HandyControls" Version="3.3.10" />
@@ -25,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TSManager.Core\TSManager.Core.csproj" />
     <ProjectReference Include="..\TSManager.Web\TSManager.Web.csproj" />
   </ItemGroup>
 </Project>

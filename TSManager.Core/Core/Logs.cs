@@ -24,34 +24,34 @@ namespace TSManager
         }
         public static void Info(object text)
         {
-            LogAndSave(text, LogLevel.Info, "[Info]", ConsoleColor.Yellow);
+            LogAndSave(text, LogLevel.Info, LogLevel.Info.ToString(), ConsoleColor.Yellow);
         }
         public static void Error(object text)
         {
-            LogAndSave(text, LogLevel.Error, "[Error]", ConsoleColor.Red);
+            LogAndSave(text, LogLevel.Error, LogLevel.Error.ToString(), ConsoleColor.Red);
         }
         public static void Fatal(object text)
         {
-            LogAndSave(text, LogLevel.Fatal, "[Fatal]", ConsoleColor.Red);
+            LogAndSave(text, LogLevel.Fatal, LogLevel.Fatal.ToString(), ConsoleColor.Red);
         }
         public static void Warn(object text)
         {
-            LogAndSave(text, LogLevel.Info, "[Warn]", ConsoleColor.DarkYellow);
+            LogAndSave(text, LogLevel.Info, LogLevel.Warn.ToString(), ConsoleColor.DarkYellow);
         }
         public static void Success(object text)
         {
-            LogAndSave(text, LogLevel.Info, "[Success]", ConsoleColor.Green);
+            LogAndSave(text, LogLevel.Info, LogLevel.Info.ToString(), ConsoleColor.Green);
         }
-        public static void LogAndSave(object message, LogLevel level, string prefix = "[Log]", ConsoleColor color = DefaultColor)
+        public static void LogAndSave(object message, LogLevel level, string prefix = "Log", ConsoleColor color = DefaultColor)
         {
             var caller = new StackFrame(2).GetMethod().DeclaringType.Namespace;
             if (level >= DisplayLogLevel)
             {
                 Console.ForegroundColor = color;
-                Console.WriteLine($"[{caller}] {prefix} {message}");
+                Console.WriteLine($"{prefix} <{caller}> - {message}");
                 Console.ForegroundColor = DefaultColor;
             }
-            File.AppendAllText(LogFileName, $"{DateTime.Now:HH:mm:ss} - <{caller}> {prefix} {message}{Environment.NewLine}");
+            File.AppendAllText(LogFileName, $"{DateTime.Now:HH:mm:ss} - [{prefix}] <{caller}> {message}{Environment.NewLine}");
         }
     }
 }

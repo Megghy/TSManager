@@ -1,6 +1,6 @@
 ﻿using Stylet;
 using System.ComponentModel;
-using TSManager.Core.Servers;
+using TSManager.Core.Models;
 
 namespace TSManager.GUI.ViewModel
 {
@@ -9,11 +9,11 @@ namespace TSManager.GUI.ViewModel
         public DashBoardViewModel()
         {
             DisplayName = Core.Localization.Get("MainWindow.Tab.DashBoard");
-            currentServer = new("test", "", null);
+            currentServer = new(new("test", ""));
         }
         public ServerContainer currentServer;
         #region 属性
-        public string CurrentServerName => currentServer?.Name;
+        public string CurrentServerName => currentServer?.Info.Name ?? "unknown";
         #endregion
         public double CPUUsage = 65;
     }

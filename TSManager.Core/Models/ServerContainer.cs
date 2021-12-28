@@ -2,21 +2,19 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using TSManager.Core.Models;
 
-namespace TSManager.Core.Servers
+namespace TSManager.Core.Models
 {
     public class ServerContainer : UnloadableContext
     {
-        public ServerContainer() : base() { }
-        public ServerContainer(string name, string serverPath, string[] args) : base(serverPath)
+        public ServerContainer(ServerInfo info, string[] args = null) : base(info.ServerFilePath)
         {
-            Name = name;
-            StartArgs = args;
+            Info = info;
+            StartArgs = args ?? Array.Empty<string>();
         }
 
         #region 成员
-        public string Name { get; private set; } = string.Empty;
+        public ServerInfo Info { get; set; }
         public string[] StartArgs { get; set; } = Array.Empty<string>();
         public BindingList<TerrariaApi.Server.TerrariaPlugin> Plugins { get; set; }
         public Task ServerTask { get; private set; }

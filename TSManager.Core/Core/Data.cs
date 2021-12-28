@@ -10,8 +10,7 @@ namespace TSManager
 {
     public static class Data
     {
-        public static string CurrentPath => new DirectoryInfo(AppContext.BaseDirectory + "..\\").FullName;
-        public static string LibPath => Path.Combine(CurrentPath, "Lib");
+        public static string CurrentPath => AppContext.BaseDirectory;//new DirectoryInfo(AppContext.BaseDirectory + "..\\").FullName;
         public static string ConfigPath => Path.Combine(CurrentPath, "Config");
         public static string ScriptPath => Path.Combine(CurrentPath, "Script");
         public static string TempPath => Path.Combine(CurrentPath, "Temp");

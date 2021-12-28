@@ -13,3 +13,8 @@
 /TSManager.Launcher/obj
 /TSManager.Web/bin/Debug/net6.0
 /TSManager.Web/obj
+/Output
+/TSManager.Core/bin/Release/net6.0
+/TSManager.GUI/bin/Release
+/TSManager.Launcher/bin/Release/net6.0
+/TSManager.Web/bin/Release/net6.0

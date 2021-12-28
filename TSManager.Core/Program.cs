@@ -1,4 +1,5 @@
-﻿using System;
+﻿global using TSManager.Core;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using TSManager.Core.Attributes;
+
 
 namespace TSManager.Core
 {
@@ -23,6 +25,12 @@ namespace TSManager.Core
             Logs.Info("初始化 TSManager 核心...");
 
             InvokeAllAutoStartMethods();
+
+            var a = Assembly.LoadFrom(@"E:\Download\Decompress\TShockLauncher\bin\Release\net6.0\win-x64\publish\TShock.exe");
+            var s = new Models.ServerContainer(new("1", @"E:\Download\Decompress\TShockLauncher\bin\Release\net6.0\win-x64\publish\TShock.exe"));
+            s.Start();
+            var p = s.MainAssembly.GetType("Terraria.Main").GetField("players").GetValue(null);
+            Console.WriteLine(p.GetType().Name);
         }
 
         public static void InvokeAllAutoStartMethods()
@@ -49,8 +57,6 @@ namespace TSManager.Core
 
         private static void SetupFolder()
         {
-            if (!Directory.Exists(Data.LibPath))
-                Directory.CreateDirectory(Data.LibPath);
             if (!Directory.Exists(Data.LogPath))
                 Directory.CreateDirectory(Data.LogPath);
             if (!Directory.Exists(Data.ConfigPath))

@@ -4,10 +4,11 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+	<PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
 	
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="xcopy /Y /R $(OutDir) $(SolutionDir)Output\$(Configuration)\Lib" />
+		<Exec Command="xcopy /Y /R $(OutDir) $(SolutionDir)Output\$(Configuration)\" />
 	</Target>
 	
 	<ItemGroup>

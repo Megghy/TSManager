@@ -20,11 +20,8 @@ namespace TSManager.GUI
 
                 Core.Program.Main(args);
 
-                if (!args.Contains("noweb")
-                    && Path.Combine(Data.LibPath!, "TSManager.Web.dll") is { } path
-                    && File.Exists(path))
+                if (!args.Contains("noweb"))
                 {
-                    Assembly.LoadFrom(path);
                     Task.Run(() => typeof(Web.App).Assembly.EntryPoint?.Invoke(null, new object[] { args }));
                 }
 

@@ -2,7 +2,8 @@
   "profiles": {
     "配置文件 1": {
       "commandName": "Executable",
-      "executablePath": "D:\\Code\\TSManager\\Output\\Debug\\TSManager.Launcher.exe"
+      "executablePath": "D:\\Code\\TSManager\\Output\\Debug\\TSManager.Launcher.exe",
+      "workingDirectory": "D:\\Code\\TSManager\\Output\\Debug\\"
     }
   }
 }
