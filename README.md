@@ -1,5 +1,8 @@
-# 过时, 将在TShock迁移于基于OTAPI3和.Net5(或者6?)的TSAPI后重构
-# Obsolete, will be refactored after TShock migrates to TSAPI based on OTAPI3 and .Net5
+# 过时, 将在TShock迁移于基于OTAPI3和.Net6的TSAPI后重构
+# Obsolete, will be refactored after TShock migrates to TSAPI based on OTAPI3 and .Net6
+
+开发分支: [dev-3.0](https://github.com/Megghy/TSManager/tree/dev-3.0)
+
 # TSManager
 
 > *注: 本人只是业余时间自学C井, 某些地方可能写得十分憨批, 还请见谅*
