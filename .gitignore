@@ -2,12 +2,19 @@
 # 此 .gitignore 文件已由 Microsoft(R) Visual Studio 自动创建。
 ################################################################################
 
-/TSManager/.vs/TSManager/v17
-/TSManager/bin/Debug/net5.0-windows
-/.vs/TSManager/v17
-/TSManager/obj
-/TSManager/bin/Debug/net6.0-windows8.0
-/.vs/TSManager/DesignTimeBuild
-/TSManager/bin/Release/net6.0-windows8.0/win-x64
 /.vs
 /TSManager.GUI/obj
+/Output/Debug
+/TSManager.Core/.vs/TSManager/v17
+/TSManager.Core/bin/Debug/net6.0
+/TSManager.Core/obj
+/TSManager.GUI/bin/Debug
+/TSManager.Launcher/bin/Debug/net6.0
+/TSManager.Launcher/obj
+/TSManager.Web/bin/Debug/net6.0
+/TSManager.Web/obj
+/Output
+/TSManager.Core/bin/Release/net6.0
+/TSManager.GUI/bin/Release
+/TSManager.Launcher/bin/Release/net6.0
+/TSManager.Web/bin/Release/net6.0
