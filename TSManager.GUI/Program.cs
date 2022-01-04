@@ -25,14 +25,14 @@ namespace TSManager.GUI
                     Task.Run(() => typeof(Web.App).Assembly.EntryPoint?.Invoke(null, new object[] { args }));
                 }
 
-                Logs.Info("启动用户界面");
+                Logger.Info("启动用户界面");
                 var app = new App();
                 app.InitializeComponent();
                 app.Run();
             }
             catch (Exception ex)
             {
-                Logs.Error($"初始化失败{Environment.NewLine}{ex}");
+                Logger.Error($"初始化失败{Environment.NewLine}{ex}");
             }
         }
     }

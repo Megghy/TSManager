@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace TSManager.Core.Models
 {
+    /// <summary>
+    /// 由于不由assembly加载了所以这东西不太用得上
+    /// </summary>
     public class UnloadableContext
     {
         public UnloadableContext()
@@ -40,9 +43,6 @@ namespace TSManager.Core.Models
         /// <returns></returns>
         public bool Load()
         {
-            MainAssembly = Context.LoadFromAssemblyPath(FilePath);
-            IsLoaded = true;
-            return true; //临时测试
             if (File.Exists(FilePath) && !IsLoaded)
             {
                 MainAssembly = Context.LoadFromAssemblyPath(FilePath);

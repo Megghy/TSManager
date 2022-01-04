@@ -22,20 +22,14 @@ namespace TSManager.Core
             
             SetupFolder();
 
-            Logs.Info("初始化 TSManager 核心...");
+            Logger.Info("初始化 TSManager 核心...");
 
             InvokeAllAutoStartMethods();
-
-            var a = Assembly.LoadFrom(@"E:\Download\Decompress\TShockLauncher\bin\Release\net6.0\win-x64\publish\TShock.exe");
-            var s = new Models.ServerContainer(new("1", @"E:\Download\Decompress\TShockLauncher\bin\Release\net6.0\win-x64\publish\TShock.exe"));
-            s.Start();
-            var p = s.MainAssembly.GetType("Terraria.Main").GetField("players").GetValue(null);
-            Console.WriteLine(p.GetType().Name);
         }
 
         public static void InvokeAllAutoStartMethods()
         {
-            Logs.Info("加载所有需加载项");
+            Logger.Info("加载所有需加载项");
             var inits = new List<MethodInfo>();
             Assembly.GetExecutingAssembly()
                 .GetTypes()
@@ -44,15 +38,15 @@ namespace TSManager.Core
             inits = inits.OrderBy(m => m.GetCustomAttribute<AutoStartAttribute>().Order).ToList();
             inits.ForEach(m =>
             {
-                Logs.Info($"<{m.DeclaringType.Name}.{m.Name}> => Init.");
+                Logger.Info($"<{m.DeclaringType.Name}.{m.Name}> => Init.");
                 var attr = m.GetCustomAttribute<AutoStartAttribute>();
                 if(!string.IsNullOrEmpty(attr.PreMessage))
-                    Logs.Info(attr.PreMessage);
+                    Logger.Info(attr.PreMessage);
                 m.Invoke(null, null);
                 if (!string.IsNullOrEmpty(attr.PostMessage))
-                    Logs.Info(attr.PreMessage);
+                    Logger.Info(attr.PreMessage);
             });
-            Logs.Success("加载完成");
+            Logger.Success("加载完成");
         }
 
         private static void SetupFolder()

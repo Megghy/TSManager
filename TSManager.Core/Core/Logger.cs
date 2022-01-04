@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using TSManager.Core.Attributes;
 
 namespace TSManager
 {
-    public class Logs
+    public class Logger
     {
         public enum LogLevel
         {
@@ -42,6 +45,21 @@ namespace TSManager
         {
             LogAndSave(text, LogLevel.Info, LogLevel.Info.ToString(), ConsoleColor.Green);
         }
+        private static readonly ConcurrentQueue<string> _queue = new();
+        [AutoStart]
+        private static void SaveLogTask()
+        {
+            Task.Run(() =>
+            {
+                while (true)
+                {
+                    if (_queue.TryDequeue(out var text))
+                        File.AppendAllText(LogFileName, text + Environment.NewLine);
+                    else
+                        Thread.Sleep(1);
+                }
+            });
+        }
         public static void LogAndSave(object message, LogLevel level, string prefix = "Log", ConsoleColor color = DefaultColor)
         {
             var caller = new StackFrame(2).GetMethod().DeclaringType.Namespace;
@@ -51,7 +69,7 @@ namespace TSManager
                 Console.WriteLine($"{prefix} <{caller}> - {message}");
                 Console.ForegroundColor = DefaultColor;
             }
-            File.AppendAllText(LogFileName, $"{DateTime.Now:HH:mm:ss} - [{prefix}] <{caller}> {message}{Environment.NewLine}");
+            _queue.Enqueue($"{DateTime.Now:HH:mm:ss} - [{prefix}] <{caller}> {message}{Environment.NewLine}");
         }
     }
 }

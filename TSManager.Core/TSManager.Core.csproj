@@ -17,13 +17,4 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="OTAPI">
-      <HintPath>..\..\TSAPI-dotnet5\TSAPI-dotnet5\Launcher\bin\Debug\net5.0\OTAPI.dll</HintPath>
-    </Reference>
-    <Reference Include="TerrariaServer">
-      <HintPath>E:\Download\压缩\TSAPI-a7949a2cee98e43e321ed9981c92d08334156f79\TSAPI-a7949a2cee98e43e321ed9981c92d08334156f79\TerrariaServerAPI\bin\Debug\net6.0\TerrariaServer.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>
