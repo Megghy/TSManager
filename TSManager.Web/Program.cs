@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Components.Web;
 using TSManager;
 using TSManager.Web.Data;
 
-TSManager.Core.Program.Main(Array.Empty<string>());
+TSManager.Core.Init.Start(Array.Empty<string>());
 
-Logs.Info("初始化网页模块");
+Logger.Text("初始化网页模块");
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -32,5 +32,5 @@ app.UseRouting();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
-Logs.Info("网页管理模块启动");
+Logger.Success("网页管理模块启动");
 app.Run();

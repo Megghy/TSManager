@@ -1,24 +1,20 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace TSManager.Core.Models
 {
     public class ServerContainer
     {
-        public ServerContainer(ServerInfo info, string[] args = null)
+        public ServerContainer(ServerInfo info)
         {
             Info = info;
-            StartArgs = args ?? Array.Empty<string>();
 
             ServerProcess = new()
             {
                 StartInfo = new()
                 {
-                    FileName = FilePath,
-                    Arguments = string.Join(" ", args),
+                    FileName = FilePath,                    
                     UseShellExecute = false,
                     RedirectStandardOutput = true
                 }
@@ -32,18 +28,30 @@ namespace TSManager.Core.Models
         public BindingList<PluginInfo> Plugins { get; set; }
         public Process ServerProcess { get; private set; }
 
+        public bool IsRunning { get; private set; }
         public bool IsTrServer { get; internal set; }
+
+        public long RunningTime { get; private set; }
         #endregion
 
         #region 启动关闭
-        public void Start()
+        public void Start(string[] args = null)
         {
+            if (args is not null)
+                ServerProcess.StartInfo.Arguments = string.Join(" ", args);
+            IsRunning = true;
             ServerProcess.Start();
         }
 
         public void Stop()
         {
+            IsRunning = false;
             ServerProcess.Kill();
+        }
+
+        public void Dispose()
+        {
+            Stop();
         }
         #endregion
 
@@ -54,7 +62,7 @@ namespace TSManager.Core.Models
         #region 操作trserver进程
         private void RedirectOutput()
         {
-            
+
         }
         #endregion
     }

@@ -24,5 +24,20 @@ namespace TSManager.Core.Modules
         {
             return true; //还不知道结构
         }
+        public static (bool, string) StartServer(ServerInfo targetServer)
+        {
+            if (Data.Servers.FirstOrDefault(s => s.Info == targetServer) is { } server)
+            {
+                if (server.IsRunning)
+                    return (false, "指定服务器正在运行");
+                else
+                {
+                    server.Start();
+                    return (true, null);
+                }
+            }
+            else
+                return (false, "未找到指定服务器");
+        }
     }
 }

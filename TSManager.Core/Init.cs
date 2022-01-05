@@ -1,5 +1,4 @@
-﻿global using TSManager.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,10 +10,10 @@ using TSManager.Core.Attributes;
 
 namespace TSManager.Core
 {
-    public class Program
+    public static class Init
     {
         private static bool _initialized = false;
-        public static void Main(string[] args)
+        public static void Start(string[] args)
         {
             if (_initialized)
                 return;
@@ -22,29 +21,44 @@ namespace TSManager.Core
             
             SetupFolder();
 
-            Logger.Info("初始化 TSManager 核心...");
+            Logger.Text("初始化 TSManager 核心...");
 
             InvokeAllAutoStartMethods();
         }
 
         public static void InvokeAllAutoStartMethods()
         {
-            Logger.Info("加载所有需加载项");
+            Logger.Text("加载所有需加载项");
             var inits = new List<MethodInfo>();
             Assembly.GetExecutingAssembly()
                 .GetTypes()
                 .ForEach(t => t.GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)
                 .Where(m => m.GetCustomAttribute<AutoStartAttribute>() is { }).ForEach(m => inits.Add(m)));
             inits = inits.OrderBy(m => m.GetCustomAttribute<AutoStartAttribute>().Order).ToList();
-            inits.ForEach(m =>
+            inits.ForEach(async m =>
             {
-                Logger.Info($"<{m.DeclaringType.Name}.{m.Name}> => Init.");
+                Logger.Text($"<{m.DeclaringType.Name}.{m.Name}> => Init.");
                 var attr = m.GetCustomAttribute<AutoStartAttribute>();
+
                 if(!string.IsNullOrEmpty(attr.PreMessage))
-                    Logger.Info(attr.PreMessage);
-                m.Invoke(null, null);
+                    Logger.Text(attr.PreMessage);
+
+                if (m.ReturnType.GetMethod(nameof(Task.GetAwaiter)) != null)
+                {
+                    if (m.ReturnType.IsGenericType)
+                    {
+                        await(dynamic)(m.Invoke(null, null) ?? Task.Delay(1));
+                    }
+                    else
+                    {
+                        await(Task)(m.Invoke(null, null) ?? Task.Delay(1));
+                    }
+                }
+                else
+                    m.Invoke(null, null);
+
                 if (!string.IsNullOrEmpty(attr.PostMessage))
-                    Logger.Info(attr.PreMessage);
+                    Logger.Text(attr.PreMessage);
             });
             Logger.Success("加载完成");
         }

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using TSManager.Core.Models;
 
 namespace TSManager
 {
@@ -15,5 +17,7 @@ namespace TSManager
         public static string ScriptPath => Path.Combine(CurrentPath, "Script");
         public static string TempPath => Path.Combine(CurrentPath, "Temp");
         public static string LogPath => Path.Combine(CurrentPath, "Log");
+
+        public static readonly BindingList<ServerContainer> Servers = new();
     }
 }

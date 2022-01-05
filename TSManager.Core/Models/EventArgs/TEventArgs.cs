@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TSManager.Core.Modules.Packets
+namespace TSManager.Core.Models.EventArgs
 {
-    public interface ITSMPacket
+    public abstract class TEventArgs
     {
-        public TSMPacketType Type { get; }
+        public bool Handled { get; set; } = false;
     }
 }

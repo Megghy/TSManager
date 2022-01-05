@@ -18,14 +18,14 @@ namespace TSManager.GUI
             {
                 args = args.Select(a => a.ToLower()).ToArray();
 
-                Core.Program.Main(args);
+                Core.Init.Start(args);
 
                 if (!args.Contains("noweb"))
                 {
                     Task.Run(() => typeof(Web.App).Assembly.EntryPoint?.Invoke(null, new object[] { args }));
                 }
 
-                Logger.Info("启动用户界面");
+                Logger.Text("启动用户界面");
                 var app = new App();
                 app.InitializeComponent();
                 app.Run();
