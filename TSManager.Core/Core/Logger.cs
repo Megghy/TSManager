@@ -35,7 +35,7 @@ namespace TSManager
         }
         public static void Fatal(object text)
         {
-            LogAndSave(text, LogLevel.Fatal, LogLevel.Fatal.ToString(), ConsoleColor.Red);
+            LogAndSave(text, LogLevel.Fatal, LogLevel.Fatal.ToString(), ConsoleColor.DarkRed);
         }
         public static void Warn(object text)
         {
@@ -43,7 +43,7 @@ namespace TSManager
         }
         public static void Success(object text)
         {
-            LogAndSave(text, LogLevel.Info, LogLevel.Info.ToString(), ConsoleColor.Green);
+            LogAndSave(text, LogLevel.Info, "Success", ConsoleColor.Green);
         }
         private static readonly ConcurrentQueue<string> _queue = new();
         [AutoStart]
@@ -66,7 +66,7 @@ namespace TSManager
             if (level >= DisplayLogLevel)
             {
                 Console.ForegroundColor = color;
-                Console.WriteLine($"{prefix} <{caller}> - {message}");
+                Console.WriteLine($"[{prefix}] <{caller}> - {message}");
                 Console.ForegroundColor = DefaultColor;
             }
             _queue.Enqueue($"{DateTime.Now:HH:mm:ss} - [{prefix}] <{caller}> {message}{Environment.NewLine}");

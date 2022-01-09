@@ -12,7 +12,7 @@ namespace TSManager.Core.Models
     /// </summary>
     public class PluginInfo : IPacket
     {
-        public TPacketTypes Type => TPacketTypes.PluginsList;
+        public PacketTypes Type => PacketTypes.PluginsList;
         public string Name { get; set; }
         
     }

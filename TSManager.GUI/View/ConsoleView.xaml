@@ -4,9 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:TSManager.GUI.View"
-             mc:Ignorable="d" 
-             d:DesignHeight="540" d:DesignWidth="900">
+             xmlns:vm="clr-namespace:TSManager.GUI.ViewModel"
+             xmlns:hc="https://handyorg.github.io/handycontrol"
+             xmlns:lang="http://wpflocalizeextension.codeplex.com"
+             lang:ResxLocalizationProvider.DefaultAssembly="TSManager.Core"
+             lang:ResxLocalizationProvider.DefaultDictionary="Resources"
+             mc:Ignorable="d"
+             d:DesignHeight="540"
+             d:DesignWidth="900"
+             d:DataContext="{d:DesignInstance vm:ConsoleViewModel}">
     <Grid>
-            
+        <RichTextBox Background="Gray" FontSize="20"/>
     </Grid>
 </UserControl>

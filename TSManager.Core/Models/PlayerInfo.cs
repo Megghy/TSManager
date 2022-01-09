@@ -7,9 +7,9 @@ using TSManager.Core.Modules.Packet;
 
 namespace TSManager.Core.Models
 {
-    public class PlayerInfo : IPacket
+    public record PlayerInfo : IPacket
     {
-        public TPacketTypes Type => TPacketTypes.PlayerJoin | TPacketTypes.PlayerLeave;
+        public PacketTypes Type => PacketTypes.PlayerJoin | PacketTypes.PlayerLeave;
         public string Name { get; set; }
         public string UUID { get; set; }
         public int HP { get; set; }

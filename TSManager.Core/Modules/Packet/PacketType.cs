@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TSManager.Core.Modules.Packet
 {
-    public enum TPacketTypes
+    public enum PacketTypes
     {
         /// <summary>
         /// 服务器关闭请求

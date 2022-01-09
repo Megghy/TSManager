@@ -15,7 +15,7 @@ namespace TSManager.Core.Modules.Packet
         }
         public static void SendPacket<T>(this ServerContainer server, T packet) where T : IPacket   
         {
-
+            
         }
     }
 }

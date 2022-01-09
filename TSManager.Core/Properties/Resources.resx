@@ -123,6 +123,9 @@
   <data name="DashBoard.Shortcut.Restart" xml:space="preserve">
     <value>重新启动</value>
   </data>
+  <data name="MainWindow.Tab.Console" xml:space="preserve">
+    <value>控制台</value>
+  </data>
   <data name="MainWindow.Tab.DashBoard" xml:space="preserve">
     <value>仪表盘</value>
   </data>

@@ -13,7 +13,7 @@ namespace TSManager.Core.Events
 
             public delegate void PlayerLeaveEvent(PlayerLeaveEventArgs args);
 
-            public delegate void TextEvent(TextEventArgs args);
+            public delegate void TextEvent(OutputEventArgs args);
 
             public delegate void SendPacketEvent(SendPacketEventArgs args);
 
@@ -51,7 +51,7 @@ namespace TSManager.Core.Events
             }
             return args.Handled;
         }        
-        internal static bool OnText(ServerContainer server, TextInfo[] message, out TextEventArgs args)
+        internal static bool OnOutput(ServerContainer server, TextInfo[] message, out OutputEventArgs args)
         {
             args = new(server, message);
             try

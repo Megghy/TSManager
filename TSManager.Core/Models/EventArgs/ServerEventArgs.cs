@@ -12,6 +12,7 @@ namespace TSManager.Core.Models.EventArgs
             }
             public ServerContainer From { get; private set; }
         }
+
         public class PlayerJoinEventArgs : TServerEventArgs
         {
             public PlayerJoinEventArgs(ServerContainer from, PlayerInfo info) : base(from)
@@ -26,9 +27,9 @@ namespace TSManager.Core.Models.EventArgs
             {
             }
         }
-        public class TextEventArgs : TServerEventArgs
+        public class OutputEventArgs : TServerEventArgs
         {
-            public TextEventArgs(ServerContainer from, TextInfo[] message) : base(from)
+            public OutputEventArgs(ServerContainer from, TextInfo[] message) : base(from)
             {
                 Message = message;
             }

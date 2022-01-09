@@ -123,6 +123,9 @@
   <data name="DashBoard.Shortcut.Restart" xml:space="preserve">
     <value>Restart</value>
   </data>
+  <data name="MainWindow.Tab.Console" xml:space="preserve">
+    <value>Console</value>
+  </data>
   <data name="MainWindow.Tab.DashBoard" xml:space="preserve">
     <value>DashBoard</value>
   </data>

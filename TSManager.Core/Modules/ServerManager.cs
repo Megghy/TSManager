@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.Loader;
-using System.Text;
-using System.Threading.Tasks;
 using TSManager.Core.Models;
 
 namespace TSManager.Core.Modules
@@ -14,10 +8,21 @@ namespace TSManager.Core.Modules
     public static class ServerManager
     {
         public static BindingList<ServerContainer> Servers { get; internal set; } = new();
-        
-        public static void CreateServer(ServerInfo info)
-        {
 
+        public static (bool, ServerContainer) CreateServer(ServerInfo info)
+        {
+            try
+            {
+                if (CheckIsValid(info))
+                    return (true, new ServerContainer(info));
+                else
+                    return (false, null);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"未能创建服务器实例{Environment.NewLine}{ex}");
+                return (false, null);
+            }
         }
 
         public static bool CheckIsValid(ServerInfo info)
