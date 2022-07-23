@@ -1,6 +1,7 @@
-﻿using TSManager.Core.Modules.Packet;
+﻿using TSManager.Core.Models;
+using TSManager.Shared.TSMDatastructs;
 
-namespace TSManager.Core.Models.EventArgs
+namespace TSManager.Core.EventArgs
 {
     public static class ServerEventArgs
     {
@@ -29,25 +30,11 @@ namespace TSManager.Core.Models.EventArgs
         }
         public class OutputEventArgs : TServerEventArgs
         {
-            public OutputEventArgs(ServerContainer from, TextInfo[] message) : base(from)
+            public OutputEventArgs(ServerContainer from, ConsoleMessageInfo[] message) : base(from)
             {
                 Message = message;
             }
-            public TextInfo[] Message { get; private set; }
-        }
-        public class SendPacketEventArgs : TServerEventArgs
-        {
-            public SendPacketEventArgs(ServerContainer from, IPacket packet) : base(from)
-            {
-                Packet = packet;
-            }
-            public IPacket Packet { get; private set; }
-        }
-        public class RecievePacketEventArgs : SendPacketEventArgs
-        {
-            public RecievePacketEventArgs(ServerContainer from, IPacket packet) : base(from, packet)
-            {
-            }
+            public ConsoleMessageInfo[] Message { get; private set; }
         }
     }
 }

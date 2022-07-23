@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TSManager.Core.Models.EventArgs
+namespace TSManager.Core.EventArgs
 {
     public abstract class TEventArgs
     {

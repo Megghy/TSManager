@@ -17,4 +17,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models\UnloadableContext.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StreamJsonRpc" Version="2.11.35" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TSManager.Shared\TSManager.Shared.csproj" />
+  </ItemGroup>
 </Project>

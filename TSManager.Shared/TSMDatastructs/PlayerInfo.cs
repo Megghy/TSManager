@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TSManager.Core.Modules.Packet;
-
-namespace TSManager.Core.Models
+﻿namespace TSManager.Shared.TSMDatastructs
 {
-    public record PlayerInfo : IPacket
+    public record PlayerInfo
     {
-        public PacketTypes Type => PacketTypes.PlayerJoin | PacketTypes.PlayerLeave;
         public string Name { get; set; }
         public string UUID { get; set; }
         public int HP { get; set; }

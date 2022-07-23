@@ -1,7 +1,7 @@
 ﻿using System;
 using TSManager.Core.Models;
-using TSManager.Core.Modules.Packet;
-using static TSManager.Core.Models.EventArgs.ServerEventArgs;
+using TSManager.Shared.TSMDatastructs;
+using static TSManager.Core.EventArgs.ServerEventArgs;
 
 namespace TSManager.Core.Events
 {
@@ -14,17 +14,11 @@ namespace TSManager.Core.Events
             public delegate void PlayerLeaveEvent(PlayerLeaveEventArgs args);
 
             public delegate void TextEvent(OutputEventArgs args);
-
-            public delegate void SendPacketEvent(SendPacketEventArgs args);
-
-            public delegate void RecievePacketEvent(RecievePacketEventArgs args);
         }
 
         public static event ServerEventDelegates.PlayerJoinEvent PlayerJoin;
         public static event ServerEventDelegates.PlayerLeaveEvent PlayerLeave;
         public static event ServerEventDelegates.TextEvent Text;
-        public static event ServerEventDelegates.SendPacketEvent SendPacket;
-        public static event ServerEventDelegates.RecievePacketEvent RecievePacket;
         internal static bool OnPlayerJoin(ServerContainer server, PlayerInfo info, out PlayerJoinEventArgs args)
         {
             args = new(server, info);
@@ -51,7 +45,7 @@ namespace TSManager.Core.Events
             }
             return args.Handled;
         }        
-        internal static bool OnOutput(ServerContainer server, TextInfo[] message, out OutputEventArgs args)
+        internal static bool OnOutput(ServerContainer server, ConsoleMessageInfo[] message, out OutputEventArgs args)
         {
             args = new(server, message);
             try
@@ -61,32 +55,6 @@ namespace TSManager.Core.Events
             catch (Exception ex)
             {
                 Logger.Error($"<Chat> Hook handling failed.{Environment.NewLine}{ex}");
-            }
-            return args.Handled;
-        }
-        internal static bool OnSendPacket(ServerContainer server, IPacket packet, out SendPacketEventArgs args)
-        {
-            args = new(server, packet);
-            try
-            {
-                SendPacket?.Invoke(args);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error($"<SendPacket> Hook handling failed.{Environment.NewLine}{ex}");
-            }
-            return args.Handled;
-        }
-        internal static bool OnGetPacket(ServerContainer server, IPacket packet, bool fromClient, out RecievePacketEventArgs args)
-        {
-            args = new(server, packet);
-            try
-            {
-                RecievePacket?.Invoke(args);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error($"<GetPacket> Hook handling failed.{Environment.NewLine}{ex}");
             }
             return args.Handled;
         }

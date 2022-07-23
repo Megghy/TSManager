@@ -1,4 +1,4 @@
-﻿namespace TSManager.Core.Models.EventArgs
+﻿namespace TSManager.Core.EventArgs
 {
     public static class TSMEventArgs
     {

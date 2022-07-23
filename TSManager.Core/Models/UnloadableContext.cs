@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Hprose.RPC;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Text;
 using System.Threading.Tasks;
+using TSManager.Shared.TSMInterfaces;
 
 namespace TSManager.Core.Models
 {
@@ -14,8 +17,21 @@ namespace TSManager.Core.Models
     /// </summary>
     public class UnloadableContext
     {
+        class aa : ITSMClientService
+        {
+
+        }
         public UnloadableContext()
         {
+            HttpListener server = new HttpListener();
+            server.Prefixes.Add("http://localhost:10240/");
+            server.Start();
+
+            Service service = new Service().Bind(server).AddInstanceMethods(new aa());
+
+            System.Console.WriteLine("Server listening at http://localhost:10240/ \n Press any key exit ...");
+            System.Console.ReadKey();
+            server.Stop();
             Context = new AssemblyLoadContext($"TSManagerContext_{Guid.NewGuid()}", isCollectible: true);
             Context.Resolving += ContextResolving;
         }

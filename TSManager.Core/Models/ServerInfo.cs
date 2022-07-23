@@ -18,33 +18,42 @@ namespace TSManager.Core.Models
             Description = des;
             FilePath = path;
         }
+        /// <summary>
+        /// 服务器唯一标识符
+        /// </summary>
         public Guid SID { get; init; } = Guid.Empty;
+
+        /// <summary>
+        /// 服务器名称
+        /// </summary>
         public string Name { get; private set; }
+
+        /// <summary>
+        /// 服务器描述
+        /// </summary>
         public string Description { get; private set; }
+
+        /// <summary>
+        /// 启动文件路径
+        /// </summary>
         public string FilePath { get; private set; }
+
+        /// <summary>
+        /// 服务器目录
+        /// </summary>
         public string FileDirectory => Directory.GetParent(FilePath).FullName;
         public override string ToString()
-        {
-            return $"{SID}_{Name}";
-        }
+            => $"{SID}_{Name}";
         public override bool Equals([NotNullWhen(true)] object? obj)
-        {
-            return obj?.ToString() == ToString();
-        }
+            => obj?.ToString() == ToString();
 
         public static bool operator ==(ServerInfo left, ServerInfo right)
-        {
-            return left.Equals(right);
-        }
+            => left.Equals(right);
 
         public static bool operator !=(ServerInfo left, ServerInfo right)
-        {
-            return !(left == right);
-        }
+            => !(left == right);
 
         public override int GetHashCode()
-        {
-            return SID.GetHashCode();
-        }
+            =>SID.GetHashCode();
     }
 }

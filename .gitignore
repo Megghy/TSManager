@@ -21,3 +21,6 @@
 /TSManager/obj/Debug/net6.0-windows8.0/win-x64
 /TSManager.Shared/obj
 /TSManager.TShock/obj/Debug
+/packages
+/TSManager.Shared/bin/Debug
+/TSManager.TShock/bin/Debug

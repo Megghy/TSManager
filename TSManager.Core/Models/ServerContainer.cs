@@ -1,48 +1,67 @@
-﻿using System;
+﻿using StreamJsonRpc;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Net;
 using TSManager.Core.Events;
 using TSManager.Core.Modules;
+using TSManager.Shared.TSMDatastructs;
+using TSManager.Shared.TSMInterfaces;
 
 namespace TSManager.Core.Models
 {
-    public class ServerContainer
+    public class ServerContainer : IDisposable
     {
-        public ServerContainer(ServerInfo info)
+        public ServerContainer(ServerInfo info, bool createService = true)
         {
+            _createService = createService;
             Info = info;
-
-            ServerProcess = new()
-            {
-                StartInfo = new()
-                {
-                    FileName = FilePath,                    
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    CreateNoWindow = true,
-                    RedirectStandardInput = true,
-                }
-            };
-            ServerProcess.OutputDataReceived += OnRecieveOutput;
-            BindingPipe = new Pipeline();
+            Init(createService);
         }
 
         #region 成员
+        private bool _createService;
+
         public ServerInfo Info { get; init; }
         public string FilePath => Info.FilePath;
         public string[] StartArgs { get; set; } = Array.Empty<string>();
-        public Pipeline BindingPipe { get; private set; }
+        private SimplePipeline _bindPipeline;
+        private IRPCServerService _rpcProcessor;
+        private JsonRpc _rpcInstance;
+        public IRPCClientService RPCService { get; private set; }
+
         public BindingList<PluginInfo> Plugins { get; set; }
         public Process ServerProcess { get; private set; }
 
         public bool IsRunning { get; private set; }
         public bool IsTrServer { get; internal set; }
 
-        public long RunningTime { get; private set; }     
+        public long RunTime { get; private set; }     
         #endregion
 
         #region 启动关闭
-        public bool Start(string[] args = null)
+        private void Init(bool createService)
+        {
+            ServerProcess = new()
+            {
+                StartInfo = new()
+                {
+                    FileName = FilePath,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardInput = true,
+                }
+            };
+            ServerProcess.OutputDataReceived += OnRecieveOutput;
+
+            if (createService)
+            {
+                _bindPipeline = new();
+                _rpcProcessor = new DefaultRPCServerProcessor(this);
+            }
+        }
+        public async Task<bool> StartAsync(string[] args = null)
         {
             if(IsRunning)
             {
@@ -56,37 +75,54 @@ namespace TSManager.Core.Models
                     ServerProcess.StartInfo.Arguments = string.Join(" ", args);
                 IsRunning = true;
                 ServerProcess.Start();
-                BindingPipe.Start();
+                if (_createService)
+                {
+                    await _bindPipeline.StartAsync();
+                    _rpcInstance = JsonRpc.Attach(_bindPipeline._pipeServer, _rpcProcessor);
+                    RPCService = _rpcInstance.Attach<IRPCClientService>();
+
+                    Logger.Success($"实例 [{Info.Name}] RPC服务已注册");
+                }
                 Logger.Success($"实例 [{Info.Name}] 启动完成");
                 return true;
             }
         }
 
-        public void Stop()
+        public async Task StopAsync()
         {
             if (IsRunning)
                 Logger.Info($"实例 [{Info.Name}] 未启动, 无法停止");
             else
             {
                 IsRunning = false;
-                ServerProcess.Kill();
-                BindingPipe.Dispose();
+                if (IsTrServer) //tr服务器退出使用exit
+                {
+                    WriteLine("exit");
+                    await ServerProcess.WaitForExitAsync();
+                }
+                else
+                {
+                    ServerProcess.Kill();
+                }
+                ServerProcess = null;
+                _bindPipeline.Dispose();
+                _bindPipeline = null;
                 Logger.Success($"实例 [{Info.Name}] 已停止");
             }
         }
-        public void Restart()
+        public async Task RestartAsync()
         {
-            Stop();
-            BindingPipe = new();
-            Start();
+            await StopAsync();
+            Init(_createService);
+            await StartAsync();
         }
-        public void Dispose()
+        public async Task DisposeAsync()
         {
-            Stop();
-            BindingPipe = null;
-            ServerProcess = null;
+            await StopAsync();
             Plugins = null;
         }
+        public void Dispose()
+            => DisposeAsync().Wait();
         #endregion
 
         #region 事件
@@ -98,7 +134,7 @@ namespace TSManager.Core.Models
         private void OnRecieveOutput(object sender, DataReceivedEventArgs e)
         {
             if (!string.IsNullOrEmpty(e.Data))
-                ServerEvent.OnOutput(this, new TextInfo[] { new() { Text = e.Data } }, out _);
+                ServerEvent.OnOutput(this, new ConsoleMessageInfo[] { new() { Text = e.Data } }, out _);
         }
         #endregion
 
@@ -109,8 +145,9 @@ namespace TSManager.Core.Models
         /// <param name="obj">消息</param>
         public void WriteLine(object obj)
         {
-            ServerProcess?.StandardInput.WriteLine(obj.ToString());
+            ServerProcess?.StandardInput.WriteLine(obj?.ToString());
         }
+
         #endregion
     }
 }
