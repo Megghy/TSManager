@@ -17,12 +17,4 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Modules\Pipe\PipeServerPool.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Modules\Pipe\" />
-  </ItemGroup>
 </Project>

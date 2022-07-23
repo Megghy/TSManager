@@ -13,5 +13,6 @@
 	
 	<ItemGroup>
 	  <ProjectReference Include="..\TSManager.Core\TSManager.Core.csproj" />
+	  <ProjectReference Include="..\TSManager.Shared\TSManager.Shared.csproj" />
 	</ItemGroup>
 </Project>
